@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+	"deploy": "git add dist -f && git commit -m \"$msg\" && git push origin `git subtree split --prefix dist main`:gh-pages --force"
   },
   "dependencies": {
     "vue": "^3.3.4",
