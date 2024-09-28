@@ -1,19 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { disablePointerEvents, ToolList } from "../global";
+import { disablePointerEvents, ToolList, curToolIdx } from "../global";
 import { playground } from "../handler/playground-handler";
 import { showToolBar } from "./refs";
-
-const curToolIdx = ref<number>(-1);
-
-function selectTool(idx: number) {
-	if(idx === curToolIdx.value) {
-		curToolIdx.value = -1;
-	} else {
-		curToolIdx.value = idx;
-	}
-	playground.setTool(curToolIdx.value);
-}
 
 </script>
 
@@ -24,7 +12,11 @@ function selectTool(idx: number) {
 	:class="['floating-panel', 'scroll-bar', disablePointerEvents ? 'pointer-events-none' : '']"
 >
 	<div class="tools-list">
-		<div v-for="(tool, idx) in ToolList" @click="selectTool(idx)" :class="[idx === curToolIdx ? 'selected' : '']">
+		<div
+			v-for="(tool, idx) in ToolList"
+			@click="playground.setTool(idx === curToolIdx ? -1 : idx)"
+			:class="[idx === curToolIdx ? 'selected' : '']"
+		>
 			<component :is="tool.icon" :class="[idx === curToolIdx ? 'selected' : '']"></component>
 		</div>
 	</div>

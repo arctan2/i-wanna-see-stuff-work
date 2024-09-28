@@ -124,7 +124,7 @@ export class CanvasHandler {
 		this.lineCtx.scale(this.DPR, this.DPR);
 	}
 
-	add(...element: Array<ElementHandler>) {
+	addElements(...element: Array<ElementHandler>) {
 		for(let el of element) {
 			this.elements.push(el);
 			el.draw(this.ctx);

@@ -16,7 +16,7 @@ export function sampleLinkedList(canvas: CanvasHandler, row: number, col: number
 		let x = canvas.transform.x * -1 / GAP + GAP;
 		for(let j = 0; j < col; j++) {
 			const enode = new ElementLLNode(x * GAP, y * GAP, String(randInt(10, 500)));
-			canvas.add(enode, enode.arrow);
+			canvas.addElements(enode, enode.arrow);
 			x += 12;
 			nodes.push(enode);
 		}
@@ -40,7 +40,7 @@ export function sampleUGraph(canvas: CanvasHandler, row: number, col: number, is
 		let x = canvas.transform.x * -1 / GAP + (GAP * 2);
 		for(let j = 0; j < col; j++) {
 			const enode = new ElementGNode(x * GAP, y * GAP, String(randInt(1, 500)));
-			canvas.add(enode);
+			canvas.addElements(enode);
 			x += 10;
 			nodes.push(enode);
 		}
@@ -60,7 +60,7 @@ export function sampleUGraph(canvas: CanvasHandler, row: number, col: number, is
 
 			edge.weight.value = isWeighted ? randInt(1, 50) : 0;
 			edge.rectify();
-			canvas.add(edge);
+			canvas.addElements(edge);
 		}
 	}
 
@@ -76,7 +76,7 @@ export function sampleDGraph(canvas: CanvasHandler, row: number, col: number, is
 		let x = canvas.transform.x * -1 / GAP + (GAP * 2);
 		for(let j = 0; j < col; j++) {
 			const enode = new ElementGNode(x * GAP, y * GAP, String(randInt(1, 500)));
-			canvas.add(enode);
+			canvas.addElements(enode);
 			x += 10;
 			nodes.push(enode);
 		}
@@ -96,7 +96,7 @@ export function sampleDGraph(canvas: CanvasHandler, row: number, col: number, is
 
 			edge.weight.value = isWeighted ? randInt(1, 50) : 0;
 			edge.rectify();
-			canvas.add(edge);
+			canvas.addElements(edge);
 		}
 	}
 
@@ -114,7 +114,7 @@ export function sampleUEdgeMatrix(canvas: CanvasHandler, row: number, col: numbe
 		nodes.push([]);
 		for(let j = 0; j < col; j++) {
 			const enode = new ElementGNode(x * GAP, y * GAP, String(randInt(1, 500)));
-			canvas.add(enode);
+			canvas.addElements(enode);
 			x += d;
 			nodes[i].push(enode);
 		}
@@ -143,7 +143,7 @@ export function sampleUEdgeMatrix(canvas: CanvasHandler, row: number, col: numbe
 				const edge = new ElementUEdge(a.ptr, b.ptr);
 				edge.weight.value = isWeighted ? randInt(1, 50) : 0;
 				edge.rectify();
-				canvas.add(edge);
+				canvas.addElements(edge);
 			}
 		}
 	}
@@ -163,7 +163,7 @@ export function sampleDBTree(canvas: CanvasHandler, depth: number, isWeighted: b
 		let x = -canvas.transform.x / GAP + gap;
 		for(let i = 0; i < nodesCount; i++) {
 			const enode = new ElementGNode(x * GAP, yLevel, String(randInt(1, 500)));
-			canvas.add(enode);
+			canvas.addElements(enode);
 			x += gap + (depth - height) * 5;
 			nodes.push(enode);
 		}
@@ -177,7 +177,7 @@ export function sampleDBTree(canvas: CanvasHandler, depth: number, isWeighted: b
 
 		edge.weight.value = isWeighted ? randInt(1, 50) : 0;
 		edge.rectify();
-		canvas.add(edge);
+		canvas.addElements(edge);
 	}
 
 	for(let i = depth; i > 0; i--) {

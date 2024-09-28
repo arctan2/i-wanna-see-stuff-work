@@ -43,7 +43,8 @@ export class ToolGNode extends ToolHandler {
 		const { x: vx, y: vy } = canvas.toVirtualPosition(x, y);
 
 		const node = new ElementGNode(vx, vy, String(randInt(1, 500)));
-		canvas.add(node);
+		canvas.addElements(node);
+		pgnd.tryUnselectTool();
 	}
 
 	pointerMove(state: EventState, canvas: CanvasHandler) {

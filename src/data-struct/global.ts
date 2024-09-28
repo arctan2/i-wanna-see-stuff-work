@@ -17,6 +17,9 @@ const _errorPopup = reactive({
 	text: ""
 })
 
+export const curToolIdx = shallowRef<number>(-1);
+export const isRetainTool = shallowRef<boolean>(false);
+
 export const errorPopup = readonly(_errorPopup);
 
 const _infoPopup = reactive({

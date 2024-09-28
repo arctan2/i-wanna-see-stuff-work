@@ -96,7 +96,7 @@ export class ToolUEdge extends ToolHandler {
 
 		edge.rectify();
 
-		canvas.add(edge);
+		canvas.addElements(edge);
 		canvas.redraw();
 	}
 

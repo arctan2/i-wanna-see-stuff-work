@@ -1,24 +1,21 @@
 <script setup lang="ts">
 import { showToolBar, isMenuOpen, setIsMenuOpen, setIsMemAllocShow, isMemAllocShow, isSelectedItemShow, setIsSelectedItemShow } from "./refs";
 import { playground } from "../handler/playground-handler";
-import { setDelay, DELAY, focusedElement } from "../global";
+import { setDelay, DELAY, focusedElement, isRetainTool } from "../global";
 import Range from "../../common-components/range.vue";
 import ToolIcon from "../assets/icons/spawner.svg";
 import RamIcon from "../assets/icons/ram.svg";
 import { componentMap } from "./tool-component-map";
 import { sampleDBTree, sampleDGraph, sampleLinkedList, sampleUEdgeMatrix, sampleUGraph } from "./samples";
 import Select from "../../common-components/select.vue";
-import { computed, ref } from "vue";
-
-function setDisplayGrid() {
-	playground.canvas.setIsDisplayGrid(!playground.canvas.isDisplayGrid);
-}
+import { computed, ref, watch } from "vue";
 
 const exampleMap = {
 	ll: "Linked List",
 	graph: "Graph",
 	tree: "BTree"
 };
+const isDisplayGrid = ref<boolean>(false);
 const curExample = ref(exampleMap.ll);
 const rows = ref(3);
 const cols = ref(3);
@@ -49,6 +46,10 @@ function createExample() {
 	}
 }
 
+watch(isDisplayGrid, cur => {
+	playground.canvas.setIsDisplayGrid(cur);
+})
+
 </script>
 
 <template>
@@ -59,9 +60,15 @@ function createExample() {
 		</div>
 		<section id="menu-section" class="floating-panel sub-sections-container" v-if="isMenuOpen">
 			<div>
-				<button class="btn btn-nobg" @click="setDisplayGrid">
-					Toggle-grid
-				</button>
+				<div class="checkbox-container">
+					<input type="checkbox" v-model="isRetainTool" />
+					<label>Retain tool</label>
+				</div>
+
+				<div class="checkbox-container">
+					<input type="checkbox" v-model="isDisplayGrid" />
+					<label>Show grid</label>
+				</div>
 			</div>
 
 			<div>
