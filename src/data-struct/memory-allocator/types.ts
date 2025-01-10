@@ -2,6 +2,10 @@ import { ShallowReactive, ShallowRef, shallowReactive, shallowRef } from "vue";
 import { numberToBytes } from "../utils";
 import allocator, { AllocDisplay, Dealloc, DisplayableBlock, Ptr } from "./allocator";
 
+export const PrimitiveSize = {
+	Int: 4
+}
+
 export class Chars implements AllocDisplay {
 	charsRef: ShallowRef<string>;
 	cap: number;
@@ -49,7 +53,7 @@ export class Chars implements AllocDisplay {
 }
 
 export class Str implements AllocDisplay, Dealloc {
-	static Size = 4 + 4 + Ptr.Size;
+	static Size = PrimitiveSize.Int + PrimitiveSize.Int + Ptr.Size;
 
 	static new(value: string): Ptr<Str> {
 		const newStr = new Str(value);
@@ -182,7 +186,7 @@ export class Arr<T extends AllocDisplay | number> implements AllocDisplay {
 }
 
 export class List<T extends AllocDisplay | number> implements AllocDisplay, Dealloc {
-	static Size = 4 + 4 + Ptr.Size;
+	static Size = PrimitiveSize.Int + PrimitiveSize.Int + Ptr.Size;
 
 	arrPtr: Ptr<Arr<T>>;
 	dsize: number;
@@ -321,7 +325,7 @@ export class MapListMap<T extends AllocDisplay> implements AllocDisplay {
 }
 
 export class MapList<T extends AllocDisplay> implements AllocDisplay, Dealloc {
-	static Size = 4 + 4 + Ptr.Size;
+	static Size = PrimitiveSize.Int + PrimitiveSize.Int + Ptr.Size;
 
 	mapPtr: Ptr<MapListMap<T>>;
 	dsize: number;

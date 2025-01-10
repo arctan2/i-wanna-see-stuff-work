@@ -275,6 +275,15 @@ class FreeList {
 	}
 
 	deleteByPtr(ptr: PtrType) {
+		if(this.head === null) {
+			return;
+		}
+
+		if(this.head.ptr === ptr) {
+			this.head = this.head.next;
+			return;
+		}
+
 		const prevBlock = this.prevOfPtr(ptr);
 
 		if(prevBlock && prevBlock.next) {

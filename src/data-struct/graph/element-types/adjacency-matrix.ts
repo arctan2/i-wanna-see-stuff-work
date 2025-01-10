@@ -1,7 +1,7 @@
 import { circleFill } from "../../canvas";
 import { Transform } from "../../handler/canvas-handler";
 import allocator, { Ptr } from "../../memory-allocator/allocator";
-import { List } from "../../memory-allocator/types";
+import { List, PrimitiveSize } from "../../memory-allocator/types";
 
 export const CELL_SIZE: number = 20;
 
@@ -65,7 +65,7 @@ export class AdjMatrix {
 
 	constructor(x: number, y: number, arr: Array<Array<number>>) {
 		let mat = List.new(arr.map(row => {
-			return List.new(row, 4);
+			return List.new(row, PrimitiveSize.Int);
 		}), Ptr.Size);
 
 		this.mat = mat;
@@ -156,7 +156,7 @@ export class AdjMatrix {
 			this.rows = rows;
 
 			for(let i = this.mat.v.length; i < rows; ++i) {
-				const newRowPtr = List.new(new Array(this.columns).fill(0), 4);
+				const newRowPtr = List.new(new Array(this.columns).fill(0), PrimitiveSize.Int);
 				this.mat.v.setAt(i, newRowPtr);
 			}
 		} else {

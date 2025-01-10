@@ -10,7 +10,7 @@ import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/alloc
 import { MapList } from "../memory-allocator/types";
 
 export class ElementGNode extends GNode implements ElementHandler, AllocDisplay, Dealloc {
-	edges: Ptr<MapList<Ptr<ElementUEdge | ElementDEdge>>> = MapList.new(new Map, 4);
+	edges: Ptr<MapList<Ptr<ElementUEdge | ElementDEdge>>> = MapList.new(new Map, Ptr.Size);
 
 	referedByDEdges: Set<ElementDEdge> = new Set();
 
