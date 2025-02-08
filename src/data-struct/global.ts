@@ -5,6 +5,7 @@ import { ToolGNode } from "./graph/tool-node.ts";
 import { ToolUEdge } from "./graph/tool-u-edge.ts";
 import { ToolDEdge } from "./graph/tool-d-edge.ts";
 import { ToolAdjMatrix } from "./graph/tool-adjmatrix.ts";
+import { ToolBtreeNode } from "./btree/tool-btree-node.ts";
 import IconLLNode from "./assets/vue-icon-wrappers/ll-node.vue";
 import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
 import IconUEdge from "./assets/vue-icon-wrappers/u-edge.vue";
@@ -75,5 +76,6 @@ export const ToolList: ToolType[] = [
 	{ name: "u-edge", toolClass: ToolUEdge, icon: IconUEdge },
 	{ name: "d-edge", toolClass: ToolDEdge, icon: IconDEdge },
 	{ name: "adj-mat", toolClass: ToolAdjMatrix, icon: IconMatrix },
+	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconLLNode },
 ];
 

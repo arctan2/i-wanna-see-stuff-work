@@ -23,7 +23,7 @@ export class Null implements AllocDisplay {
 	}
 
     toString() {
-		return `NULL: ${Null.Hex}`;
+		return `${Null.Hex}`;
 	}
 
     toDisplayableBlocks() {

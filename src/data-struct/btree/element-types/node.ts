@@ -1,0 +1,135 @@
+import { ShallowRef, shallowRef } from "vue";
+import { GAP } from "../../canvas";
+import { Transform } from "../../handler/canvas-handler";
+import { Arr, PrimitiveSize } from "../../memory-allocator/types";
+import { Ptr } from "../../memory-allocator/allocator";
+
+export class BtreeNode {
+	static cellWidth = GAP * 6;
+	static cellHeight = GAP * 4;
+
+	M: number;
+
+	curKeyCount: ShallowRef<number>;
+	keys: Ptr<Arr<number>>;
+	isLeaf: ShallowRef<boolean>;
+
+	bg: string = "";
+	color = "#000000";
+
+	keysBg: Array<string> = [];
+
+	totalWidth: number;
+
+	x = -1;
+	y = -1;
+
+	constructor(M: number, isLeaf: boolean) {
+		this.M = M;
+		this.curKeyCount = shallowRef(0);
+		this.keys = Arr.new(new Array<number>(M - 1).fill(0), PrimitiveSize.Int);
+		this.isLeaf = shallowRef(isLeaf);
+
+		this.totalWidth = (M - 1) * BtreeNode.cellWidth;
+		this.resetStyle();
+	}
+
+	defaultCellColor(bg: string) {
+		const r = Math.round(parseInt(bg.slice(1, 3), 16) * 0.7);
+		const g = Math.round(parseInt(bg.slice(3, 5), 16) * 0.7);
+		const b = Math.round(parseInt(bg.slice(5, 7), 16) * 0.7);
+
+		return `rgb(${r}, ${g}, ${b})`;
+	}
+
+	resetStyle() {
+		const bg = "#0095ff";
+		this.bg = bg;
+		this.color = "#000000";
+		this.keysBg = new Array(this.M - 1).fill("#8fc9f2");
+	}
+
+	drawBorder(ctx: CanvasRenderingContext2D, color: string) {
+		ctx.strokeStyle = color;
+		ctx.lineWidth = 3;
+		const wb2 = ctx.lineWidth / 2;
+		ctx.beginPath();
+		ctx.roundRect(this.x - wb2, this.y - wb2, this.totalWidth + ctx.lineWidth, BtreeNode.cellHeight + ctx.lineWidth, 4);
+		ctx.stroke();
+		ctx.restore();
+	}
+
+	drawBg(ctx: CanvasRenderingContext2D) {
+		const { x, y } = this;
+
+		ctx.fillStyle = this.bg;
+		ctx.fillRect(x, y, this.totalWidth, BtreeNode.cellHeight);
+		this.drawBorder(ctx, this.bg);
+	}
+
+	drawCell(ctx: CanvasRenderingContext2D, idx: number) {
+		const { x, y } = this;
+
+		const pad = 3;
+		const padb2 = pad / 2;
+
+		const curX = (BtreeNode.cellWidth * idx) + padb2;
+
+		ctx.beginPath();
+		ctx.fillStyle = this.keysBg[idx];
+		ctx.roundRect(x + curX, y + padb2, BtreeNode.cellWidth - pad, BtreeNode.cellHeight - pad, 4);
+		ctx.fill();
+		ctx.restore();
+
+		ctx.fillStyle = this.color;
+		ctx.textBaseline = "middle";
+		ctx.textAlign = "center";
+		ctx.font = "16px monospace";
+
+		let text = this.keys.v.arr[idx] + "0000";
+		
+		ctx.fillText(text, x + curX + (BtreeNode.cellWidth / 2) - pad, (this.top + this.bottom) / 2);
+	}
+
+	paint(ctx: CanvasRenderingContext2D) {
+		this.drawBg(ctx);
+
+		for(let i = 0; i < this.keysBg.length; i++) {
+			this.drawCell(ctx, i);
+		}
+	}
+
+	setXY(x: number, y: number) {
+		this.x = x;
+		this.y = y;
+	}
+
+	dividerX() {
+		return this.right - GAP * 3;
+	}
+	
+	get top() {
+		return this.y;
+	}
+
+	get bottom() {
+		return this.y + BtreeNode.cellHeight;
+	}
+
+	get left() {
+		return this.x;
+	}
+
+	get right() {
+		return this.x + this.totalWidth;
+	}
+
+	intersects(x: number, y: number, transform: Transform): boolean {
+		const lowx = (this.x * transform.scale) + transform.x;
+		const lowy = (this.y * transform.scale) + transform.y;
+		const highx = lowx + (BtreeNode.cellWidth * transform.scale);
+		const highy = lowy + (BtreeNode.cellHeight * transform.scale);
+		return x >= lowx && x <= highx && y >= lowy && y <= highy;
+	}
+}
+

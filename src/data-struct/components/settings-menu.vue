@@ -6,14 +6,14 @@ import Range from "../../common-components/range.vue";
 import ToolIcon from "../assets/icons/spawner.svg";
 import RamIcon from "../assets/icons/ram.svg";
 import { componentMap } from "./tool-component-map";
-import { sampleDBTree, sampleDGraph, sampleLinkedList, sampleUEdgeMatrix, sampleUGraph } from "./samples";
+import { sampleDBinaryTree, sampleDGraph, sampleLinkedList, sampleUEdgeMatrix, sampleUGraph } from "./samples";
 import Select from "../../common-components/select.vue";
 import { computed, ref, watch } from "vue";
 
 const exampleMap = {
 	ll: "Linked List",
 	graph: "Graph",
-	tree: "BTree"
+	binaryTree: "Binary Tree"
 };
 const isDisplayGrid = ref<boolean>(false);
 const curExample = ref(exampleMap.ll);
@@ -40,8 +40,8 @@ function createExample() {
 			}
 		}
 		break;
-		case exampleMap.tree:
-		sampleDBTree(playground.canvas, rows.value, isWeighted.value, isDirected.value);
+		case exampleMap.binaryTree:
+		sampleDBinaryTree(playground.canvas, rows.value, isWeighted.value, isDirected.value);
 		break;
 	}
 }
@@ -83,7 +83,7 @@ watch(isDisplayGrid, cur => {
 				<div class="custom-select-container">
 					<Select :options="exampleMap" :value="curExample" @change="v => curExample = v" />
 				</div>
-				<div class="input-rows" v-if="curExample !== exampleMap.tree">
+				<div class="input-rows" v-if="curExample !== exampleMap.binaryTree">
 					<div class="input-container">
 						<span>Rows</span>
 						<input placeholder="rows" type="number" v-model="rows" />
@@ -109,7 +109,7 @@ watch(isDisplayGrid, cur => {
 					</div>
 				</div>
 
-				<div v-else-if="curExample === exampleMap.tree">
+				<div v-else-if="curExample === exampleMap.binaryTree">
 					<div class="input-container">
 						<span>Depth</span>
 						<input placeholder="depth" type="number" v-model="rows" />

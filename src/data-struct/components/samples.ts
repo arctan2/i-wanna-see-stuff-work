@@ -151,7 +151,7 @@ export function sampleUEdgeMatrix(canvas: CanvasHandler, row: number, col: numbe
 	canvas.redraw();
 }
 
-export function sampleDBTree(canvas: CanvasHandler, depth: number, isWeighted: boolean, isDirected: boolean) {
+export function sampleDBinaryTree(canvas: CanvasHandler, depth: number, isWeighted: boolean, isDirected: boolean) {
 	let calcY = (h: number) => (-canvas.transform.y) + (GNode.radius * 2 * h * 2) + (GAP * 5);
 	let yLevel = calcY(depth);
 	let noOfNodesInHeight = (h: number) => Math.pow(2, h - 1);

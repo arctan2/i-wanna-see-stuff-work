@@ -42,7 +42,7 @@ export class CanvasHandler {
 	toolCtx: CanvasRenderingContext2D;
 	lineCtx: CanvasRenderingContext2D;
 
-	isDisplayGrid: boolean = false;
+	isDisplayGrid: boolean = true;
 
 	finder: Finder = new Finder();
 

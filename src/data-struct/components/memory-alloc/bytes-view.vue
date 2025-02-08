@@ -142,6 +142,10 @@ function calcBytesInc() {
 	color: var(--gnode);
 }
 
+.ElementBtreeNode.bytes{
+	color: var(--btree-node);
+}
+
 .MapList.bytes, .List.bytes{
 	color: var(--list);
 }
