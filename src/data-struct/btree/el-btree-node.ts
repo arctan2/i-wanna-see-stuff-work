@@ -17,15 +17,16 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	pointerLeave(_state: EventState, _canvas: CanvasHandler) {};
 
 	parentNode: ElementBtreeNode | null = null;
-	children: Ptr<Arr<Null | ElementBtreeNode>>;
+	children: Ptr<Arr<Ptr<ElementBtreeNode> | Null>>;
 
 	static Size = Ptr.Size + Ptr.Size;
 
-	constructor(x: number, y: number, M: number, isLeaf: boolean) {
+	constructor(x: number, y: number, M: number, isLeaf: boolean, parent: ElementBtreeNode | null) {
 		super(M, isLeaf);
 		this.x = x;
 		this.y = y;
-		this.children = Arr.new(new Array<Null | ElementBtreeNode>(M).fill(new Null), Ptr.Size);
+		this.parentNode = parent;
+		this.children = Arr.new(new Array<Ptr<ElementBtreeNode> | Null>(M).fill(new Null), Ptr.Size);
 		this.ptr = allocator.malloc(ElementBtreeNode.Size, this);
 	}
 
@@ -110,12 +111,31 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		return null;
 	}
 
+	drawLineToChild(ctx: CanvasRenderingContext2D, idx: number) {
+		const c = this.children.v.arr[idx];
+		if(c.constructor.name === Null.name) {
+			return;
+		}
+
+		const child = (c as Ptr<ElementBtreeNode>).v;
+
+		ctx.strokeStyle = "white";
+		ctx.beginPath();
+		ctx.lineWidth = 3;
+		ctx.lineTo(this.x + (BtreeNode.cellWidth * idx), this.y + BtreeNode.cellHeight);
+		ctx.lineTo(child.x + (child.totalWidth / 2), child.y);
+		ctx.stroke();
+	}
+
 	draw(ctx: CanvasRenderingContext2D) {
+		this.paint(ctx);
 		if(this === focusedElement.value) {
 			this.drawBorder(ctx, "#FFFF00");
 		}
 
-		this.paint(ctx);
+		for(let i = 0; i <= this.curKeyCount.value; i++) {
+			this.drawLineToChild(ctx, i);
+		}
 	}
 }
 

@@ -4,6 +4,7 @@ import { playground } from "../handler/playground-handler";
 import { runSample } from "../samples";
 import { EventHandler } from "../handler/event-handler";
 import { infoPopup, errorPopup, setErrorPopupText } from "../global";
+import ToolInput from "./tool-input.vue";
 
 const playgroundSection = ref<null | HTMLElement>(null);
 const pgndCanvas = ref<null | HTMLCanvasElement>(null);
@@ -48,6 +49,8 @@ onUnmounted(() => {
 		ref="pgndCanvas"
 	></canvas>
 	<canvas id="element" ref="toolCanvas"></canvas>
+
+	<ToolInput />
 
 	<div id="info-popup" v-if="infoPopup.text !== ''">
 		<div class="icon">i</div>

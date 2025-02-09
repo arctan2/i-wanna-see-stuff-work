@@ -5,7 +5,9 @@ import { ElementBtreeNode } from "./el-btree-node";
 import { BtreeNode } from "./element-types/node";
 import { CanvasHandler } from "../handler/canvas-handler";
 import { Playground } from "../handler/playground-handler";
-import allocator from "../memory-allocator/allocator";
+import { ref } from "vue";
+
+export const MAX_CHILDREN = ref<number>(4);
 
 export class ToolBtreeNode extends ToolHandler {
 	constructor() {
@@ -41,7 +43,7 @@ export class ToolBtreeNode extends ToolHandler {
 
 		const { x: vx, y: vy } = canvas.toVirtualPosition(x, y);
 
-		const node = new ElementBtreeNode(vx, vy, 4, true);
+		const node = new ElementBtreeNode(vx, vy, MAX_CHILDREN.value, true, null);
 		canvas.addElements(node);
 		pgnd.tryUnselectTool();
 	}
@@ -59,13 +61,28 @@ export class ToolBtreeNode extends ToolHandler {
 		canvas.toolCanvas.style.left = x + "px";
 	}
 
-	static node;
+	static node: BtreeNode;
 
-	static {
-		this.node = new BtreeNode(4, true);
-		allocator.resetExceptNull();
+	static setTool() {
+		let v = Number(MAX_CHILDREN.value);
+
+		if(Number.isNaN(v) || !v || v <= 4) {
+			v = 4;
+		}
+
+		if(v >= 128) {
+			v = 128;
+		}
+
+		MAX_CHILDREN.value = v;
+
+		this.node = new BtreeNode(MAX_CHILDREN.value, true, false);
 		ToolBtreeNode.node.x = 0;
 		ToolBtreeNode.node.y = 0;
+	}
+
+	static {
+		this.setTool();
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {

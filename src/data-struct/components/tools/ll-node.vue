@@ -47,7 +47,7 @@ function find() {
 
 <template>
 <div class="tool-node">
-	<h1>Node</h1>
+	<h1>LL-Node</h1>
 	<div class="sub-sections-container">
 		<div>
 			<input

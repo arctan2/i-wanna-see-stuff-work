@@ -5,10 +5,12 @@ import { Arr, PrimitiveSize } from "../../memory-allocator/types";
 import { Ptr } from "../../memory-allocator/allocator";
 
 export class BtreeNode {
-	static cellWidth = GAP * 6;
+	static cellWidth = GAP * 9;
 	static cellHeight = GAP * 4;
+	static borderWidth = 3;
 
 	M: number;
+	T: number;
 
 	curKeyCount: ShallowRef<number>;
 	keys: Ptr<Arr<number>>;
@@ -20,17 +22,26 @@ export class BtreeNode {
 	keysBg: Array<string> = [];
 
 	totalWidth: number;
+	totalWidthHalf: number;
 
 	x = -1;
 	y = -1;
 
-	constructor(M: number, isLeaf: boolean) {
+	constructor(M: number, isLeaf: boolean, dontAlloc?: boolean) {
 		this.M = M;
+		this.T = Math.ceil(M / 2);
 		this.curKeyCount = shallowRef(0);
-		this.keys = Arr.new(new Array<number>(M - 1).fill(0), PrimitiveSize.Int);
+
+		if(dontAlloc === false) {
+			this.keys = new Ptr(0, 0, new Arr(new Array<number>(M - 1).fill(0)));
+		} else {
+			this.keys = Arr.new(new Array<number>(M - 1).fill(0), PrimitiveSize.Int);
+		}
+
 		this.isLeaf = shallowRef(isLeaf);
 
 		this.totalWidth = (M - 1) * BtreeNode.cellWidth;
+		this.totalWidthHalf = this.totalWidth / 2;
 		this.resetStyle();
 	}
 
@@ -51,7 +62,7 @@ export class BtreeNode {
 
 	drawBorder(ctx: CanvasRenderingContext2D, color: string) {
 		ctx.strokeStyle = color;
-		ctx.lineWidth = 3;
+		ctx.lineWidth = BtreeNode.borderWidth;
 		const wb2 = ctx.lineWidth / 2;
 		ctx.beginPath();
 		ctx.roundRect(this.x - wb2, this.y - wb2, this.totalWidth + ctx.lineWidth, BtreeNode.cellHeight + ctx.lineWidth, 4);
@@ -81,12 +92,16 @@ export class BtreeNode {
 		ctx.fill();
 		ctx.restore();
 
+		if(idx >= this.curKeyCount.value) {
+			return;
+		}
+
 		ctx.fillStyle = this.color;
 		ctx.textBaseline = "middle";
 		ctx.textAlign = "center";
 		ctx.font = "16px monospace";
 
-		let text = this.keys.v.arr[idx] + "0000";
+		let text = String(this.keys.v.arr[idx]);
 		
 		ctx.fillText(text, x + curX + (BtreeNode.cellWidth / 2) - pad, (this.top + this.bottom) / 2);
 	}
@@ -94,7 +109,7 @@ export class BtreeNode {
 	paint(ctx: CanvasRenderingContext2D) {
 		this.drawBg(ctx);
 
-		for(let i = 0; i < this.keysBg.length; i++) {
+		for(let i = 0; i < this.M - 1; i++) {
 			this.drawCell(ctx, i);
 		}
 	}
@@ -102,10 +117,6 @@ export class BtreeNode {
 	setXY(x: number, y: number) {
 		this.x = x;
 		this.y = y;
-	}
-
-	dividerX() {
-		return this.right - GAP * 3;
 	}
 	
 	get top() {
@@ -127,7 +138,7 @@ export class BtreeNode {
 	intersects(x: number, y: number, transform: Transform): boolean {
 		const lowx = (this.x * transform.scale) + transform.x;
 		const lowy = (this.y * transform.scale) + transform.y;
-		const highx = lowx + (BtreeNode.cellWidth * transform.scale);
+		const highx = lowx + (this.totalWidth * transform.scale);
 		const highy = lowy + (BtreeNode.cellHeight * transform.scale);
 		return x >= lowx && x <= highx && y >= lowy && y <= highy;
 	}
