@@ -30,13 +30,17 @@ export class AlgorithmHandler {
 		});
 	}
 
-	async play(canvas: CanvasHandler) {
+	async play(canvas: CanvasHandler, callback?: () => void) {
 		this.state = ProgressState.Running;
 		if(this.generator === null) {
 			this.generator = this.generatorFn(canvas);
 		}
 
 		while(await this.run(canvas));
+
+		if(callback) {
+			callback();
+		}
 	}
 
 	pause() {

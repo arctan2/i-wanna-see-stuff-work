@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowReactive, watch } from 'vue';
+import { Ref, ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
 import { useFocusedElement, unfocusElement } from '../../global';
 import { ElementBtreeNode } from '../../btree/el-btree-node';
@@ -11,33 +11,43 @@ const toInsertKey = ref<number | "">("");
 const from = ref<number>(1);
 const to = ref<number>(8);
 const step = ref<number>(1);
-const inserterState = shallowReactive<{node: ElementBtreeNode | null, curKey: number}>({
+const inserterState: {node: ElementBtreeNode | null, curKey: number} = {
 	node: null,
 	curKey: 0
-})
+}
 
-function validateInputs() {
-	if(toInsertKey.value === "") {
-		return;
-	}
+class ValidatorObj {
+	obj: Ref<number | "">;
+	min: number;
+	max: number;
 
-	if(+toInsertKey.value <= -999999) {
-		toInsertKey.value = -999999;
-		input();
-	}
-
-	if(+toInsertKey.value >= 999999) {
-		toInsertKey.value = 999999;
-		input();
+	constructor(obj: Ref<number | "">, min: number, max: number) {
+		this.obj = obj;
+		this.min = min;
+		this.max = max;
 	}
 }
 
-function input() {
-	if(toInsertKey.value === "") {
-		return;
-	}
-	if(toInsertKey.value >= -999999 && toInsertKey.value < 999999) {
-		toInsertKey.value = Math.floor(toInsertKey.value);
+function validateInputs() {
+	const validatorObjects = [
+		new ValidatorObj(toInsertKey, -999999, 999999),
+		new ValidatorObj(from, -999999, 999999),
+		new ValidatorObj(to, -999999, 999999),
+		new ValidatorObj(step, -100, 100)
+	];
+
+	for(const { obj, min, max } of validatorObjects) {
+		if(obj.value !== "") {
+			if(Number(obj.value) <= min) {
+				obj.value = min;
+			}
+
+			if(Number(obj.value) >= max) {
+				obj.value = max;
+			}
+
+			obj.value = Math.floor(obj.value);
+		}
 	}
 }
 
@@ -52,11 +62,7 @@ function insertKey() {
 	unfocusElement();
 }
 
-watch(algorithmState, (state) => {
-	if(!state.isDone) {
-		return;
-	}
-
+function iter() {
 	if(inserterState.curKey >= to.value) {
 		algorithmState.forceStopAlgorithm();
 		return;
@@ -74,8 +80,8 @@ watch(algorithmState, (state) => {
 
 	InsertBtree.init(inserterState.node, inserterState.curKey);
 	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.play(playground.canvas);
-});
+	InsertBtree.play(playground.canvas, iter);
+}
 
 function iterInsert() {
 	inserterState.curKey = from.value;
@@ -83,7 +89,8 @@ function iterInsert() {
 
 	InsertBtree.init(focusedElement.value, inserterState.curKey);
 	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.play(playground.canvas);
+	InsertBtree.play(playground.canvas, iter);
+	unfocusElement();
 }
 
 </script>
@@ -96,51 +103,50 @@ function iterInsert() {
 			<h2>Insert Key</h2>
 			<input
 				@blur="validateInputs"
-				@input="input"
 				spellcheck="false"
 				placeholder="key"
 				type="number"
 				max="999999"
 				min="-999999"
 				v-model="toInsertKey"
+				style="width: 100%;"
 			/>
-			<button class="btn btn-nobg" @click="insertKey()">insert</button>
+			<button class="btn btn-nobg clr-green" @click="insertKey()">insert</button>
 		</div>
 
-		<div class="insert-key">
-			<h2>Insert Keys</h2>
-			<div>
-				<span>from: </span>
-				<input
-					@blur="validateInputs"
-					@input="from = Math.floor(from)"
-					spellcheck="false"
-					placeholder="key"
-					type="number"
-					max="999999"
-					min="-999999"
-					v-model="from"
-				/>
-			</div>
-			<div>
-				<span>to: </span>
-				<input
-					@blur="validateInputs"
-					@input="to = Math.floor(to)"
-					spellcheck="false"
-					placeholder="key"
-					type="number"
-					max="999999"
-					min="-999999"
-					v-model="to"
-				/>
+		<div class="insert-keys">
+			<h2>Insert Iter</h2>
+			<div class="from-to">
+				<div>
+					<div>from</div>
+					<div>to</div>
+				</div>
+				<div>
+					<input
+						@blur="validateInputs"
+						spellcheck="false"
+						placeholder="key"
+						type="number"
+						max="999999"
+						min="-999999"
+						v-model="from"
+					/>
+					<input
+						@blur="validateInputs"
+						spellcheck="false"
+						placeholder="key"
+						type="number"
+						max="999999"
+						min="-999999"
+						v-model="to"
+					/>
+				</div>
 			</div>
 
 			<div>
-				<span>step: </span>
+				<span style="font-family: monospace;">step: </span>
 				<input
 					@blur="validateInputs"
-					@input="step = Math.floor(step)"
 					spellcheck="false"
 					placeholder="key"
 					type="number"
@@ -149,7 +155,7 @@ function iterInsert() {
 					v-model="step"
 				/>
 			</div>
-			<button class="btn btn-nobg" @click="iterInsert()">insert</button>
+			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
 		</div>
 	</div>
 </div>
@@ -168,7 +174,7 @@ function iterInsert() {
 }
 
 .sub-sections-container > div{
-	--bg: rgb(56, 48, 64);
+	--bg: rgb(48, 58, 64);
 }
 
 .buttons{
@@ -182,13 +188,36 @@ function iterInsert() {
 	min-width: 4.5rem;
 }
 
-.insert-key button{
+.insert-key button, .insert-keys button {
 	margin-top: 0.5rem;
 }
 
-.insert-key h2{
+.insert-key h2, .insert-keys h2{
 	font-size: 1.2rem;
 	margin-bottom: 0.5rem;
+}
+
+.from-to {
+	display: flex;
+	flex-direction: column;
+}
+
+.from-to > div {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: space-around;
+	font-family: monospace;
+	margin-bottom: 0.3rem;
+}
+
+.from-to > div > * {
+	max-width: 48%;
+	min-width: 48%;
+}
+
+.from-to > div > div{
+	text-align: center;
 }
 
 </style>

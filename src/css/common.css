@@ -52,6 +52,10 @@
 	--clr: rgb(255, 255, 41);
 }
 
+.clr-lblue{
+	--clr: rgb(0, 165, 255);
+}
+
 .clr-purple{
 	--clr: rgb(132, 0, 255);
 }
@@ -64,8 +68,8 @@
 	--clr: rgb(38, 42, 255);
 }
 
-.clr-lblue{
-	--clr: rgb(97, 100, 255);
+.clr-green{
+	--clr: rgb(0, 255, 76);
 }
 
 .btn-nobg{

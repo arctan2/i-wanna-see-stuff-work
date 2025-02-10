@@ -9,15 +9,22 @@ enum Color {
 	visited = "#00ff00"
 };
 
-const gap = GAP * 3;
+const gapX = GAP * 3;
+const gapY = BtreeNode.cellHeight * 2;
 
 class InsertBtree extends AlgorithmHandler {
-	startNode: null | ElementBtreeNode = null;
+	root: null | ElementBtreeNode = null;
 	toInsertKey: number = 0;
 
 	init(node: ElementBtreeNode, toInsertKey: number) {
 		this.toInsertKey = toInsertKey;
-		this.startNode = node;
+		this.root = node;
+	}
+
+	uninit(canvas: CanvasHandler) {
+		this.root = null;
+		this.toInsertKey = 0;
+		canvas.redraw();
 	}
 
 	splitNode(parent: ElementBtreeNode, idx: number, canvas: CanvasHandler): void {
@@ -29,14 +36,6 @@ class InsertBtree extends AlgorithmHandler {
 			fullChild.v.isLeaf.value,
 			parent
 		);
-
-		for(let i = 0; i <= idx; i++) {
-			(parent.children.v.arr[i] as Ptr<ElementBtreeNode>).v.x -= parent.totalWidthHalf + gap;
-		}
-
-		for(let i = idx + 1; i < parent.curKeyCount.value; i++) {
-			(parent.children.v.arr[i] as Ptr<ElementBtreeNode>).v.x += parent.totalWidthHalf + gap;
-		}
 
 		canvas.addElements(newChild);
 
@@ -114,21 +113,82 @@ class InsertBtree extends AlgorithmHandler {
 		current.curKeyCount.value++;
 
 		canvas.redraw();
+
+		return root;
 	}
 
-	uninit(canvas: CanvasHandler) {
-		this.startNode = null;
-		this.toInsertKey = 0;
-		canvas.redraw();
+	rearrangeTree(root: ElementBtreeNode) {
+		let levels = [];
+		let queue = [root];
+
+		let count = 0;
+		let temp = [];
+
+		while(queue.length > 0) {
+			if(count === 0) {
+				count = queue.length;
+			}
+
+			count--;
+
+			const node: ElementBtreeNode = queue.pop() as ElementBtreeNode;
+
+			for(let i = 0; i <= node.curKeyCount.value; i++) {
+				const child = node.children.v.arr[i];
+				if(child.constructor.name !== Null.name) {
+					queue.unshift((child as Ptr<ElementBtreeNode>).v);
+				}
+			}
+
+			temp.push(node);
+
+			if(count === 0) {
+				levels.push(temp);
+				temp = [];
+			}
+		}
+
+		const lastLevel = levels.length - 1;
+
+		if(lastLevel === 0) {
+			return;
+		}
+
+		const lastLevelY = root.y + (lastLevel * (BtreeNode.cellHeight + gapY));
+		const lastLevelWidth = root.totalWidth * levels[lastLevel].length;
+		const lastLevelStartX = (root.x + root.totalWidthHalf) - (lastLevelWidth / 2);
+
+		for(let i = 0; i < levels[lastLevel].length; i++) {
+			levels[lastLevel][i].x = lastLevelStartX + ((root.totalWidth + gapX) * i);
+			levels[lastLevel][i].y = lastLevelY;
+		}
+
+		for(let i = lastLevel - 1; i >= 0; i--) {
+			let level = levels[i];
+			for(let j = 0; j < level.length; j++) {
+				let node = level[j];
+				const children = node.children.v.arr;
+				const firstChildX = (children[0] as Ptr<ElementBtreeNode>).v.x;
+				const lastChildEndX = (children[node.curKeyCount.value] as Ptr<ElementBtreeNode>).v.x + root.totalWidth;
+				node.y = root.y + (i * (BtreeNode.cellHeight + gapY));
+				node.x = ((firstChildX + lastChildEndX) / 2) - (root.totalWidthHalf);
+			}
+		}
 	}
 
 	*generatorFn(canvas: CanvasHandler) {
-		if(this.startNode) {
-			let gen = this.insertKey(this.startNode, this.toInsertKey, canvas);
+		if(this.root) {
+			let gen = this.insertKey(this.root, this.toInsertKey, canvas);
+			let result: IteratorResult<never, ElementBtreeNode>;
 
-			while(!gen.next().done) {
+			while(true) {
+				result = gen.next();
+				if(result.done) {
+					break;
+				}
 				yield null;
 			}
+			this.rearrangeTree(result.value);
 		}
 	}
 }
