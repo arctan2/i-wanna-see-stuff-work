@@ -11,6 +11,7 @@ import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
 import IconUEdge from "./assets/vue-icon-wrappers/u-edge.vue";
 import IconGNode from "./assets/vue-icon-wrappers/g-node.vue";
 import IconMatrix from "./assets/vue-icon-wrappers/matrix.vue";
+import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -77,6 +78,6 @@ export const ToolList: ToolType[] = [
 	{ name: "u-edge", toolClass: ToolUEdge, icon: IconUEdge },
 	{ name: "d-edge", toolClass: ToolDEdge, icon: IconDEdge },
 	{ name: "adj-mat", toolClass: ToolAdjMatrix, icon: IconMatrix },
-	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconLLNode },
+	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
 ];
 

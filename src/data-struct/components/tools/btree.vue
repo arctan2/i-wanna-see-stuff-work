@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
-import { useFocusedElement, unfocusElement, isAutoplay } from '../../global';
+import { useFocusedElement, unfocusElement } from '../../global';
 import { ElementBtreeNode } from '../../btree/el-btree-node';
 import InsertBtree from "../../btree/insert-btree.ts"
 import { algorithmState } from '../refs';
@@ -75,20 +75,18 @@ async function iter() {
 		InsertBtree.forceStop(playground.canvas);
 		return;
 	}
-	inserterState.curKey += step.value;
 
 	InsertBtree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
 	algorithmState.setAlgorithm(InsertBtree);
 	InsertBtree.tryPlay(playground.canvas);
+
+	inserterState.curKey += step.value;
 }
 
 function iterInsert() {
 	inserterState.curKey = from.value;
 	inserterState.node = focusedElement.value;
-
-	InsertBtree.init(playground.canvas, focusedElement.value, inserterState.curKey, iter);
-	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.tryPlay(playground.canvas);
+	iter();
 	unfocusElement();
 }
 
