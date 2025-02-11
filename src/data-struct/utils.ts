@@ -31,6 +31,12 @@ export function numberToBytes(n: number): Array<string> {
 	return arr;
 }
 
+export function getContrastFg(hex: string){
+	const { r, g, b } = hexToRGB(hex)
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? "#000000" : "#ffffff";
+}
+
 export function lerp(a: number, b: number, t: number) {
 	return a + ((b - a) * t);
 }

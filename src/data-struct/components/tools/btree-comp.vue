@@ -92,10 +92,13 @@ function iterInsert() {
 
 </script>
 
-<template v-if="focusedElement.parentNode === null">
+<template>
 <div class="tool-btree-node">
 	<h1>B-tree Node</h1>
+
+
 	<div class="sub-sections-container">
+		<template v-if="focusedElement.parentNode === null">
 		<div class="insert-key">
 			<h2>Insert Key</h2>
 			<input
@@ -154,6 +157,8 @@ function iterInsert() {
 			</div>
 			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
 		</div>
+
+		</template>
 
 		<div>
 			<button class="btn btn-nobg clr-lblue" @click="focusedElement.rearrangeTree(playground.canvas)">rearrange</button>

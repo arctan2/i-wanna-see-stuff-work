@@ -115,7 +115,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		return null;
 	}
 
-	drawLineToChild(ctx: CanvasRenderingContext2D, idx: number) {
+	drawLineToChild(ctx: CanvasRenderingContext2D, idx: number, color = "#ffffff") {
 		const c = this.children.v.arr[idx];
 		if(c.constructor.name === Null.name) {
 			return;
@@ -123,7 +123,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 
 		const child = (c as Ptr<ElementBtreeNode>).v;
 
-		ctx.strokeStyle = "white";
+		ctx.strokeStyle = color;
 		ctx.beginPath();
 		ctx.lineWidth = 3;
 		ctx.lineTo(this.x + (BtreeNode.cellWidth * idx), this.y + BtreeNode.cellHeight);
@@ -208,7 +208,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		return new Promise<void>((resolve) => {
 			let t = 0;
 			const run = () => {
-				t = Math.min(t + 0.01, 1);
+				t = Math.min(t + 0.05, 1);
 				for(const [node, point] of locMap.entries()) {
 					node.x = lerp(node.x, point.x, t);
 					node.y = lerp(node.y, point.y, t);

@@ -11,7 +11,7 @@ import GNodeComp from "./tools/g-node.vue";
 import UEdgeComp from "./tools/u-edge.vue";
 import DEdgeComp from "./tools/d-edge.vue";
 import AdjMatrixComp from "./tools/adjmatrix.vue";
-import BtreeNodeComp from "./tools/btree.vue";
+import BtreeNodeComp from "./tools/btree-comp.vue";
 
 type ComponentMap = { [_:string]: any };
 
@@ -23,3 +23,4 @@ export const componentMap: ComponentMap = {
 	[ElementAdjMatrix.name]: AdjMatrixComp,
 	[ElementBtreeNode.name]: BtreeNodeComp
 };
+

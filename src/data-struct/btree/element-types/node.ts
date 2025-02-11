@@ -3,11 +3,14 @@ import { GAP } from "../../canvas";
 import { Transform } from "../../handler/canvas-handler";
 import { Arr, PrimitiveSize } from "../../memory-allocator/types";
 import { Ptr } from "../../memory-allocator/allocator";
+import { getContrastFg } from "../../utils";
 
 export class BtreeNode {
 	static cellWidth = GAP * 9;
 	static cellHeight = GAP * 4;
 	static borderWidth = 3;
+	static nodeBg = "#0095ff";
+	static cellBg = "#8fc9f2";
 
 	M: number;
 	T: number;
@@ -17,7 +20,6 @@ export class BtreeNode {
 	isLeaf: ShallowRef<boolean>;
 
 	bg: string = "";
-	color = "#000000";
 
 	keysBg: Array<string> = [];
 
@@ -54,10 +56,8 @@ export class BtreeNode {
 	}
 
 	resetStyle() {
-		const bg = "#0095ff";
-		this.bg = bg;
-		this.color = "#000000";
-		this.keysBg = new Array(this.M - 1).fill("#8fc9f2");
+		this.bg = BtreeNode.nodeBg;
+		this.keysBg = new Array(this.M - 1).fill(BtreeNode.cellBg);
 	}
 
 	drawBorder(ctx: CanvasRenderingContext2D, color: string) {
@@ -96,7 +96,7 @@ export class BtreeNode {
 			return;
 		}
 
-		ctx.fillStyle = this.color;
+		ctx.fillStyle = getContrastFg(this.keysBg[idx]);
 		ctx.textBaseline = "middle";
 		ctx.textAlign = "center";
 		ctx.font = "16px monospace";

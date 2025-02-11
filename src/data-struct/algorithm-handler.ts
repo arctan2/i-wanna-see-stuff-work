@@ -25,10 +25,6 @@ export class AlgorithmHandler {
 		}
 
 		return new Promise((resolve, _) => {
-			if(this.state === ProgressState.Stopped) {
-				resolve(false);
-				return;
-			}
 			setTimeout(() => {
 				if(this.state !== ProgressState.Running) {
 					resolve(false);
@@ -110,7 +106,7 @@ export class AlgorithmHandler {
 	}
 
 	forceStop(canvas: CanvasHandler) {
-		if(this.state === ProgressState.Stopped || this.state === ProgressState.NotBegun) return;
+		if(this.state === ProgressState.Stopped) return;
 		this.state = ProgressState.Stopped;
 		this.uninit(canvas);
 		this.generator = null;

@@ -11,7 +11,7 @@ import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
 import IconUEdge from "./assets/vue-icon-wrappers/u-edge.vue";
 import IconGNode from "./assets/vue-icon-wrappers/g-node.vue";
 import IconMatrix from "./assets/vue-icon-wrappers/matrix.vue";
-import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node.vue";
+import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node-icon.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
