@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
-import { useFocusedElement, unfocusElement } from '../../global';
+import { useFocusedElement, unfocusElement, isAutoplay } from '../../global';
 import { ElementBtreeNode } from '../../btree/el-btree-node';
 import InsertBtree from "../../btree/insert-btree.ts"
 import { algorithmState } from '../refs';
@@ -56,40 +56,45 @@ function insertKey() {
 		return;
 	}
 
-	InsertBtree.init(focusedElement.value, toInsertKey.value);
+	InsertBtree.init(playground.canvas, focusedElement.value, toInsertKey.value);
 	algorithmState.setAlgorithm(InsertBtree);
 	InsertBtree.play(playground.canvas);
 	unfocusElement();
 }
 
-function iter() {
-	if(inserterState.curKey >= to.value) {
-		algorithmState.forceStopAlgorithm();
-		return;
-	}
-
+async function iter() {
 	while(inserterState.node!.parentNode !== null) {
 		inserterState.node = inserterState.node!.parentNode;
 	}
-
-	inserterState.curKey += step.value;
 
 	if(inserterState.node === null) {
 		return;
 	}
 
-	InsertBtree.init(inserterState.node, inserterState.curKey);
+	// await inserterState.node.rearrangeTree(playground.canvas);
+
+	if(inserterState.curKey >= to.value) {
+		InsertBtree.forceStop(playground.canvas);
+		return;
+	}
+	inserterState.curKey += step.value;
+
+	InsertBtree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
 	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.play(playground.canvas, iter);
+	if(isAutoplay.value) {
+		InsertBtree.play(playground.canvas);
+	}
 }
 
 function iterInsert() {
 	inserterState.curKey = from.value;
 	inserterState.node = focusedElement.value;
 
-	InsertBtree.init(focusedElement.value, inserterState.curKey);
+	InsertBtree.init(playground.canvas, focusedElement.value, inserterState.curKey, iter);
 	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.play(playground.canvas, iter);
+	if(isAutoplay.value) {
+		InsertBtree.play(playground.canvas);
+	}
 	unfocusElement();
 }
 
@@ -156,6 +161,10 @@ function iterInsert() {
 				/>
 			</div>
 			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
+		</div>
+
+		<div>
+			<button class="btn btn-nobg clr-lblue" @click="focusedElement.rearrangeTree(playground.canvas)">rearrange</button>
 		</div>
 	</div>
 </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { showToolBar, isMenuOpen, setIsMenuOpen, setIsMemAllocShow, isMemAllocShow, isSelectedItemShow, setIsSelectedItemShow } from "./refs";
 import { playground } from "../handler/playground-handler";
-import { setDelay, DELAY, focusedElement, isRetainTool } from "../global";
+import { setDelay, DELAY, focusedElement, isRetainTool, isAutoplay } from "../global";
 import Range from "../../common-components/range.vue";
 import ToolIcon from "../assets/icons/spawner.svg";
 import RamIcon from "../assets/icons/ram.svg";
@@ -76,6 +76,11 @@ watch(isDisplayGrid, cur => {
 				<Range :min="10" :dir="'rtl'" :max="1000" :step="1" :value="DELAY" class="speed"
 					@input="(e: any) => setDelay(Number(e.target.value))"
 				/>
+
+				<div class="checkbox-container">
+					<input type="checkbox" v-model="isAutoplay" />
+					<label>Autoplay</label>
+				</div>
 			</div>
 
 			<div class="examples">

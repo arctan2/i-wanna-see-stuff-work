@@ -30,3 +30,7 @@ export function numberToBytes(n: number): Array<string> {
 
 	return arr;
 }
+
+export function lerp(a: number, b: number, t: number) {
+	return a + ((b - a) * t);
+}

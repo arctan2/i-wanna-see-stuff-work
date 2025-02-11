@@ -13,13 +13,15 @@ export class AlgorithmHandler {
 	private state: ProgressState = ProgressState.NotBegun;
 	private generator: Generator<null, void, unknown> | null = null;
 
+	doneCallback?: () => void;
+
 	run(canvas: CanvasHandler) {
 		return new Promise((resolve, _) => {
+			if(this.state === ProgressState.Stopped) {
+				resolve(false);
+				return;
+			}
 			setTimeout(() => {
-				if(this.state === ProgressState.Stopped) {
-					resolve(false);
-					return;
-				}
 				this.next(canvas);
 				if(this.state !== ProgressState.Running) {
 					resolve(false);
@@ -30,17 +32,13 @@ export class AlgorithmHandler {
 		});
 	}
 
-	async play(canvas: CanvasHandler, callback?: () => void) {
+	async play(canvas: CanvasHandler) {
 		this.state = ProgressState.Running;
 		if(this.generator === null) {
 			this.generator = this.generatorFn(canvas);
 		}
 
 		while(await this.run(canvas));
-
-		if(callback) {
-			callback();
-		}
 	}
 
 	pause() {
@@ -58,6 +56,10 @@ export class AlgorithmHandler {
 		this.generator = null;
 
 		algorithmState.algorithmDone();
+
+		if(this.doneCallback) {
+			setTimeout(this.doneCallback);
+		}
 	}
 
 	forceStop(canvas: CanvasHandler) {
@@ -70,9 +72,17 @@ export class AlgorithmHandler {
 	}
 
 	next(canvas: CanvasHandler) {
+		if(this.state === ProgressState.NotBegun) {
+			this.state = ProgressState.Paused;
+		}
 		if(this.generator?.next().done) {
 			this.done(canvas);
 		}
+	}
+
+	initGenerator(canvas: CanvasHandler) {
+		this.state = ProgressState.NotBegun;
+		this.generator = this.generatorFn(canvas);
 	}
 
 	*generatorFn(_canvas: CanvasHandler) {

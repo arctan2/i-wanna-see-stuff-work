@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { algorithmState } from "./refs";
-import { disablePointerEvents } from "../global";
+import { disablePointerEvents, isAutoplay } from "../global";
 import { ref, watch } from "vue";
 import { playground } from "../handler/playground-handler";
 import { setDelay, DELAY } from "../global";
@@ -49,7 +49,7 @@ const componentMap: ComponentMap = {
 	[InsertBtree.constructor.name]: null,
 };
 
-const isPlaying = ref(true);
+const isPlaying = ref(isAutoplay.value);
 
 function togglePlay() {
 	isPlaying.value = !isPlaying.value;
@@ -63,7 +63,7 @@ function togglePlay() {
 
 watch(algorithmState, (newVal) => {
 	if(newVal.isDone) {
-		isPlaying.value = true;
+		isPlaying.value = isAutoplay.value;
 	}
 })
 

@@ -1,5 +1,4 @@
 import { AlgorithmHandler } from "../algorithm-handler";
-import { GAP } from "../canvas.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
 import { Null, Ptr } from "../memory-allocator/allocator.ts";
 import { ElementBtreeNode } from "./el-btree-node.ts";
@@ -9,16 +8,15 @@ enum Color {
 	visited = "#00ff00"
 };
 
-const gapX = GAP * 3;
-const gapY = BtreeNode.cellHeight * 2;
-
 class InsertBtree extends AlgorithmHandler {
 	root: null | ElementBtreeNode = null;
 	toInsertKey: number = 0;
 
-	init(node: ElementBtreeNode, toInsertKey: number) {
+	init(canvas: CanvasHandler, node: ElementBtreeNode, toInsertKey: number, doneCallback?: () => void) {
 		this.toInsertKey = toInsertKey;
 		this.root = node;
+		this.doneCallback = doneCallback;
+		this.initGenerator(canvas);
 	}
 
 	uninit(canvas: CanvasHandler) {
@@ -65,6 +63,8 @@ class InsertBtree extends AlgorithmHandler {
 
 		parent.keys.v.arr[idx] = fullChild.v.keys.v.arr[t - 1];
 		parent.curKeyCount.value++;
+		
+		parent.rearrangeTree(canvas);
 	}
 
 	*insertKey(root: ElementBtreeNode, key: number, canvas: CanvasHandler) {
@@ -117,65 +117,6 @@ class InsertBtree extends AlgorithmHandler {
 		return root;
 	}
 
-	rearrangeTree(root: ElementBtreeNode) {
-		let levels = [];
-		let queue = [root];
-
-		let count = 0;
-		let temp = [];
-
-		while(queue.length > 0) {
-			if(count === 0) {
-				count = queue.length;
-			}
-
-			count--;
-
-			const node: ElementBtreeNode = queue.pop() as ElementBtreeNode;
-
-			for(let i = 0; i <= node.curKeyCount.value; i++) {
-				const child = node.children.v.arr[i];
-				if(child.constructor.name !== Null.name) {
-					queue.unshift((child as Ptr<ElementBtreeNode>).v);
-				}
-			}
-
-			temp.push(node);
-
-			if(count === 0) {
-				levels.push(temp);
-				temp = [];
-			}
-		}
-
-		const lastLevel = levels.length - 1;
-
-		if(lastLevel === 0) {
-			return;
-		}
-
-		const lastLevelY = root.y + (lastLevel * (BtreeNode.cellHeight + gapY));
-		const lastLevelWidth = root.totalWidth * levels[lastLevel].length;
-		const lastLevelStartX = (root.x + root.totalWidthHalf) - (lastLevelWidth / 2);
-
-		for(let i = 0; i < levels[lastLevel].length; i++) {
-			levels[lastLevel][i].x = lastLevelStartX + ((root.totalWidth + gapX) * i);
-			levels[lastLevel][i].y = lastLevelY;
-		}
-
-		for(let i = lastLevel - 1; i >= 0; i--) {
-			let level = levels[i];
-			for(let j = 0; j < level.length; j++) {
-				let node = level[j];
-				const children = node.children.v.arr;
-				const firstChildX = (children[0] as Ptr<ElementBtreeNode>).v.x;
-				const lastChildEndX = (children[node.curKeyCount.value] as Ptr<ElementBtreeNode>).v.x + root.totalWidth;
-				node.y = root.y + (i * (BtreeNode.cellHeight + gapY));
-				node.x = ((firstChildX + lastChildEndX) / 2) - (root.totalWidthHalf);
-			}
-		}
-	}
-
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.root) {
 			let gen = this.insertKey(this.root, this.toInsertKey, canvas);
@@ -188,7 +129,6 @@ class InsertBtree extends AlgorithmHandler {
 				}
 				yield null;
 			}
-			this.rearrangeTree(result.value);
 		}
 	}
 }
