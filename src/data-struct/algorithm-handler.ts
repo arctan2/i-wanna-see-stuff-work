@@ -1,5 +1,5 @@
 import { algorithmState } from "./components/refs";
-import { DELAY } from "./global";
+import { DELAY, isAutoplay } from "./global";
 import { CanvasHandler } from "./handler/canvas-handler";
 
 export enum ProgressState {
@@ -9,20 +9,47 @@ export enum ProgressState {
 	Running
 }
 
+type Gen = Generator<null, void, unknown>;
+type AsyncGen = AsyncGenerator<null, void, unknown>;
+
 export class AlgorithmHandler {
 	private state: ProgressState = ProgressState.NotBegun;
-	private generator: Generator<null, void, unknown> | null = null;
+	private generator: Gen | AsyncGen | null = null;
+	private isAsync: boolean = false;
 
 	doneCallback?: () => void;
 
-	run(canvas: CanvasHandler) {
+	private async run(canvas: CanvasHandler) {
+		if(this.state !== ProgressState.Stopped) {
+			this.next(canvas);
+		}
+
 		return new Promise((resolve, _) => {
 			if(this.state === ProgressState.Stopped) {
 				resolve(false);
 				return;
 			}
 			setTimeout(() => {
-				this.next(canvas);
+				if(this.state !== ProgressState.Running) {
+					resolve(false);
+					return;
+				}
+				resolve(true);
+			}, DELAY);
+		});
+	}
+
+	private async asyncRun(canvas: CanvasHandler) {
+		if(this.state !== ProgressState.Stopped) {
+			await this.asyncNext(canvas);
+		}
+
+		return new Promise((resolve, _) => {
+			if(this.state === ProgressState.Stopped) {
+				resolve(false);
+				return;
+			}
+			setTimeout(() => {
 				if(this.state !== ProgressState.Running) {
 					resolve(false);
 					return;
@@ -33,12 +60,32 @@ export class AlgorithmHandler {
 	}
 
 	async play(canvas: CanvasHandler) {
+		if(this.isAsync) {
+			this.asyncPlay(canvas);
+			return;
+		}
+
 		this.state = ProgressState.Running;
 		if(this.generator === null) {
 			this.generator = this.generatorFn(canvas);
 		}
 
 		while(await this.run(canvas));
+	}
+
+	tryPlay(canvas: CanvasHandler) {
+		if(isAutoplay.value) {
+			this.play(canvas);
+		}
+	}
+
+	private async asyncPlay(canvas: CanvasHandler) {
+		this.state = ProgressState.Running;
+		if(this.generator === null) {
+			this.generator = this.asyncGeneratorFn(canvas);
+		}
+
+		while(await this.asyncRun(canvas));
 	}
 
 	pause() {
@@ -72,10 +119,25 @@ export class AlgorithmHandler {
 	}
 
 	next(canvas: CanvasHandler) {
+		if(this.isAsync) {
+			this.asyncNext(canvas);
+			return;
+		}
+
 		if(this.state === ProgressState.NotBegun) {
 			this.state = ProgressState.Paused;
 		}
-		if(this.generator?.next().done) {
+
+		if((this.generator as Gen)?.next().done) {
+			this.done(canvas);
+		}
+	}
+
+	private async asyncNext(canvas: CanvasHandler) {
+		if(this.state === ProgressState.NotBegun) {
+			this.state = ProgressState.Paused;
+		}
+		if((await (this.generator as AsyncGen)?.next()).done) {
 			this.done(canvas);
 		}
 	}
@@ -83,6 +145,18 @@ export class AlgorithmHandler {
 	initGenerator(canvas: CanvasHandler) {
 		this.state = ProgressState.NotBegun;
 		this.generator = this.generatorFn(canvas);
+		this.isAsync = false;
+	}
+	
+	initAsyncGenerator(canvas: CanvasHandler) {
+		this.state = ProgressState.NotBegun;
+		this.generator = this.asyncGeneratorFn(canvas);
+		this.isAsync = true;
+	}
+
+	async *asyncGeneratorFn(_canvas: CanvasHandler) {
+		yield null;
+		/* implemented by child class */
 	}
 
 	*generatorFn(_canvas: CanvasHandler) {

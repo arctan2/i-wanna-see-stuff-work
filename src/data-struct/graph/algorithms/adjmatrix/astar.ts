@@ -27,6 +27,7 @@ export default class AstarAdjMatrix extends AlgorithmHandler {
 		this.distanceTable = {};
 		this.cleanup(canvas);
 		this.curHeuristics = heuristics;
+		this.initGenerator(canvas)
 	}
 
 	cleanup(canvas: CanvasHandler) {

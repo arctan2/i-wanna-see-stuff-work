@@ -136,6 +136,10 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 			root = this;
 		}
 
+		while(root.parentNode !== null) {
+			root = root?.parentNode;
+		}
+
 		let levels = [];
 		let queue = [root];
 

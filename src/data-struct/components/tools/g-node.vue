@@ -54,27 +54,27 @@ function onChangeHeuristics(value: Heuristics) {
 function run() {
 	switch(currentAlg.value) {
 		case GraphAlgorithms.Dfs:
-			dfs.init(focusedElement.value);
+			dfs.init(playground.canvas, focusedElement.value);
 			algorithmState.setAlgorithm(dfs);
-			dfs.play(playground.canvas);
+			dfs.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.Bfs:
-			bfs.init(focusedElement.value);
+			bfs.init(playground.canvas, focusedElement.value);
 			algorithmState.setAlgorithm(bfs);
-			bfs.play(playground.canvas);
+			bfs.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.Dijkstra:
 			setToolDijkstra(playground, focusedElement.value);
 			break;
 		case GraphAlgorithms.Prims:
-			prims.init(focusedElement.value);
+			prims.init(playground.canvas, focusedElement.value);
 			algorithmState.setAlgorithm(prims);
-			prims.play(playground.canvas);
+			prims.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.Kruskal:
-			kruskal.init(focusedElement.value);
+			kruskal.init(playground.canvas, focusedElement.value);
 			algorithmState.setAlgorithm(kruskal);
-			kruskal.play(playground.canvas);
+			kruskal.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.BellmanFord:
 			setToolBellmanFord(playground, focusedElement.value);

@@ -32,7 +32,8 @@ class BellmanFord extends AlgorithmHandler {
 	endNode: null | ElementGNode = null;
 	distanceTable: Ref<Map<ElementGNode, DistValue>> = ref(new Map());
 
-	init(startNode: ElementGNode, endNode: ElementGNode) {
+	init(canvas: CanvasHandler, startNode: ElementGNode, endNode: ElementGNode) {
+		this.initGenerator(canvas);
 		this.startNode = startNode;
 		this.endNode = endNode;
 		this.distanceTable.value = new Map<ElementGNode, DistValue>();

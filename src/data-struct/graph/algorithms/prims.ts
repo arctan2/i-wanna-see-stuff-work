@@ -79,7 +79,8 @@ class Prims extends AlgorithmHandler {
 	startNode: null | ElementGNode = null;
 	mst: Map<ElementGNode, WeightValue> = new Map();
 
-	init(startNode: ElementGNode) {
+	init(canvas: CanvasHandler, startNode: ElementGNode) {
+		this.initGenerator(canvas);
 		this.startNode = startNode;
 		this.mst = new Map();
 	}

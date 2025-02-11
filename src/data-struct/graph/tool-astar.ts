@@ -46,7 +46,7 @@ export class ToolAstar extends ToolHandler {
 
 		astar.init(this.startNode, endNode, this.heuristics);
 		algorithmState.setAlgorithm(astar);
-		astar.play(canvas);
+		astar.tryPlay(canvas);
 		pgnd.toolHandler = null;
 	}
 

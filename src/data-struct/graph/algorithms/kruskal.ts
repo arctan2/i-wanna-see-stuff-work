@@ -21,7 +21,8 @@ class Kruskal extends AlgorithmHandler {
 	parent: Map<ElementGNode, ElementGNode> = new Map();
 	rank: Map<ElementGNode, number> = new Map();
 
-	init(startNode: ElementGNode) {
+	init(canvas: CanvasHandler, startNode: ElementGNode) {
+		this.initGenerator(canvas);
 		this.startNode = startNode;
 		this.visited = new Set();
 		this.parent = new Map();

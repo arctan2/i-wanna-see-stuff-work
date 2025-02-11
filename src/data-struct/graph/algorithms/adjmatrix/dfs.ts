@@ -9,6 +9,7 @@ export default class DfsAdjMatrixClass extends AlgorithmHandler {
 	init(adjMatrix: AdjMatrix, canvas: CanvasHandler) {
 		this.adjMatrix = adjMatrix;
 		this.cleanup(canvas);
+		this.initGenerator(canvas);
 	}
 
 	cleanup(canvas: CanvasHandler) {

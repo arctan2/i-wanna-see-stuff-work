@@ -25,7 +25,7 @@ class InsertBtree extends AlgorithmHandler {
 		canvas.redraw();
 	}
 
-	splitNode(parent: ElementBtreeNode, idx: number, canvas: CanvasHandler): void {
+	splitNode(parent: ElementBtreeNode, idx: number, canvas: CanvasHandler) {
 		const fullChild: Ptr<ElementBtreeNode> = parent.children.v.arr[idx] as Ptr<ElementBtreeNode>;
 		const newChild = new ElementBtreeNode(
 			parent.x + ((parent.totalWidth / 2) * (idx + 1)),
@@ -64,6 +64,7 @@ class InsertBtree extends AlgorithmHandler {
 		parent.keys.v.arr[idx] = fullChild.v.keys.v.arr[t - 1];
 		parent.curKeyCount.value++;
 		
+		// crazy crazy
 		parent.rearrangeTree(canvas);
 	}
 

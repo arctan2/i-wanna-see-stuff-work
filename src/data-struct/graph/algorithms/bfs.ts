@@ -13,7 +13,8 @@ class Bfs extends AlgorithmHandler {
 	visited: ShallowRef<Set<ElementGNode>> = shallowRef(new Set<ElementGNode>());
 	queue: ShallowReactive<Array<ElementGNode>> = shallowReactive([]); 
 
-	init(node: ElementGNode) {
+	init(canvas: CanvasHandler, node: ElementGNode) {
+		this.initGenerator(canvas);
 		this.startNode = node;
 		this.visited.value = new Set<ElementGNode>();
 		this.queue = [];

@@ -35,11 +35,12 @@ class Astar extends AlgorithmHandler {
 	distanceTable: Ref<Map<ElementGNode, DistValue>> = ref(new Map());
 	curHeuristics: Heuristics = Heuristics.Euclidian;
 
-	init(startNode: ElementGNode, endNode: ElementGNode, heuristics: Heuristics) {
+	init(canvas: CanvasHandler, startNode: ElementGNode, endNode: ElementGNode, heuristics: Heuristics) {
 		this.startNode = startNode;
 		this.endNode = endNode;
 		this.distanceTable.value = new Map<ElementGNode, DistValue>();
 		this.curHeuristics = heuristics;
+		this.initGenerator(canvas);
 	}
 
 	uninit(_canvas: CanvasHandler) {

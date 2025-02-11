@@ -13,6 +13,7 @@ export default class Maze extends AlgorithmHandler {
 		this.cleanup(canvas);
 		this.parent = {};
 		this.rank = {};
+		this.initGenerator(canvas);
 	}
 
 	uninit(_canvas: CanvasHandler) {

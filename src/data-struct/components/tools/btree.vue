@@ -58,7 +58,7 @@ function insertKey() {
 
 	InsertBtree.init(playground.canvas, focusedElement.value, toInsertKey.value);
 	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.play(playground.canvas);
+	InsertBtree.tryPlay(playground.canvas);
 	unfocusElement();
 }
 
@@ -71,8 +71,6 @@ async function iter() {
 		return;
 	}
 
-	// await inserterState.node.rearrangeTree(playground.canvas);
-
 	if(inserterState.curKey >= to.value) {
 		InsertBtree.forceStop(playground.canvas);
 		return;
@@ -81,9 +79,7 @@ async function iter() {
 
 	InsertBtree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
 	algorithmState.setAlgorithm(InsertBtree);
-	if(isAutoplay.value) {
-		InsertBtree.play(playground.canvas);
-	}
+	InsertBtree.tryPlay(playground.canvas);
 }
 
 function iterInsert() {
@@ -92,9 +88,7 @@ function iterInsert() {
 
 	InsertBtree.init(playground.canvas, focusedElement.value, inserterState.curKey, iter);
 	algorithmState.setAlgorithm(InsertBtree);
-	if(isAutoplay.value) {
-		InsertBtree.play(playground.canvas);
-	}
+	InsertBtree.tryPlay(playground.canvas);
 	unfocusElement();
 }
 

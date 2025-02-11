@@ -89,22 +89,22 @@ function run() {
 		case GraphAlgorithms.Dfs:
 			DfsAdjMatrix.init(focusedElement.value, playground.canvas);
 			algorithmState.setAlgorithm(DfsAdjMatrix);
-			DfsAdjMatrix.play(playground.canvas);
+			DfsAdjMatrix.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.Bfs:
 			BfsAdjMatrix.init(focusedElement.value, playground.canvas);
 			algorithmState.setAlgorithm(BfsAdjMatrix);
-			BfsAdjMatrix.play(playground.canvas);
+			BfsAdjMatrix.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.Dijkstra:
 			DijkstraAdjMatrix.init(focusedElement.value, playground.canvas);
 			algorithmState.setAlgorithm(DijkstraAdjMatrix);
-			DijkstraAdjMatrix.play(playground.canvas);
+			DijkstraAdjMatrix.tryPlay(playground.canvas);
 			break;
 		case GraphAlgorithms.Astar:
 			AstarAdjMatrix.init(focusedElement.value, curHeuristics.value, playground.canvas);
 			algorithmState.setAlgorithm(AstarAdjMatrix);
-			AstarAdjMatrix.play(playground.canvas);
+			AstarAdjMatrix.tryPlay(playground.canvas);
 			break;
 	}
 

@@ -12,9 +12,10 @@ class Dfs extends AlgorithmHandler {
 
 	visited: ShallowRef<Set<ElementGNode>> = shallowRef(new Set<ElementGNode>());
 
-	init(node: ElementGNode) {
+	init(canvas: CanvasHandler, node: ElementGNode) {
 		this.startNode = node;
 		this.visited.value = new Set<ElementGNode>();
+		this.initGenerator(canvas);
 	}
 
 	*dfs(node: ElementGNode, canvas: CanvasHandler) {

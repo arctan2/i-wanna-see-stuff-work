@@ -43,7 +43,7 @@ export class ToolDijstra extends ToolHandler {
 
 		dijkstra.init(this.startNode, endNode);
 		algorithmState.setAlgorithm(dijkstra);
-		dijkstra.play(canvas);
+		dijkstra.tryPlay(canvas);
 		pgnd.toolHandler = null;
 	}
 

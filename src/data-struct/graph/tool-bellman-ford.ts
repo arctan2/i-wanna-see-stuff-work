@@ -43,7 +43,7 @@ export class ToolDijstra extends ToolHandler {
 
 		bellmanFord.init(this.startNode, endNode);
 		algorithmState.setAlgorithm(bellmanFord);
-		bellmanFord.play(canvas);
+		bellmanFord.tryPlay(canvas);
 		pgnd.toolHandler = null;
 	}
 

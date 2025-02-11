@@ -12,6 +12,7 @@ export default class DijkstraAdjMatrix extends AlgorithmHandler {
 		this.adjMatrix = adjMatrix;
 		this.distanceTable = {};
 		this.cleanup(canvas);
+		this.initGenerator(canvas);
 	}
 
 	cleanup(canvas: CanvasHandler) {
