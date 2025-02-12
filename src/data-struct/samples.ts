@@ -416,14 +416,14 @@ export function createSampleAstar(canvas: CanvasHandler) {
 	canvas.redraw();
 }
 
-function createSampleBtree(canvas: CanvasHandler) {
+export function createSampleBtree(canvas: CanvasHandler) {
 	let node = new ElementBtreeNode(GAP * 40, GAP * 35, 4, true, null);
 	canvas.addElements(node);
 
 	let curKey = 1;
 
 	const iter = () => {
-		if(curKey === 3) {
+		if(curKey === 10) {
 			return;
 		}
 
@@ -449,6 +449,6 @@ export function runSample(playground: Playground) {
 	// createSampleAstar(playground.canvas);
 	// createSampleLinkedList(playground.canvas);
 	// createSampleUGraph(playground.canvas);
-	createSampleBtree(playground.canvas);
+	// createSampleBtree(playground.canvas);
 }
 

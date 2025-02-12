@@ -63,10 +63,8 @@ function togglePlay() {
 	}
 }
 
-watch(algorithmState, (newVal) => {
-	if(newVal.isDone) {
-		isPlaying.value = isAutoplay.value;
-	}
+watch(algorithmState, () => {
+	isPlaying.value = isAutoplay.value;
 })
 
 function stop() {

@@ -1,5 +1,6 @@
 import { AlgorithmHandler } from "../algorithm-handler";
 import { GAP } from "../canvas.ts";
+import { setInfoPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
 import { Null, Ptr } from "../memory-allocator/allocator.ts";
 import { ElementBtreeNode } from "./el-btree-node.ts";
@@ -21,6 +22,7 @@ class InsertBtree extends AlgorithmHandler {
 		this.root = node;
 		this.doneCallback = doneCallback;
 		this.initAsyncGenerator(canvas);
+		setInfoPopupText(`Inserting "${this.toInsertKey}"`);
 	}
 
 	dfsClean(node: Ptr<ElementBtreeNode> | Null) {
@@ -49,6 +51,7 @@ class InsertBtree extends AlgorithmHandler {
 		this.root = null;
 		this.toInsertKey = 0;
 		canvas.redraw();
+		setInfoPopupText("");
 	}
 
 	async *splitNode(parent: ElementBtreeNode, idx: number, canvas: CanvasHandler) {
@@ -195,13 +198,7 @@ class InsertBtree extends AlgorithmHandler {
 	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.root) {
 			let gen = this.insertKey(this.root, this.toInsertKey, canvas);
-			let result: IteratorResult<undefined, ElementBtreeNode>;
-
-			while(true) {
-				result = await gen.next();
-				if(result.done) {
-					break;
-				}
+			while(!(await gen.next()).done) {
 				yield null;
 			}
 		}

@@ -6,16 +6,19 @@ import { ElementBtreeNode } from '../../btree/el-btree-node';
 import InsertBtree from "../../btree/insert-btree.ts"
 import DeleteBtree from "../../btree/delete-btree.ts"
 import { algorithmState } from '../refs';
+import { randInt } from '../../utils.ts';
 
 const focusedElement = useFocusedElement<ElementBtreeNode>();
 const toInsertKey = ref<number | "">("");
 const toDeleteKey = ref<number | "">("");
-const from = ref<number>(1);
-const to = ref<number>(8);
-const step = ref<number>(1);
-const inserterState: {node: ElementBtreeNode | null, curKey: number} = {
+const from = ref<number | "">(1);
+const to = ref<number | "">(8);
+const step = ref<number | "">(1);
+const isRandomize = ref<boolean>(false);
+const inserterState: {node: ElementBtreeNode | null, curKey: number, insertedKeys: Set<number>} = {
 	node: null,
-	curKey: 0
+	curKey: 0,
+	insertedKeys: new Set
 }
 
 class ValidatorObj {
@@ -79,6 +82,8 @@ function deleteKey() {
 }
 
 async function iter() {
+	if(from.value === "" || to.value === "" || step.value === "") return;
+
 	while(inserterState.node!.parentNode !== null) {
 		inserterState.node = inserterState.node!.parentNode;
 	}
@@ -92,7 +97,18 @@ async function iter() {
 		return;
 	}
 
-	InsertBtree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
+	if(isRandomize.value) {
+		while(true) {
+			const v = randInt(from.value, to.value);
+			if(inserterState.insertedKeys.has(v)) continue;
+			inserterState.insertedKeys.add(v);
+			InsertBtree.init(playground.canvas, inserterState.node, v, iter);
+			break;
+		}
+	} else {
+		InsertBtree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
+	}
+
 	algorithmState.setAlgorithm(InsertBtree);
 	InsertBtree.tryPlay(playground.canvas);
 
@@ -100,6 +116,11 @@ async function iter() {
 }
 
 function iterInsert() {
+	if(from.value === "" || to.value === "" || step.value === "") return;
+	if(isRandomize.value) {
+		inserterState.insertedKeys = new Set();
+	}
+
 	inserterState.curKey = from.value;
 	inserterState.node = focusedElement.value;
 	iter();
@@ -173,6 +194,12 @@ function iterInsert() {
 					v-model="step"
 				/>
 			</div>
+
+			<div class="checkbox-container">
+				<input type="checkbox" v-model="isRandomize" />
+				<label>Random</label>
+			</div>
+
 			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
 		</div>
 
@@ -258,6 +285,13 @@ function iterInsert() {
 
 .from-to > div > div{
 	text-align: center;
+}
+
+.checkbox-container{
+	font-size: 0.9rem;
+	min-width: 100%;
+	justify-content: start;
+	margin-top: 0.5rem;
 }
 
 </style>

@@ -5,6 +5,9 @@ export function sleep(ms: number) {
 }
 
 export function randInt(min: number, max: number): number {
+	if(max < min) {
+		[max, min] = [min, max];
+	}
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
