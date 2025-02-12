@@ -5,12 +5,14 @@ import { useFocusedElement, unfocusElement } from '../../global';
 import { ElementBtreeNode } from '../../btree/el-btree-node';
 import InsertBtree from "../../btree/insert-btree.ts"
 import DeleteBtree from "../../btree/delete-btree.ts"
+import SearchBtree from "../../btree/search-btree.ts"
 import { algorithmState } from '../refs';
 import { randInt } from '../../utils.ts';
 
 const focusedElement = useFocusedElement<ElementBtreeNode>();
 const toInsertKey = ref<number | "">("");
 const toDeleteKey = ref<number | "">("");
+const toSearchKey = ref<number | "">("");
 const from = ref<number | "">(1);
 const to = ref<number | "">(8);
 const step = ref<number | "">(1);
@@ -40,6 +42,7 @@ function validateInputs() {
 		new ValidatorObj(to, -999999, 999999),
 		new ValidatorObj(step, -100, 100),
 		new ValidatorObj(toDeleteKey, -999999, 999999),
+		new ValidatorObj(toSearchKey, -999999, 999999),
 	];
 
 	for(const { obj, min, max } of validatorObjects) {
@@ -77,6 +80,18 @@ function deleteKey() {
 	DeleteBtree.init(playground.canvas, focusedElement.value, toDeleteKey.value);
 	algorithmState.setAlgorithm(DeleteBtree);
 	DeleteBtree.tryPlay(playground.canvas);
+
+	unfocusElement();
+}
+
+function searchKey() {
+	if(toSearchKey.value === "") {
+		return;
+	}
+
+	SearchBtree.init(playground.canvas, focusedElement.value, toSearchKey.value);
+	algorithmState.setAlgorithm(SearchBtree);
+	SearchBtree.tryPlay(playground.canvas);
 
 	unfocusElement();
 }
@@ -218,6 +233,21 @@ function iterInsert() {
 			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete</button>
 		</div>
 
+		<div class="search-key">
+			<h2>Search Key</h2>
+			<input
+				@blur="validateInputs"
+				spellcheck="false"
+				placeholder="key"
+				type="number"
+				max="999999"
+				min="-999999"
+				v-model="toSearchKey"
+				style="width: 100%;"
+			/>
+			<button class="btn btn-nobg clr-lblue" @click="searchKey()">search</button>
+		</div>
+
 		</template>
 	</div>
 </div>
@@ -255,11 +285,11 @@ function iterInsert() {
 	min-width: 4.5rem;
 }
 
-.insert-key button, .insert-keys button, .delete-key button {
+.sub-sections-container > div button:not(:first-child) {
 	margin-top: 0.5rem;
 }
 
-.insert-key h2, .insert-keys h2, .delete-key h2 {
+.sub-sections-container > div h2 {
 	font-size: 1.2rem;
 	margin-bottom: 0.5rem;
 }

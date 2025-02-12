@@ -73,6 +73,31 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	pointerDy: number = -1;
 	pointerDx: number = -1;
 
+	dfsClean(node: Ptr<ElementBtreeNode> | Null) {
+		if(Null.isNull(node)) {
+			return;
+		}
+
+		const n = (node as Ptr<ElementBtreeNode>).v;
+		n.resetStyle();
+		for(let i = 0; i <= n.curKeyCount.value; i++) {
+			this.dfsClean(n.children.v.arr[i]);
+		}
+	}
+
+	resetAllNodesStyle(canvas: CanvasHandler) {
+		let root: ElementBtreeNode | null = this;
+
+		while(root!.parentNode !== null) {
+			root = root!.parentNode;
+		}
+
+		if(root !== null) {
+			this.dfsClean(root.ptr);
+		}
+		canvas.redraw();
+	}
+
 	moveTo(x: number, y: number) {
 		this.setXY(x, y);
 

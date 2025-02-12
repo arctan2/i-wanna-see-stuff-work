@@ -32,6 +32,11 @@ import { DijkstraAdjMatrix, BfsAdjMatrix, DfsAdjMatrix, AstarAdjMatrix, Maze } f
 import InsertBtree from "../btree/insert-btree.ts";
 import DeleteBtree from "../btree/delete-btree.ts";
 
+import SearchBtree from "../btree/search-btree.ts";
+import SearchBtreeComp from "../btree/components/search-btree-comp.vue";
+
+import { ProgressState } from "../algorithm-handler.ts";
+
 type ComponentMap = { [_:string]: any };
 
 const componentMap: ComponentMap = {
@@ -49,6 +54,7 @@ const componentMap: ComponentMap = {
 	[Maze.constructor.name]: null,
 	[InsertBtree.constructor.name]: null,
 	[DeleteBtree.constructor.name]: null,
+	[SearchBtree.constructor.name]: SearchBtreeComp,
 };
 
 const isPlaying = ref(isAutoplay.value);
@@ -63,8 +69,10 @@ function togglePlay() {
 	}
 }
 
-watch(algorithmState, () => {
-	isPlaying.value = isAutoplay.value;
+watch(algorithmState, (newState) => {
+	if(newState.alg?.getState() === ProgressState.NotBegun) {
+		isPlaying.value = isAutoplay.value;
+	}
 })
 
 function stop() {

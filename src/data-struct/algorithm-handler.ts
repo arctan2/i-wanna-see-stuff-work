@@ -138,6 +138,10 @@ export class AlgorithmHandler {
 		}
 	}
 
+	getState() {
+		return this.state;
+	}
+
 	initGenerator(canvas: CanvasHandler) {
 		this.state = ProgressState.NotBegun;
 		this.generator = this.generatorFn(canvas);

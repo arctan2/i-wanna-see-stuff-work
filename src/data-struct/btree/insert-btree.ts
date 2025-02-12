@@ -25,32 +25,10 @@ class InsertBtree extends AlgorithmHandler {
 		setInfoPopupText(`Inserting "${this.toInsertKey}"`);
 	}
 
-	dfsClean(node: Ptr<ElementBtreeNode> | Null) {
-		if(Null.isNull(node)) {
-			return;
-		}
-
-		const n = (node as Ptr<ElementBtreeNode>).v;
-		n.resetStyle();
-		for(let i = 0; i <= n.curKeyCount.value; i++) {
-			this.dfsClean(n.children.v.arr[i]);
-		}
-	}
-
 	uninit(canvas: CanvasHandler) {
-		let root = this.root;
-
-		while(root!.parentNode !== null) {
-			root = root!.parentNode;
-		}
-
-		if(root !== null) {
-			this.dfsClean(root.ptr);
-		}
-
+		this.root?.resetAllNodesStyle(canvas);
 		this.root = null;
 		this.toInsertKey = 0;
-		canvas.redraw();
 		setInfoPopupText("");
 	}
 
@@ -95,10 +73,10 @@ class InsertBtree extends AlgorithmHandler {
 		}
 
 		parent.curKeyCount.value++;
-		for(const _ of this.animateCellBg(canvas, fullChild.v, t - 1, Color.assign)) yield;
+		for(const _ of this.animateCellBg(canvas, fullChild.v, t - 1, Color.shifting)) yield;
 		fullChild.v.curKeyCount.value = t - 1;
 		parent.keys.v.arr[idx] = fullChild.v.keys.v.arr[t - 1];
-		for(const _ of this.animateCellBg(canvas, parent, idx, Color.assign)) yield;
+		for(const _ of this.animateCellBg(canvas, parent, idx, Color.shifting)) yield;
 		
 		await parent.rearrangeTree(canvas);
 	}

@@ -8,7 +8,7 @@ const _isSelectedItemShow = ref<boolean>(true);
 
 class AlgorithmState {
 	alg: null | AlgorithmHandler = null;
-	isDone: boolean = false;
+	isDone: boolean = true;
 
 	setAlgorithm(handler: AlgorithmHandler) {
 		this.alg = handler;

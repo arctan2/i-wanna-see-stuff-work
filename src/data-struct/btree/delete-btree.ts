@@ -24,9 +24,9 @@ class DeleteBtree extends AlgorithmHandler {
 	}
 
 	uninit(canvas: CanvasHandler) {
+		this.root?.resetAllNodesStyle(canvas);
 		this.root = null;
 		this.toDeleteKey = 0;
-		canvas.redraw();
 	}
 
 	*animateNodeBg(canvas: CanvasHandler, node: ElementBtreeNode, color: string) {
