@@ -23,7 +23,29 @@ class InsertBtree extends AlgorithmHandler {
 		this.initAsyncGenerator(canvas);
 	}
 
+	dfsClean(node: Ptr<ElementBtreeNode> | Null) {
+		if(Null.isNull(node)) {
+			return;
+		}
+
+		const n = (node as Ptr<ElementBtreeNode>).v;
+		n.resetStyle();
+		for(let i = 0; i <= n.curKeyCount.value; i++) {
+			this.dfsClean(n.children.v.arr[i]);
+		}
+	}
+
 	uninit(canvas: CanvasHandler) {
+		let root = this.root;
+
+		while(root!.parentNode !== null) {
+			root = root!.parentNode;
+		}
+
+		if(root !== null) {
+			this.dfsClean(root.ptr);
+		}
+
 		this.root = null;
 		this.toInsertKey = 0;
 		canvas.redraw();

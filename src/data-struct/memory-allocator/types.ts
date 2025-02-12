@@ -163,12 +163,12 @@ export class Arr<T extends AllocDisplay | number> implements AllocDisplay {
 	}
 
     toDisplayableBlocks() {
+		const type = typeof this.arr[0];
 		let b = [];
 		for(let a of this.arr) {
-			b.push({ ptr: a.toString() } , ',');
+			b.push(type === "number" ? a.toString() : { ptr: a.toString() } , ',');
 		}
 
-		const type = typeof this.arr[0];
 		if(type === "number") {
 			for(let i = 0, rem = this.cap - this.arr.length; i < rem; i++) {
 				b.push('0', ',');

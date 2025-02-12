@@ -1,4 +1,7 @@
+import { ElementBtreeNode } from "./btree/el-btree-node";
+import insertBtree from "./btree/insert-btree";
 import { GAP } from "./canvas";
+import { algorithmState } from "./components/refs";
 import { ElementAdjMatrix } from "./graph/el-adjmatrix";
 import { ElementDEdge } from "./graph/el-d-edge";
 import { ElementGNode } from "./graph/el-node";
@@ -413,10 +416,39 @@ export function createSampleAstar(canvas: CanvasHandler) {
 	canvas.redraw();
 }
 
+function createSampleBtree(canvas: CanvasHandler) {
+	let node = new ElementBtreeNode(GAP * 40, GAP * 35, 4, true, null);
+	canvas.addElements(node);
+
+	let curKey = 1;
+
+	const iter = () => {
+		if(curKey === 3) {
+			return;
+		}
+
+		while(node!.parentNode !== null) {
+			node = node!.parentNode;
+		}
+
+		if(node === null) {
+			return;
+		}
+
+		insertBtree.init(canvas, node, curKey, iter);
+		algorithmState.setAlgorithm(insertBtree);
+		insertBtree.tryPlay(canvas);
+		curKey++;
+	}
+	iter();
+	canvas.redraw();
+}
+
 export function runSample(playground: Playground) {
 	// createSampleAdjMatrix(playground.canvas);
 	// createSampleAstar(playground.canvas);
-	createSampleLinkedList(playground.canvas);
+	// createSampleLinkedList(playground.canvas);
 	// createSampleUGraph(playground.canvas);
+	createSampleBtree(playground.canvas);
 }
 

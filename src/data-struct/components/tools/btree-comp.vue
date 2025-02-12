@@ -4,10 +4,12 @@ import { playground } from '../../handler/playground-handler';
 import { useFocusedElement, unfocusElement } from '../../global';
 import { ElementBtreeNode } from '../../btree/el-btree-node';
 import InsertBtree from "../../btree/insert-btree.ts"
+import DeleteBtree from "../../btree/delete-btree.ts"
 import { algorithmState } from '../refs';
 
 const focusedElement = useFocusedElement<ElementBtreeNode>();
 const toInsertKey = ref<number | "">("");
+const toDeleteKey = ref<number | "">("");
 const from = ref<number>(1);
 const to = ref<number>(8);
 const step = ref<number>(1);
@@ -33,7 +35,8 @@ function validateInputs() {
 		new ValidatorObj(toInsertKey, -999999, 999999),
 		new ValidatorObj(from, -999999, 999999),
 		new ValidatorObj(to, -999999, 999999),
-		new ValidatorObj(step, -100, 100)
+		new ValidatorObj(step, -100, 100),
+		new ValidatorObj(toDeleteKey, -999999, 999999),
 	];
 
 	for(const { obj, min, max } of validatorObjects) {
@@ -59,6 +62,19 @@ function insertKey() {
 	InsertBtree.init(playground.canvas, focusedElement.value, toInsertKey.value);
 	algorithmState.setAlgorithm(InsertBtree);
 	InsertBtree.tryPlay(playground.canvas);
+
+	unfocusElement();
+}
+
+function deleteKey() {
+	if(toDeleteKey.value === "") {
+		return;
+	}
+
+	DeleteBtree.init(playground.canvas, focusedElement.value, toDeleteKey.value);
+	algorithmState.setAlgorithm(DeleteBtree);
+	DeleteBtree.tryPlay(playground.canvas);
+
 	unfocusElement();
 }
 
@@ -96,8 +112,10 @@ function iterInsert() {
 <div class="tool-btree-node">
 	<h1>B-tree Node</h1>
 
-
-	<div class="sub-sections-container">
+	<div class="sub-sections-container scroll-bar">
+		<div>
+			<button class="btn btn-nobg clr-lblue" @click="focusedElement.rearrangeTree(playground.canvas)">rearrange</button>
+		</div>
 		<template v-if="focusedElement.parentNode === null">
 		<div class="insert-key">
 			<h2>Insert Key</h2>
@@ -158,11 +176,22 @@ function iterInsert() {
 			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
 		</div>
 
-		</template>
-
-		<div>
-			<button class="btn btn-nobg clr-lblue" @click="focusedElement.rearrangeTree(playground.canvas)">rearrange</button>
+		<div class="delete-key">
+			<h2>Delete Key</h2>
+			<input
+				@blur="validateInputs"
+				spellcheck="false"
+				placeholder="key"
+				type="number"
+				max="999999"
+				min="-999999"
+				v-model="toDeleteKey"
+				style="width: 100%;"
+			/>
+			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete</button>
 		</div>
+
+		</template>
 	</div>
 </div>
 </template>
@@ -177,6 +206,11 @@ function iterInsert() {
 .tool-btree-node > h1{
 	margin-bottom: 1rem;
 	font-size: 1.75rem;
+}
+
+.sub-sections-container {
+	height: 25rem;
+	overflow-y: scroll;
 }
 
 .sub-sections-container > div{
@@ -194,11 +228,11 @@ function iterInsert() {
 	min-width: 4.5rem;
 }
 
-.insert-key button, .insert-keys button {
+.insert-key button, .insert-keys button, .delete-key button {
 	margin-top: 0.5rem;
 }
 
-.insert-key h2, .insert-keys h2{
+.insert-key h2, .insert-keys h2, .delete-key h2 {
 	font-size: 1.2rem;
 	margin-bottom: 0.5rem;
 }

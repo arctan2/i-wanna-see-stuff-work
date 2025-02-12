@@ -44,7 +44,15 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	}
 
     toString(): string {
-		return ` btree-node {} `;
+		return ` btree-node { keys_count: ${
+			this.curKeyCount.value
+		}, is_leaf: ${
+			this.isLeaf.value
+		}, keys: ${
+			this.keys.toString()
+		} children: ${
+			this.children.toString()
+		} } `
 	}
 
     toDisplayableBlocks() {
@@ -58,6 +66,8 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	}
 
 	dealloc() {
+		allocator.free(this.children);
+		allocator.free(this.keys);
 	}
 
 	pointerDy: number = -1;

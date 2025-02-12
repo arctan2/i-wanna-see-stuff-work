@@ -18,6 +18,10 @@ export class Null implements AllocDisplay {
 	static Hex = "0x00000000";
 	static Size = 8;
 
+	static isNull(v: any) {
+		return v.constructor.name === Null.name;
+	}
+
     toBytes(): Array<string> {
 		return Null.Bytes;
 	}

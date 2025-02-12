@@ -30,6 +30,7 @@ import AstarComp from "../graph/algorithms/components/astar.vue";
 import { DijkstraAdjMatrix, BfsAdjMatrix, DfsAdjMatrix, AstarAdjMatrix, Maze } from "../graph/algorithms/adjmatrix.ts";
 
 import InsertBtree from "../btree/insert-btree.ts";
+import DeleteBtree from "../btree/delete-btree.ts";
 
 type ComponentMap = { [_:string]: any };
 
@@ -47,6 +48,7 @@ const componentMap: ComponentMap = {
 	[AstarAdjMatrix.constructor.name]: null,
 	[Maze.constructor.name]: null,
 	[InsertBtree.constructor.name]: null,
+	[DeleteBtree.constructor.name]: null,
 };
 
 const isPlaying = ref(isAutoplay.value);
