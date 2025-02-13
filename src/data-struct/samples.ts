@@ -444,7 +444,7 @@ export function createSampleBtree(canvas: CanvasHandler) {
 	canvas.redraw();
 }
 
-export function runSample(playground: Playground) {
+export function runSample(_playground: Playground) {
 	// createSampleAdjMatrix(playground.canvas);
 	// createSampleAstar(playground.canvas);
 	// createSampleLinkedList(playground.canvas);

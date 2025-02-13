@@ -44,7 +44,7 @@ export class ToolAstar extends ToolHandler {
 
 		setInfoPopupText("");
 
-		astar.init(this.startNode, endNode, this.heuristics);
+		astar.init(canvas, this.startNode, endNode, this.heuristics);
 		algorithmState.setAlgorithm(astar);
 		astar.tryPlay(canvas);
 		pgnd.toolHandler = null;

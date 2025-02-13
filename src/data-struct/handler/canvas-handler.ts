@@ -57,6 +57,9 @@ export class CanvasHandler {
 	halfWidth = 0;
 	halfHeight = 0;
 
+	halfDomHeight = 0;
+	halfDomWidth = 0;
+
 	transform: Transform;
 	DPR: number;
 	scalexDPR: number;
@@ -118,6 +121,9 @@ export class CanvasHandler {
 
 		this.halfWidth = Math.floor(this.width / 2);
 		this.halfHeight = Math.floor(this.height / 2);
+
+		this.halfDomWidth = Math.floor(w / 2);
+		this.halfDomHeight = Math.floor(h / 2);
 
 		setCanvasSize(this.playgroundCanvas, w, h);
 		setCanvasSize(this.lineCanvas, w, h);
@@ -266,7 +272,11 @@ export class CanvasHandler {
 	// 	d.style.left = "0";
 	// 	d.style.fontSize = "0.8rem";
 	// 	d.innerText = `transform { x: ${this.transform.x}, y: ${this.transform.y} }`;
+	// 	if(focusedElement.value) {
+	// 		d.innerText += `\nfocused element { x: ${(focusedElement.value as any)?.x}, y: ${(focusedElement.value as any)?.y} }`
+	// 	}
 	// 	document.body.appendChild(d);
+
 	// }
 
 	clear() {

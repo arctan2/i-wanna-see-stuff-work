@@ -6,11 +6,12 @@ import { Ptr } from "../../memory-allocator/allocator";
 import { getContrastFg } from "../../utils";
 
 export class BtreeNode {
-	static cellWidth = GAP * 9;
-	static cellHeight = GAP * 4;
+	static cellWidth = GAP * 7;
+	static cellHeight = GAP * 3;
 	static borderWidth = 3;
 	static nodeBg = "#0095ff";
 	static cellBg = "#8fc9f2";
+	static fontSize = 12;
 
 	M: number;
 	T: number;
@@ -99,7 +100,7 @@ export class BtreeNode {
 		ctx.fillStyle = getContrastFg(this.keysBg[idx]);
 		ctx.textBaseline = "middle";
 		ctx.textAlign = "center";
-		ctx.font = "16px monospace";
+		ctx.font = `${BtreeNode.fontSize}px monospace`;
 
 		let text = String(this.keys.v.arr[idx]);
 		

@@ -10,14 +10,13 @@ import { Arr } from "../memory-allocator/types";
 import { lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 
-const gapX = GAP * 3;
+const gapX = GAP * 2;
 const gapY = BtreeNode.cellHeight * 2;
 
 export class ElementBtreeNode extends BtreeNode implements ElementHandler, AllocDisplay, Dealloc {
 	ptr: ShallowReactive<Ptr<ElementBtreeNode>>;
 
 	pointerEnter(_state: EventState, _canvas: CanvasHandler) {};
-	pointerUp(_state: EventState, _canvas: CanvasHandler): ElementHandler | null { return null };
 	pointerLeave(_state: EventState, _canvas: CanvasHandler) {};
 
 	parentNode: ElementBtreeNode | null = null;
@@ -79,6 +78,11 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		}
 
 		const n = (node as Ptr<ElementBtreeNode>).v;
+
+		if(n.constructor.name !== ElementBtreeNode.name) {
+			return;
+		}
+
 		n.resetStyle();
 		for(let i = 0; i <= n.curKeyCount.value; i++) {
 			this.dfsClean(n.children.v.arr[i]);
@@ -128,7 +132,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		const x = this.x + canvas.transform.x;
 		const y = this.y + canvas.transform.y;
 		if(!(x > 0 && x < canvas.width && y > 0 && y < canvas.height)) {
-			await canvas.scrollTo(canvas.halfWidth - this.x, canvas.halfHeight - this.y, 30);
+			await canvas.scrollTo(canvas.halfDomWidth - this.x, canvas.halfDomHeight - this.y, 30);
 		}
 	}
 
@@ -138,6 +142,14 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		this.pointerDx = Math.floor((statex - nodex) / GAP) * GAP;
 		this.pointerDy = Math.floor((statey - nodey) / GAP) * GAP;
 	}
+
+	pointerUp(state: EventState, canvas: CanvasHandler): ElementHandler | null { 
+		if(Math.abs(state.pointerDown.x - state.pointerUp.x) <= GAP && Math.abs(state.pointerDown.y - state.pointerUp.y) <= GAP) {
+			return null;
+		}
+		this.rearrangeTree(canvas, this);
+		return null;
+	};
 
 	focus() {
 	}
@@ -230,10 +242,10 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 				const firstChild = (children[0] as Ptr<ElementBtreeNode>).v;
 				const lastChild = (children[node.curKeyCount.value] as Ptr<ElementBtreeNode>).v;
 				const firstChildX = locMap.get(firstChild)?.x || 0;
-				const lastChildEndX = locMap.get(lastChild)?.x || 0 + node.totalWidth;
+				const lastChildEndX = (locMap.get(lastChild)?.x || 0);
 
 				const endPoint = new Point(
-					((firstChildX + lastChildEndX) / 2),
+					(firstChildX + lastChildEndX) / 2,
 					root.y + (i * (BtreeNode.cellHeight + gapY))
 				);
 				locMap.set(node, endPoint);

@@ -220,12 +220,6 @@ export class ElementLLNode extends LLNode implements ElementHandler, AllocDispla
 			const next = node.next;
 			const arrow = node.arrow;
 
-			const x = node.x + canvas.transform.x;
-			const y = node.y + canvas.transform.y;
-			if(!(x > 0 && x < canvas.width && y > 0 && y < canvas.height)) {
-				await canvas.scrollTo(canvas.halfWidth - node.x, canvas.halfHeight - node.y, 30);
-			}
-
 			arrow.bg = Arrow.notPointingColor;
 			await arrow.animateArrowHeadTo(canvas, new Point(arrow.tail.x + GAP, arrow.tail.y));
 

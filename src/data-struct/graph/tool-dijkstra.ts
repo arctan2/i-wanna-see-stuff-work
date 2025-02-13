@@ -41,7 +41,7 @@ export class ToolDijstra extends ToolHandler {
 
 		setInfoPopupText("");
 
-		dijkstra.init(this.startNode, endNode);
+		dijkstra.init(canvas, this.startNode, endNode);
 		algorithmState.setAlgorithm(dijkstra);
 		dijkstra.tryPlay(canvas);
 		pgnd.toolHandler = null;

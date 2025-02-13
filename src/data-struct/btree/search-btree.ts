@@ -1,7 +1,7 @@
 import { AlgorithmHandler } from "../algorithm-handler";
 import { setErrorPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
-import { Null, Ptr } from "../memory-allocator/allocator.ts";
+import { Ptr } from "../memory-allocator/allocator.ts";
 import { ElementBtreeNode } from "./el-btree-node.ts";
 import { BtreeNode } from "./element-types/node.ts";
 
@@ -53,6 +53,7 @@ class SearchBtree extends AlgorithmHandler {
 		while(true) {
 			let i = 0;
 
+			canvas.panTo(canvas.halfDomWidth - cur.x, canvas.halfDomHeight - cur.y);
 			for(const _ of this.animateNodeBg(canvas, cur, Color.traverse)) yield;
 
 			while(i < cur.curKeyCount.value && key > cur.keys.v.arr[i]) {
