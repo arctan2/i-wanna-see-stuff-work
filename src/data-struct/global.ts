@@ -13,6 +13,7 @@ import IconUEdge from "./assets/vue-icon-wrappers/u-edge.vue";
 import IconGNode from "./assets/vue-icon-wrappers/g-node.vue";
 import IconMatrix from "./assets/vue-icon-wrappers/matrix.vue";
 import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node-icon.vue";
+import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -65,6 +66,13 @@ export function unfocusElement() {
 	focusedElement.value = panHandler;
 }
 
+let disappearingInfoPopUpTimeout: NodeJS.Timeout;
+export function disappearingInfoPopUp(text: string, ms: number) {
+	clearTimeout(disappearingInfoPopUpTimeout);
+	setInfoPopupText(text);
+	disappearingInfoPopUpTimeout = setTimeout(() => setInfoPopupText(""), ms);
+}
+
 export const disablePointerEvents = shallowRef(false);
 
 export interface ToolType {
@@ -80,6 +88,6 @@ export const ToolList: ToolType[] = [
 	{ name: "d-edge", toolClass: ToolDEdge, icon: IconDEdge },
 	{ name: "adj-mat", toolClass: ToolAdjMatrix, icon: IconMatrix },
 	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
-	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBtreeNode },
+	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
 ];
 

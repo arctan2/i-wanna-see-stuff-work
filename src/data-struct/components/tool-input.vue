@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { MAX_CHILDREN, ToolBtreeNode } from "../btree/tool-btree-node";
-import { curToolIdx, setInfoPopupText, ToolList } from "../global";
+import { curToolIdx, disappearingInfoPopUp, ToolList } from "../global";
 
 function validateInputs() {
 	if(+MAX_CHILDREN.value <= 4) {
@@ -12,9 +12,8 @@ function validateInputs() {
 	}
 
 	if(MAX_CHILDREN.value % 2 !== 0) {
-		setInfoPopupText(`M should be a even number. So changing M from ${MAX_CHILDREN.value} to ${MAX_CHILDREN.value + 1}`);
+		disappearingInfoPopUp(`M should be a even number. So changing M from ${MAX_CHILDREN.value} to ${MAX_CHILDREN.value + 1}`, 5000);
 		MAX_CHILDREN.value += 1;
-		setTimeout(() => setInfoPopupText(""), 5000);
 	}
 
 	input();

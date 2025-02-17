@@ -8,6 +8,7 @@ import { UEdge } from "./element-types/u-edge";
 import { GNode } from "./element-types/node";
 import { panHandler } from "../handler/element-handler";
 import { Playground } from "../handler/playground-handler";
+import { disappearingInfoPopUp } from "../global";
 
 export class ToolUEdge extends ToolHandler {
 	constructor() {
@@ -48,7 +49,10 @@ export class ToolUEdge extends ToolHandler {
 
 		const firstEdge = gnode.edges.v.first()?.v;
 
-		if((firstEdge && firstEdge.constructor.name !== ElementUEdge.name) || gnode.referedByDEdges.size !== 0) return;
+		if((firstEdge && firstEdge.constructor.name !== ElementUEdge.name) || gnode.referedByDEdges.size !== 0) {
+			disappearingInfoPopUp("The node belongs to a directed graph.", 2000);
+			return;
+		}
 
 		if(this.startNode !== null) {
 			this.endNode = gnode;
@@ -98,6 +102,7 @@ export class ToolUEdge extends ToolHandler {
 
 		canvas.addElements(edge);
 		canvas.redraw();
+		pgnd.tryUnselectTool();
 	}
 
 	rectifyStart() {
