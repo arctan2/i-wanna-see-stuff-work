@@ -2,6 +2,10 @@ import { circleFill } from "../../canvas";
 import { Line } from "../../geometry";
 import { Transform } from "../../handler/canvas-handler";
 
+interface P {
+	x: number, y: number
+}
+
 export class Arrow {
 	head = { x: -1, y: -1 };
 	tail = { x: -1, y: -1 };
@@ -10,6 +14,14 @@ export class Arrow {
 	static pointingColor = "#FFFFFF";
 	static insertColor = "#FFFF00"
 	static invalidInsert = "#FF0000";
+
+	static drawFromTo(ctx: CanvasRenderingContext2D, tail: P, head: P, color: string) {
+		const a = new Arrow();
+		a.bg = color;
+		a.head = head;
+		a.tail = tail;
+		a.paint(ctx);
+	}
 
 	bg: string | CanvasGradient = Arrow.notPointingColor;
 

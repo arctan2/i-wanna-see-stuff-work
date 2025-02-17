@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { MAX_CHILDREN, ToolBtreeNode } from "../btree/tool-btree-node";
-import { curToolIdx, ToolList } from "../global";
+import { curToolIdx, setInfoPopupText, ToolList } from "../global";
 
 function validateInputs() {
 	if(+MAX_CHILDREN.value <= 4) {
 		MAX_CHILDREN.value = 4;
-		input();
 	}
 
 	if(+MAX_CHILDREN.value >= 128) {
 		MAX_CHILDREN.value = 128;
-		input();
 	}
+
+	if(MAX_CHILDREN.value % 2 !== 0) {
+		setInfoPopupText(`M should be a even number. So changing M from ${MAX_CHILDREN.value} to ${MAX_CHILDREN.value + 1}`);
+		MAX_CHILDREN.value += 1;
+		setTimeout(() => setInfoPopupText(""), 5000);
+	}
+
+	input();
 }
 
 function input() {
@@ -24,12 +30,13 @@ function input() {
 </script>
 
 <template>
-	<div v-if="ToolList[curToolIdx]?.name === 'btree-node'" class="btree-node floating-panel">
+	<div v-if="ToolList[curToolIdx]?.name === 'btree-node' || ToolList[curToolIdx]?.name === 'bptree-node'" class="btree-node floating-panel">
 		<span>M: </span>
 		<input
 			@focusout="validateInputs"
 			@input="input"
 			type="number"
+			step="2"
 			min="4"
 			max="128"
 			v-model="MAX_CHILDREN"

@@ -5,6 +5,7 @@ import { ElementUEdge } from "../graph/el-u-edge";
 import { ElementDEdge } from "../graph/el-d-edge";
 import { ElementAdjMatrix } from "../graph/el-adjmatrix";
 import { ElementBtreeNode } from "../btree/el-btree-node";
+import { ElementBptreeNode } from "../bptree/el-bptree-node";
 
 import LLNodeComp from "./tools/ll-node.vue";
 import GNodeComp from "./tools/g-node.vue";
@@ -12,6 +13,7 @@ import UEdgeComp from "./tools/u-edge.vue";
 import DEdgeComp from "./tools/d-edge.vue";
 import AdjMatrixComp from "./tools/adjmatrix.vue";
 import BtreeNodeComp from "./tools/btree-comp.vue";
+import BptreeNodeComp from "./tools/bptree-comp.vue";
 
 type ComponentMap = { [_:string]: any };
 
@@ -21,6 +23,7 @@ export const componentMap: ComponentMap = {
 	[ElementUEdge.name]: UEdgeComp,
 	[ElementDEdge.name]: DEdgeComp,
 	[ElementAdjMatrix.name]: AdjMatrixComp,
-	[ElementBtreeNode.name]: BtreeNodeComp
+	[ElementBtreeNode.name]: BtreeNodeComp,
+	[ElementBptreeNode.name]: BptreeNodeComp,
 };
 

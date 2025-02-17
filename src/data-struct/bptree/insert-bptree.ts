@@ -1,10 +1,10 @@
-import { AlgorithmHandler } from "../algorithm-handler";
+import { AlgorithmHandler } from "../algorithm-handler.ts";
 import { GAP } from "../canvas.ts";
 import { setInfoPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
 import { Null, Ptr } from "../memory-allocator/allocator.ts";
-import { ElementBtreeNode } from "./el-btree-node.ts";
-import { BtreeNode } from "./element-types/node.ts";
+import { ElementBptreeNode } from "./el-bptree-node.ts";
+import { BptreeNode } from "./element-types/node.ts";
 
 enum Color {
 	shifting = "#345ceb",
@@ -13,11 +13,11 @@ enum Color {
 	full = "#ff0000",
 };
 
-class InsertBtree extends AlgorithmHandler {
-	root: null | ElementBtreeNode = null;
+class InsertBptree extends AlgorithmHandler {
+	root: null | ElementBptreeNode = null;
 	toInsertKey: number = 0;
 
-	init(canvas: CanvasHandler, node: ElementBtreeNode, toInsertKey: number, doneCallback?: () => void) {
+	init(canvas: CanvasHandler, node: ElementBptreeNode, toInsertKey: number, doneCallback?: () => void) {
 		this.toInsertKey = toInsertKey;
 		this.root = node;
 		this.doneCallback = doneCallback;
@@ -32,13 +32,13 @@ class InsertBtree extends AlgorithmHandler {
 		setInfoPopupText("");
 	}
 
-	async *splitNode(parent: ElementBtreeNode, idx: number, canvas: CanvasHandler) {
-		const fullChild: Ptr<ElementBtreeNode> = parent.children.v.arr[idx] as Ptr<ElementBtreeNode>;
-		const newChild = new ElementBtreeNode(
+	async *splitNode(parent: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
+		const fullChild: ElementBptreeNode = (parent.children.v.arr[idx] as Ptr<ElementBptreeNode>).v;
+		const newChild = new ElementBptreeNode(
 			parent.x + ((parent.totalWidth / 2) * (idx + 1)),
-			parent.y + (BtreeNode.cellHeight) + (GAP * 2),
+			parent.y + (BptreeNode.cellHeight) + (GAP * 2),
 			parent.M,
-			fullChild.v.isLeaf.value,
+			fullChild.isLeaf.value,
 			parent
 		);
 
@@ -47,22 +47,27 @@ class InsertBtree extends AlgorithmHandler {
 		yield;
 
 		const t = parent.T;
-		newChild.curKeyCount.value = fullChild.v.curKeyCount.value - t;
+		newChild.curKeyCount.value = t - 1;
 
 		for (let i = 0; i < newChild.curKeyCount.value; i++) {
-			for(const _ of this.animateCellBg(canvas, fullChild.v, i + t, Color.shifting)) yield;
-			newChild.keys.v.arr[i] = fullChild.v.keys.v.arr[i + t];
+			for(const _ of this.animateCellBg(canvas, fullChild, i + t, Color.shifting)) yield;
+			newChild.keys.v.arr[i] = fullChild.keys.v.arr[i + t];
 			for(const _ of this.animateCellBg(canvas, newChild, i, Color.shifting)) yield;
 		}
 
-		if (!fullChild.v.isLeaf.value) {
+		if (!fullChild.isLeaf.value) {
 			for (let i = 0; i < newChild.curKeyCount.value + 1; i++) {
-				newChild.children.v.arr[i] = fullChild.v.children.v.arr[i + t];
+				newChild.children.v.arr[i] = fullChild.children.v.arr[i + t];
 			}
+			for(const _ of this.animateCellBg(canvas, fullChild, t - 1, Color.shifting)) yield;
+			fullChild.curKeyCount.value = t - 1;
+		} else {
+			newChild.nextNode = fullChild.nextNode;
+			fullChild.nextNode = newChild.ptr;
+			for(const _ of this.animateCellBg(canvas, fullChild, t - 1, Color.shifting)) yield;
+			fullChild.curKeyCount.value -= newChild.curKeyCount.value;
 		}
 
-		for(const _ of this.animateCellBg(canvas, fullChild.v, t - 1, Color.shifting)) yield;
-		fullChild.v.curKeyCount.value = t - 1;
 
 		for (let i = parent.curKeyCount.value; i >= idx + 1; i--) {
 			parent.children.v.arr[i + 1] = parent.children.v.arr[i];
@@ -75,30 +80,34 @@ class InsertBtree extends AlgorithmHandler {
 			for(const _ of this.animateCellBg(canvas, parent, i + 1, Color.shifting)) yield;
 		}
 
-		parent.keys.v.arr[idx] = fullChild.v.keys.v.arr[t - 1];
+		if (!fullChild.isLeaf.value) {
+			parent.keys.v.arr[idx] = fullChild.keys.v.arr[t - 1];
+		} else {
+			parent.keys.v.arr[idx] = fullChild.keys.v.arr[t];
+		}
 		parent.curKeyCount.value++;
 		for(const _ of this.animateCellBg(canvas, parent, idx, Color.shifting)) yield;
 		
 		await parent.rearrangeTree(canvas);
 	}
 
-	*animateNodeBg(canvas: CanvasHandler, node: ElementBtreeNode, color: string) {
+	*animateNodeBg(canvas: CanvasHandler, node: ElementBptreeNode, color: string) {
 		node.bg = color;
 		node.draw(canvas.ctx);
 		yield;
-		node.bg = BtreeNode.nodeBg;
+		node.bg = BptreeNode.nodeBg;
 		node.draw(canvas.ctx);
 	}
 
-	*animateCellBg(canvas: CanvasHandler, node: ElementBtreeNode, idx: number, color: string) {
+	*animateCellBg(canvas: CanvasHandler, node: ElementBptreeNode, idx: number, color: string) {
 		node.keysBg[idx] = color;
 		node.drawCell(canvas.ctx, idx);
 		yield;
-		node.keysBg[idx] = BtreeNode.cellBg;
+		node.keysBg[idx] = BptreeNode.cellBg;
 		node.drawCell(canvas.ctx, idx);
 	}
 
-	async *insertKey(root: ElementBtreeNode, key: number, canvas: CanvasHandler) {
+	async *insertKey(root: ElementBptreeNode, key: number, canvas: CanvasHandler) {
 		const M = root.M;
 
 		for(const _ of this.animateNodeBg(canvas, root, Color.traverse)) yield;
@@ -106,9 +115,9 @@ class InsertBtree extends AlgorithmHandler {
 		if(root.curKeyCount.value === M - 1) {
 			for(const _ of this.animateNodeBg(canvas, root, Color.full)) yield;
 
-			const newRoot = new ElementBtreeNode(
+			const newRoot = new ElementBptreeNode(
 				root.x,
-				root.y - (BtreeNode.cellHeight * 3),
+				root.y - (BptreeNode.cellHeight * 3),
 				root.M,
 				false,
 				null
@@ -124,7 +133,7 @@ class InsertBtree extends AlgorithmHandler {
 			root = newRoot;
 		}
 
-		let current: ElementBtreeNode = root;
+		let current: ElementBptreeNode = root;
 		while(current.isLeaf.value === false) {
 			let i = 0;
 			while (i < current.curKeyCount.value && (current.keys.v.arr[i] as number) < key) {
@@ -138,9 +147,9 @@ class InsertBtree extends AlgorithmHandler {
 
 			if(
 				!Null.isNull(current.children.v.arr[i]) &&
-				(current.children.v.arr[i] as Ptr<ElementBtreeNode>).v.curKeyCount.value === M - 1
+				(current.children.v.arr[i] as Ptr<ElementBptreeNode>).v.curKeyCount.value === M - 1
 			) {
-				for(const _ of this.animateNodeBg(canvas, (current.children.v.arr[i] as Ptr<ElementBtreeNode>).v, Color.full)) yield;
+				for(const _ of this.animateNodeBg(canvas, (current.children.v.arr[i] as Ptr<ElementBptreeNode>).v, Color.full)) yield;
 				{
 					const a = this.splitNode(current, i, canvas);
 					while(!(await a.next()).done) yield;
@@ -153,7 +162,7 @@ class InsertBtree extends AlgorithmHandler {
 				yield;
 				current.drawLineToChild(canvas.ctx, i);
 			}
-			current = (current.children.v.arr[i] as Ptr<ElementBtreeNode>).v;
+			current = (current.children.v.arr[i] as Ptr<ElementBptreeNode>).v;
 		}
 
 		let i = current.curKeyCount.value - 1;
@@ -184,4 +193,4 @@ class InsertBtree extends AlgorithmHandler {
 	}
 }
 
-export default new InsertBtree();
+export default new InsertBptree();

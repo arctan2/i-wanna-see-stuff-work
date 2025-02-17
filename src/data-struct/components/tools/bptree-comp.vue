@@ -2,14 +2,14 @@
 import { Ref, ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
 import { useFocusedElement, unfocusElement } from '../../global';
-import { ElementBtreeNode } from '../../btree/el-btree-node';
-import InsertBtree from "../../btree/insert-btree.ts"
-import DeleteBtree from "../../btree/delete-btree.ts"
-import SearchBtree from "../../btree/search-btree.ts"
+import { ElementBptreeNode } from '../../bptree/el-bptree-node';
+import InsertBptree from "../../bptree/insert-bptree.ts"
+import DeleteBptree from "../../bptree/delete-bptree.ts"
+import SearchBptree from "../../bptree/search-bptree.ts"
 import { algorithmState } from '../refs';
 import { randInt } from '../../utils.ts';
 
-const focusedElement = useFocusedElement<ElementBtreeNode>();
+const focusedElement = useFocusedElement<ElementBptreeNode>();
 const toInsertKey = ref<number | "">("");
 const toDeleteKey = ref<number | "">("");
 const toSearchKey = ref<number | "">("");
@@ -17,7 +17,7 @@ const from = ref<number | "">(1);
 const to = ref<number | "">(8);
 const step = ref<number | "">(1);
 const isRandomize = ref<boolean>(false);
-const inserterState: {node: ElementBtreeNode | null, curKey: number, insertedKeys: Set<number>} = {
+const inserterState: {node: ElementBptreeNode | null, curKey: number, insertedKeys: Set<number>} = {
 	node: null,
 	curKey: 0,
 	insertedKeys: new Set
@@ -65,9 +65,9 @@ function insertKey() {
 		return;
 	}
 
-	InsertBtree.init(playground.canvas, focusedElement.value, toInsertKey.value);
-	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.tryPlay(playground.canvas);
+	InsertBptree.init(playground.canvas, focusedElement.value, toInsertKey.value);
+	algorithmState.setAlgorithm(InsertBptree);
+	InsertBptree.tryPlay(playground.canvas);
 
 	unfocusElement();
 }
@@ -77,9 +77,9 @@ function deleteKey() {
 		return;
 	}
 
-	DeleteBtree.init(playground.canvas, focusedElement.value, toDeleteKey.value);
-	algorithmState.setAlgorithm(DeleteBtree);
-	DeleteBtree.tryPlay(playground.canvas);
+	DeleteBptree.init(playground.canvas, focusedElement.value, toDeleteKey.value);
+	algorithmState.setAlgorithm(DeleteBptree);
+	DeleteBptree.tryPlay(playground.canvas);
 
 	unfocusElement();
 }
@@ -89,9 +89,9 @@ function searchKey() {
 		return;
 	}
 
-	SearchBtree.init(playground.canvas, focusedElement.value, toSearchKey.value);
-	algorithmState.setAlgorithm(SearchBtree);
-	SearchBtree.tryPlay(playground.canvas);
+	SearchBptree.init(playground.canvas, focusedElement.value, toSearchKey.value);
+	algorithmState.setAlgorithm(SearchBptree);
+	SearchBptree.tryPlay(playground.canvas);
 
 	unfocusElement();
 }
@@ -108,7 +108,7 @@ async function iter() {
 	}
 
 	if(inserterState.curKey >= to.value) {
-		InsertBtree.forceStop(playground.canvas);
+		InsertBptree.forceStop(playground.canvas);
 		return;
 	}
 
@@ -117,15 +117,15 @@ async function iter() {
 			const v = randInt(from.value, to.value);
 			if(inserterState.insertedKeys.has(v)) continue;
 			inserterState.insertedKeys.add(v);
-			InsertBtree.init(playground.canvas, inserterState.node, v, iter);
+			InsertBptree.init(playground.canvas, inserterState.node, v, iter);
 			break;
 		}
 	} else {
-		InsertBtree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
+		InsertBptree.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
 	}
 
-	algorithmState.setAlgorithm(InsertBtree);
-	InsertBtree.tryPlay(playground.canvas);
+	algorithmState.setAlgorithm(InsertBptree);
+	InsertBptree.tryPlay(playground.canvas);
 
 	inserterState.curKey += step.value;
 }
@@ -146,7 +146,7 @@ function iterInsert() {
 
 <template>
 <div class="tool-btree-node">
-	<h1>B-tree Node</h1>
+	<h1>B+ tree Node</h1>
 
 	<div class="sub-sections-container scroll-bar">
 		<div>
@@ -271,7 +271,7 @@ function iterInsert() {
 }
 
 .sub-sections-container > div{
-	--bg: rgb(48, 58, 64);
+	--bg: rgb(48, 64, 50);
 }
 
 .buttons{

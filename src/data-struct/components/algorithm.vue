@@ -32,6 +32,12 @@ import { DijkstraAdjMatrix, BfsAdjMatrix, DfsAdjMatrix, AstarAdjMatrix, Maze } f
 import InsertBtree from "../btree/insert-btree.ts";
 import DeleteBtree from "../btree/delete-btree.ts";
 
+import InsertBptree from "../bptree/insert-bptree.ts";
+import DeleteBptree from "../bptree/delete-bptree.ts";
+
+import SearchBptree from "../bptree/search-bptree.ts";
+import SearchBptreeComp from "../bptree/components/search-bptree-comp.vue";
+
 import SearchBtree from "../btree/search-btree.ts";
 import SearchBtreeComp from "../btree/components/search-btree-comp.vue";
 
@@ -55,6 +61,9 @@ const componentMap: ComponentMap = {
 	[InsertBtree.constructor.name]: null,
 	[DeleteBtree.constructor.name]: null,
 	[SearchBtree.constructor.name]: SearchBtreeComp,
+	[InsertBptree.constructor.name]: null,
+	[DeleteBptree.constructor.name]: null,
+	[SearchBptree.constructor.name]: SearchBptreeComp,
 };
 
 const isPlaying = ref(isAutoplay.value);
