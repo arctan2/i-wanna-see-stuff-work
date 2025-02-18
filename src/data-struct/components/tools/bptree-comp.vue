@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
-import { useFocusedElement, unfocusElement } from '../../global';
+import { useFocusedElement, unfocusElement, isAutoRearrangeBtree } from '../../global';
 import { ElementBptreeNode } from '../../bptree/el-bptree-node';
 import InsertBptree from "../../bptree/insert-bptree.ts"
 import DeleteBptree from "../../bptree/delete-bptree.ts"
@@ -150,7 +150,10 @@ function iterInsert() {
 
 	<div class="sub-sections-container scroll-bar">
 		<div>
-			<button class="btn btn-nobg clr-lblue" @click="focusedElement.rearrangeTree(playground.canvas)">rearrange</button>
+			<div class="checkbox-container">
+				<input type="checkbox" v-model="isAutoRearrangeBtree" />
+				<label>Auto rearrange</label>
+			</div>
 		</div>
 		<template v-if="focusedElement.parentNode === null">
 		<div class="insert-key">
@@ -263,11 +266,6 @@ function iterInsert() {
 .tool-btree-node > h1{
 	margin-bottom: 1rem;
 	font-size: 1.75rem;
-}
-
-.sub-sections-container {
-	height: 25rem;
-	overflow-y: scroll;
 }
 
 .sub-sections-container > div{

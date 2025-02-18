@@ -1,4 +1,4 @@
-import { Ref, shallowRef, reactive, readonly, Component } from "vue";
+import { Ref, shallowRef, reactive, readonly, Component, ref } from "vue";
 import { ElementHandler, panHandler } from "./handler/element-handler";
 import { ToolLLNode } from "./linked-list/tool-node";
 import { ToolGNode } from "./graph/tool-node.ts";
@@ -24,6 +24,8 @@ const _errorPopup = reactive({
 export const curToolIdx = shallowRef<number>(-1);
 export const isRetainTool = shallowRef<boolean>(false);
 export const isAutoplay = shallowRef<boolean>(true);
+
+export const isAutoRearrangeBtree = ref<boolean>(false);
 
 export const errorPopup = readonly(_errorPopup);
 

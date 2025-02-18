@@ -64,7 +64,7 @@ class InsertBptree extends AlgorithmHandler {
 		} else {
 			newChild.nextNode = fullChild.nextNode;
 			fullChild.nextNode = newChild.ptr;
-			for(const _ of this.animateCellBg(canvas, fullChild, t - 1, Color.shifting)) yield;
+			for(const _ of this.animateCellBg(canvas, fullChild, fullChild.curKeyCount.value - newChild.curKeyCount.value, Color.shifting)) yield;
 			fullChild.curKeyCount.value -= newChild.curKeyCount.value;
 		}
 

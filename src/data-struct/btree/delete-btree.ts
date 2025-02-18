@@ -45,7 +45,6 @@ class DeleteBtree extends AlgorithmHandler {
 		node.drawCell(canvas.ctx, idx);
 	}
 
-
 	*getPredecessor(node: ElementBtreeNode, idx: number, canvas: CanvasHandler) {
 		let cur = node.children.v.arr[idx];
 
@@ -177,7 +176,7 @@ class DeleteBtree extends AlgorithmHandler {
 		child.keys.v.arr[0] = node.keys.v.arr[idx - 1];
 		for(const _ of this.animateCellBg(canvas, child, 0, Color.merge)) yield;
 
-		if (!child.isLeaf.value) {
+		if(!child.isLeaf.value) {
 			for(const _ of this.animateNodeBg(canvas, sibbling, Color.shifting)) yield;
 			child.children.v.arr[0] = sibbling.children.v.arr[sibbling.curKeyCount.value];
 			for(const _ of this.animateNodeBg(canvas, child, Color.shifting)) yield;
@@ -189,6 +188,9 @@ class DeleteBtree extends AlgorithmHandler {
 
 		sibbling.curKeyCount.value -= 1;
 		for(const _ of this.animateCellBg(canvas, sibbling, sibbling.curKeyCount.value, Color.delete)) yield;
+
+		canvas.redraw();
+		yield;
 	}
 
 	*borrowFromNext(node: ElementBtreeNode, idx: number, canvas: CanvasHandler) {
@@ -206,7 +208,7 @@ class DeleteBtree extends AlgorithmHandler {
 		for(const _ of this.animateCellBg(canvas, child, child.curKeyCount.value - 1, Color.shifting)) yield;
 
 		if (!child.isLeaf.value) {
-			child.children.v.arr[child.curKeyCount.value - 2] = sibbling.children.v.arr[0];
+			child.children.v.arr[child.curKeyCount.value] = sibbling.children.v.arr[0];
 		}
 
 		for(const _ of this.animateCellBg(canvas, sibbling, 0, Color.shifting)) yield;
@@ -227,6 +229,8 @@ class DeleteBtree extends AlgorithmHandler {
 
 		sibbling.curKeyCount.value -= 1;
 		for(const _ of this.animateCellBg(canvas, sibbling, sibbling.curKeyCount.value, Color.delete)) yield;
+		canvas.redraw();
+		yield;
 	}
 
 	*deleteFromNonLeaf(node: ElementBtreeNode, idx: number, canvas: CanvasHandler) {
@@ -292,7 +296,8 @@ class DeleteBtree extends AlgorithmHandler {
 
 			const flag = ((idx == node.curKeyCount.value) ? true : false);
 
-			if ((node.children.v.arr[idx] as Ptr<ElementBtreeNode>).v.curKeyCount.value < T) {
+			if((node.children.v.arr[idx] as Ptr<ElementBtreeNode>).v.curKeyCount.value < T) {
+				for(const _ of this.animateNodeBg(canvas, (node.children.v.arr[idx] as Ptr<ElementBtreeNode>).v, Color.delete)) yield;
 				for(const _ of this.fill(node, idx, canvas)) yield;
 			}
 

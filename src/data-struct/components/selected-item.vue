@@ -6,7 +6,7 @@ import { isSelectedItemShow, setIsSelectedItemShow } from "./refs";
 import { componentMap } from "./tool-component-map";
 
 const className = computed(() => {
-	return ['selected-item floating-panel', disablePointerEvents.value ? 'pointer-events-none' : '']
+	return ['selected-item floating-panel scroll-bar', disablePointerEvents.value ? 'pointer-events-none' : '']
 });
 
 </script>
@@ -28,13 +28,16 @@ const className = computed(() => {
 	top: 15%;
 	z-index: 20;
 	width: 12rem;
-	height: 30rem;
+	height: 80%;
+	max-height: 30rem;
+	overflow: auto;
 	padding: 0.5rem;
 	padding-top: 1rem;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
 #pane-btns{
+	position: absolute;
 	right: 0;
 	top: 0;
 	transform: translateY(0);

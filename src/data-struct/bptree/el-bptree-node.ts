@@ -1,7 +1,7 @@
 import { GAP } from "../canvas";
 import { EventState } from "../handler/event-handler";
 import { CanvasHandler } from "../handler/canvas-handler";
-import { focusedElement } from "../global";
+import { focusedElement, isAutoRearrangeBtree } from "../global";
 import { BptreeNode } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
@@ -152,6 +152,9 @@ export class ElementBptreeNode extends BptreeNode implements ElementHandler, All
 	}
 
 	pointerUp(state: EventState, canvas: CanvasHandler): ElementHandler | null { 
+		if(isAutoRearrangeBtree.value === false) {
+			return null;
+		}
 		if(Math.abs(state.pointerDown.x - state.pointerUp.x) <= GAP && Math.abs(state.pointerDown.y - state.pointerUp.y) <= GAP) {
 			return null;
 		}

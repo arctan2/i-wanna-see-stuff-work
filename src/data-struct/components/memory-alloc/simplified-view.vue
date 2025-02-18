@@ -109,6 +109,11 @@ onMounted(() => {
 	color: white;
 }
 
+.ElementBptreeNode.simplified{
+	background-color: var(--bptree-node);
+	color: black;
+}
+
 .Null.simplified{
 	background-color: var(--null);
 	color: black;
