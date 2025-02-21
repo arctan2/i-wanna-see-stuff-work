@@ -31,40 +31,26 @@ class SearchBptree extends AlgorithmHandler {
 		this.toSearchKey = 0;
 	}
 
-	*animateNodeBg(canvas: CanvasHandler, node: ElementBptreeNode, color: string) {
-		node.bg = color;
-		node.draw(canvas.ctx);
-		yield;
-		node.bg = BptreeNode.nodeBg;
-		node.draw(canvas.ctx);
-	}
-
-	*animateCellBg(canvas: CanvasHandler, node: ElementBptreeNode, idx: number, color: string) {
-		node.keysBg[idx] = color;
-		node.drawCell(canvas.ctx, idx);
-		yield;
-		node.keysBg[idx] = BptreeNode.cellBg;
-		node.drawCell(canvas.ctx, idx);
-	}
-
 	*searchKey(root: ElementBptreeNode, key: number, canvas: CanvasHandler) {
 		let cur = root;
 
 		while(true) {
 			let i = 0;
 
-			canvas.panTo(canvas.halfDomWidth - cur.x, canvas.halfDomHeight - cur.y);
-			for(const _ of this.animateNodeBg(canvas, cur, Color.traverse)) yield;
+			for(const _ of cur.animateNodeBg(canvas, Color.traverse)) yield;
 
 			while(i < cur.curKeyCount.value && key > cur.keys.v.arr[i]) {
-				for(const _ of this.animateCellBg(canvas, cur, i, Color.traverse)) yield;
+				for(const _ of cur.animateCellBg(canvas, i, Color.traverse)) yield;
 				i++;
 			}
 
 			if(i < cur.curKeyCount.value && key === cur.keys.v.arr[i]) {
-				cur.keysBg[i] = Color.found;
-				cur.drawCell(canvas.ctx, i);
-				return;
+				if(cur.isLeaf.value) {
+					cur.keysBg[i] = Color.found;
+					cur.drawCell(canvas.ctx, i);
+					return;
+				}
+				i++;
 			}
 
 			if(cur.isLeaf.value) {

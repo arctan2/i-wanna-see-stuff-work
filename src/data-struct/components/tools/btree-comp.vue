@@ -283,10 +283,6 @@ function iterInsert() {
 	min-width: 4.5rem;
 }
 
-.sub-sections-container > div button:not(:first-child) {
-	margin-top: 0.5rem;
-}
-
 .sub-sections-container > div h2 {
 	font-size: 1.2rem;
 	margin-bottom: 0.5rem;
@@ -319,6 +315,9 @@ function iterInsert() {
 	font-size: 0.9rem;
 	min-width: 100%;
 	justify-content: start;
+}
+
+.sub-sections-container > div button:not(:first-child), .sub-sections-container > div .checkbox-container:not(:first-child) {
 	margin-top: 0.5rem;
 }
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ToolBptreeNode } from "../bptree/tool-bptree-node";
 import { MAX_CHILDREN, ToolBtreeNode } from "../btree/tool-btree-node";
 import { curToolIdx, disappearingInfoPopUp, ToolList } from "../global";
 
@@ -22,7 +23,8 @@ function validateInputs() {
 function input() {
 	if(MAX_CHILDREN.value >= 4 && MAX_CHILDREN.value < 128) {
 		MAX_CHILDREN.value = Math.floor(MAX_CHILDREN.value);
-		ToolBtreeNode.setTool();
+		ToolBtreeNode.setTool(MAX_CHILDREN.value);
+		ToolBptreeNode.setTool(MAX_CHILDREN.value);
 	}
 }
 

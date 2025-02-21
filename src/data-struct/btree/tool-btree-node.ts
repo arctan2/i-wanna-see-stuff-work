@@ -63,9 +63,7 @@ export class ToolBtreeNode extends ToolHandler {
 
 	static node: BtreeNode;
 
-	static setTool() {
-		let v = Number(MAX_CHILDREN.value);
-
+	static setTool(v: number) {
 		if(Number.isNaN(v) || !v || v <= 4) {
 			v = 4;
 		}
@@ -82,7 +80,7 @@ export class ToolBtreeNode extends ToolHandler {
 	}
 
 	static {
-		this.setTool();
+		this.setTool(MAX_CHILDREN.value);
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {

@@ -290,7 +290,7 @@ class DeleteBtree extends AlgorithmHandler {
 			}
 		} else {
 			if(node.isLeaf.value) {
-				setErrorPopupText(`The key "${key}" is not present in the tree`);
+				setErrorPopupText(`The key "${key}" is not present in the tree.`);
 				return;
 			}
 

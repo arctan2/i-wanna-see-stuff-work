@@ -283,6 +283,22 @@ export class ElementBptreeNode extends BptreeNode implements ElementHandler, All
 		})
 	}
 
+	*animateNodeBg(canvas: CanvasHandler, color: string) {
+		this.bg = color;
+		this.draw(canvas.ctx);
+		yield;
+		this.bg = BptreeNode.nodeBg;
+		this.draw(canvas.ctx);
+	}
+
+	*animateCellBg(canvas: CanvasHandler, idx: number, color: string) {
+		this.keysBg[idx] = color;
+		this.drawCell(canvas.ctx, idx);
+		yield;
+		this.keysBg[idx] = BptreeNode.cellBg;
+		this.drawCell(canvas.ctx, idx);
+	}
+
 	drawArrowToNext(ctx: CanvasRenderingContext2D) {
 		if(Null.isNull(this.nextNode)) {
 			return;

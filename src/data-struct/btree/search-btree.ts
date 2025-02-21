@@ -53,7 +53,6 @@ class SearchBtree extends AlgorithmHandler {
 		while(true) {
 			let i = 0;
 
-			canvas.panTo(canvas.halfDomWidth - cur.x, canvas.halfDomHeight - cur.y);
 			for(const _ of this.animateNodeBg(canvas, cur, Color.traverse)) yield;
 
 			while(i < cur.curKeyCount.value && key > cur.keys.v.arr[i]) {
