@@ -150,6 +150,10 @@ function calcBytesInc() {
 	color: var(--bptree-node);
 }
 
+.ElementLLRbtreeNode.bytes{
+	color: var(--llrbtree-node);
+}
+
 .MapList.bytes, .List.bytes{
 	color: var(--list);
 }

@@ -114,6 +114,11 @@ onMounted(() => {
 	color: black;
 }
 
+.ElementLLRbtreeNode.simplified{
+	background-color: var(--llrbtree-node);
+	color: white;
+}
+
 .Null.simplified{
 	background-color: var(--null);
 	color: black;

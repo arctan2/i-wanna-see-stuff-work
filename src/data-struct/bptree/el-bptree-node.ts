@@ -47,22 +47,22 @@ export class ElementBptreeNode extends BptreeNode implements ElementHandler, All
 	}
 
     toString(): string {
-		return ` btree-node { keys_count: ${
+		return ` bptree-node { keys_count: ${
 			this.curKeyCount.value
 		}, is_leaf: ${
 			this.isLeaf.value
 		}, keys: ${
 			this.keys.toString()
-		} children: ${
+		}, children: ${
 			this.children.toString()
-		} next: ${
+		}, next: ${
 			this.nextNode.toString()
 		} } `
 	}
 
     toDisplayableBlocks() {
 		return [
-			` btree-node { keys_count: ${this.curKeyCount.value}, is_leaf: ${this.isLeaf.value}, keys: `,
+			` bptree-node { keys_count: ${this.curKeyCount.value}, is_leaf: ${this.isLeaf.value}, keys: `,
 			{ ptr: this.keys.toString() },
 			` children: `,
 			{ ptr: this.children.toString() },

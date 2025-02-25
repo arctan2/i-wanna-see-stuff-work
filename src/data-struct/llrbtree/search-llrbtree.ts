@@ -2,7 +2,7 @@ import { AlgorithmHandler } from "../algorithm-handler.ts";
 import { setErrorPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
 import { Ptr } from "../memory-allocator/allocator.ts";
-import { ElementBptreeNode } from "./el-bptree-node.ts";
+import { ElementLLRbtreeNode } from "./el-llrbtree-node.ts";
 
 enum Color {
 	found = "#00ff00",
@@ -10,11 +10,11 @@ enum Color {
 	notEqual = "#ff0000",
 };
 
-class SearchBptree extends AlgorithmHandler {
-	root: null | ElementBptreeNode = null;
+class SearchLLRbtree extends AlgorithmHandler {
+	root: null | ElementLLRbtreeNode = null;
 	toSearchKey: number = 0;
 
-	init(canvas: CanvasHandler, node: ElementBptreeNode, toSearchKey: number, doneCallback?: () => void) {
+	init(canvas: CanvasHandler, node: ElementLLRbtreeNode, toSearchKey: number, doneCallback?: () => void) {
 		this.toSearchKey = toSearchKey;
 		this.root = node;
 		this.doneCallback = doneCallback;
@@ -30,7 +30,7 @@ class SearchBptree extends AlgorithmHandler {
 		this.toSearchKey = 0;
 	}
 
-	*searchKey(root: ElementBptreeNode, key: number, canvas: CanvasHandler) {
+	*searchKey(root: ElementLLRbtreeNode, key: number, canvas: CanvasHandler) {
 		let cur = root;
 
 		while(true) {
@@ -60,7 +60,7 @@ class SearchBptree extends AlgorithmHandler {
 			cur.drawLineToChild(canvas.ctx, i, Color.traverse);
 			yield;
 			cur.drawLineToChild(canvas.ctx, i);
-			cur = (cur.children.v.arr[i] as Ptr<ElementBptreeNode>).v;
+			cur = (cur.children.v.arr[i] as Ptr<ElementLLRbtreeNode>).v;
 		}
 	}
 
@@ -74,4 +74,4 @@ class SearchBptree extends AlgorithmHandler {
 	}
 }
 
-export default new SearchBptree();
+export default new SearchLLRbtree();

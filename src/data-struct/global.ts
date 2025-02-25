@@ -7,13 +7,15 @@ import { ToolDEdge } from "./graph/tool-d-edge.ts";
 import { ToolAdjMatrix } from "./graph/tool-adjmatrix.ts";
 import { ToolBtreeNode } from "./btree/tool-btree-node.ts";
 import { ToolBptreeNode } from "./bptree/tool-bptree-node.ts";
+import { ToolLLRbtreeNode } from "./llrbtree/tool-llrbtree-node.ts";
+
 import IconLLNode from "./assets/vue-icon-wrappers/ll-node.vue";
 import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
 import IconUEdge from "./assets/vue-icon-wrappers/u-edge.vue";
 import IconGNode from "./assets/vue-icon-wrappers/g-node.vue";
 import IconMatrix from "./assets/vue-icon-wrappers/matrix.vue";
 import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node-icon.vue";
-import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
+import IconLLRbtreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -90,6 +92,7 @@ export const ToolList: ToolType[] = [
 	{ name: "d-edge", toolClass: ToolDEdge, icon: IconDEdge },
 	{ name: "adj-mat", toolClass: ToolAdjMatrix, icon: IconMatrix },
 	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
-	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
+	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconLLRbtreeNode },
+	{ name: "llrbtree-node", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
 ];
 

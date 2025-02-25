@@ -49,7 +49,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 			this.isLeaf.value
 		}, keys: ${
 			this.keys.toString()
-		} children: ${
+		}, children: ${
 			this.children.toString()
 		} } `
 	}
