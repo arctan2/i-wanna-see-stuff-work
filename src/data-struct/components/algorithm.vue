@@ -35,6 +35,9 @@ import DeleteBtree from "../btree/delete-btree.ts";
 import InsertBptree from "../bptree/insert-bptree.ts";
 import DeleteBptree from "../bptree/delete-bptree.ts";
 
+import InsertLLRbtree from "../llrbtree/insert-llrbtree.ts";
+import DeleteLLRbtree from "../llrbtree/delete-llrbtree.ts";
+
 import SearchBptree from "../bptree/search-bptree.ts";
 import SearchBptreeComp from "../bptree/components/search-bptree-comp.vue";
 
@@ -64,6 +67,8 @@ const componentMap: ComponentMap = {
 	[InsertBptree.constructor.name]: null,
 	[DeleteBptree.constructor.name]: null,
 	[SearchBptree.constructor.name]: SearchBptreeComp,
+	[InsertLLRbtree.constructor.name]: null,
+	[DeleteLLRbtree.constructor.name]: null,
 };
 
 const isPlaying = ref(isAutoplay.value);

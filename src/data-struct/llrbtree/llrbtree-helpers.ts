@@ -1,3 +1,4 @@
+import { CanvasHandler } from "../handler/canvas-handler";
 import { Ptr } from "../memory-allocator/allocator"
 import { ElementLLRbtreeNode, PtrLLRbNode } from "./el-llrbtree-node"
 
@@ -8,7 +9,7 @@ export function isRed(h: PtrLLRbNode): boolean {
 	return !h.v.isBlack;
 }
 
-export function rotateLeft(h: ElementLLRbtreeNode): PtrLLRbNode {
+export function *rotateLeft(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
 	let x = h.rNode!.v;
 	x.parentNode = h.parentNode;
 	if(x.isBlack) {
@@ -27,6 +28,10 @@ export function rotateLeft(h: ElementLLRbtreeNode): PtrLLRbNode {
 	x.lNode = h.ptr;
 
 	h.parentNode = x;
+
+	canvas.redraw();
+	console.log("rotlef");
+	yield;
 
 	x.isBlack = h.isBlack;
 	h.isBlack = false;

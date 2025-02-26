@@ -59,7 +59,7 @@ export class LLRbtreeNode {
 		ctx.fillStyle = this.bg;
 		circleFill(ctx, x, y, LLRbtreeNode.radius);
 
-		ctx.fillStyle = this.color;
+		ctx.fillStyle = getContrastFg(this.bg);
 		ctx.textBaseline = "middle";
 		ctx.textAlign = "center";
 		ctx.font = "16px monospace";
@@ -87,7 +87,7 @@ export class LLRbtreeNode {
 	}
 
 	get top() {
-		return this.y;
+		return this.y - LLRbtreeNode.radius;
 	}
 
 	get bottom() {
@@ -95,7 +95,7 @@ export class LLRbtreeNode {
 	}
 
 	get left() {
-		return this.x;
+		return this.x - LLRbtreeNode.radius;
 	}
 
 	get right() {

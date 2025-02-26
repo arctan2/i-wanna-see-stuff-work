@@ -2,13 +2,13 @@ import { AlgorithmHandler } from "../algorithm-handler.ts";
 import { GAP } from "../canvas.ts";
 import { setInfoPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
-import { ElementLLRbtreeNode, PtrLLRbNode } from "./el-llrbtree-node.ts";
+import { ElementLLRbtreeNode, PtrLLRbNode, gapX, gapY } from "./el-llrbtree-node.ts";
 import { LLRbtreeNode } from "./element-types/node.ts";
 import { flip, isRed, rotateLeft, rotateRight } from "./llrbtree-helpers.ts";
 
 enum Color {
 	shifting = "#345ceb",
-	assign = "#00ff00",
+	insertTo = "#00ff00",
 	traverse = "#ffff00",
 	full = "#ff0000",
 };
@@ -32,21 +32,72 @@ class InsertLLRbtree extends AlgorithmHandler {
 		setInfoPopupText("");
 	}
 
-	insert(h: PtrLLRbNode, key: number, parent: PtrLLRbNode, canvas: CanvasHandler): PtrLLRbNode {
+	async *insert(h: PtrLLRbNode, key: number, parent: PtrLLRbNode, canvas: CanvasHandler) {
 		if(h === null) {
-			const n = new ElementLLRbtreeNode(parent?.v?.x || -1, parent?.v?.y || -1, parent === null ? null : parent.v, key);
+			for(const _ of parent!.v.animateNodeBg(canvas, Color.insertTo)) yield;
+			const isLeft = parent!.v.lNode === null;
+			const p = parent!.v;
+
+			let x = p.x;
+			let y = p.y + gapY;
+
+			// if(isLeft) {
+			// 	x = p.x - LLRbtreeNode.radius - (gapX / 2);
+			// } else {
+			// 	x = p.x + LLRbtreeNode.radius + (gapX / 2);
+			// }
+
+			const n = new ElementLLRbtreeNode(x, y, parent === null ? null : parent.v, key);
 			canvas.addElements(n);
+			canvas.redraw();
+			yield;
 			return n.ptr;
 		}
 
+		for(const _ of h.v.animateNodeBg(canvas, Color.traverse)) yield;
+
 		if(key < (h.v.key.value as number)) {
-			h.v.lNode = this.insert(h.v.lNode, key, h, canvas);
+			let gen = this.insert(h.v.lNode, key, h, canvas);
+
+			h.v.drawLineToChild(canvas.ctx, "l", Color.traverse);
+			yield;
+			h.v.drawLineToChild(canvas.ctx, "l");
+
+			while(true) {
+				let result = await gen.next();
+				if(result.done) {
+					h.v.lNode = result.value;
+					break;
+				}
+				yield;
+			}
 		} else {
-			h.v.rNode = this.insert(h.v.rNode, key, h, canvas);
+			let gen = this.insert(h.v.rNode, key, h, canvas);
+
+			h.v.drawLineToChild(canvas.ctx, "r", Color.traverse);
+			yield;
+			h.v.drawLineToChild(canvas.ctx, "r");
+
+			while(true) {
+				let result = await gen.next();
+				if(result.done) {
+					h.v.rNode = result.value;
+					break;
+				}
+				yield;
+			}
 		}
 
 		if(isRed(h.v.rNode) && !isRed(h.v.lNode)) {
-			h = rotateLeft(h.v);
+			let gen = rotateLeft(h.v, canvas);
+			while(true) {
+				let result = gen.next();
+				if(result.done) {
+					h = result.value;
+					break;
+				}
+				yield;
+			}
 		}
 
 		if(h && isRed(h.v.lNode) && isRed(h.v.lNode!.v.lNode)) {
@@ -64,7 +115,15 @@ class InsertLLRbtree extends AlgorithmHandler {
 		if(root.key.value === "") {
 			root.key.value = key;
 		} else {
-			root = this.insert(root.ptr, key, root.ptr, canvas)!.v;
+			let gen = this.insert(root.ptr, key, root.ptr, canvas);
+			while(true) {
+				let result = await gen.next();
+				if(result.done) {
+					root = result.value!.v;
+					break;
+				}
+				yield;
+			}
 		}
 
 		root.isBlack = true;

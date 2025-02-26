@@ -9,8 +9,8 @@ import { ShallowReactive } from "vue";
 import { lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 
-const gapX = GAP * 4;
-const gapY = LLRbtreeNode.radius;
+export const gapX = LLRbtreeNode.diameter;
+export const gapY = LLRbtreeNode.diameter;
 
 export type PtrLLRbNode = Ptr<ElementLLRbtreeNode> | null;
 
@@ -213,6 +213,28 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		ctx.stroke();
 	}
 
+	async moveToAnimate(canvas: CanvasHandler, x: number, y: number) {
+		const fromX = this.x;
+		const fromY = this.y;
+		return new Promise<void>((resolve) => {
+			let t = 0;
+			const run = () => {
+				t = Math.min(t + 0.05, 1);
+				this.x = lerp(fromX, x, t);
+				this.y = lerp(fromY, y, t);
+				this.parentNode?.draw(canvas.ctx);
+				canvas.redraw();
+				if(t >= 1) {
+					resolve();
+					return;
+				}
+				window.requestAnimationFrame(run);
+			}
+
+			window.requestAnimationFrame(run);
+		})
+	}
+
 	async rearrangeTree(canvas: CanvasHandler, root?: ElementLLRbtreeNode) {
 		if(root === undefined) {
 			root = this;
@@ -257,26 +279,29 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		const diameter = LLRbtreeNode.diameter;
 		const radius = LLRbtreeNode.radius;
 
-		const actualLastLevelLength = levels.pop()?.length || 0;
+		levels.pop();
+
 		const lastLevel = levels.length - 1;
 
 		if(lastLevel < 0) return;
 
 		let locMap = new Map<ElementLLRbtreeNode, Point>();
-		const lastLevelY = root.y + (lastLevel * (diameter + gapY));
-		const lastLevelWidth = (diameter + gapX) * (levels[lastLevel].length + actualLastLevelLength);
-		let lastLevelStartX = (root.x + radius) - ((lastLevelWidth - diameter) / 2);
+		const lastLevelY = root.y + (lastLevel * gapY);
+		const lastLevelWidth = (diameter + gapX) * (levels[lastLevel].length - 1);
+		let lastLevelStartX = root.x - (lastLevelWidth / 2);
 
-		let tempX = 0;
+		locMap.set(levels[lastLevel][0], new Point(lastLevelStartX, lastLevelY));
 
-		for(let i = 0; i < levels[lastLevel].length; i++) {
+		const getx = (node: ElementLLRbtreeNode) => locMap.get(node)?.x || 0;
+
+		for(let i = 1; i < levels[lastLevel].length; i++) {
 			let node = levels[lastLevel][i];
-
-			if(node.lNode !== null || node.rNode !== null) tempX += diameter + gapX;
+			let prev = levels[lastLevel][i - 1];
 
 			const endPoint = new Point(
-				lastLevelStartX + ((diameter + gapX) * i) + tempX, lastLevelY
+				getx(prev) + diameter + gapX, lastLevelY
 			);
+
 			locMap.set(node, endPoint);
 		}
 
@@ -290,8 +315,8 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 					const leftX = locMap.get(leftChild)?.x || 0;
 
 					let endPoint = new Point(
-						(leftX + diameter + gapX),
-						root.y + (i * (radius + gapY))
+						leftX,
+						root.y + (i * gapY)
 					);
 
 					if(node.rNode) {
@@ -313,8 +338,8 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 
 			if(node.lNode) {
 				let endPoint = new Point(
-					nodeLoc.x - radius - (gapX / 2),
-					nodeLoc.y + diameter + gapY
+					nodeLoc.x - radius,
+					nodeLoc.y + gapY
 				);
 
 				locMap.set(node.lNode.v, endPoint);
@@ -322,8 +347,8 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 
 			if(node.rNode) {
 				let endPoint = new Point(
-					nodeLoc.x + radius + (gapX / 2),
-					nodeLoc.y + diameter + gapY
+					nodeLoc.x + radius,
+					nodeLoc.y + gapY
 				);
 
 				locMap.set(node.rNode.v, endPoint);
