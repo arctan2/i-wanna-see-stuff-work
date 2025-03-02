@@ -44,6 +44,9 @@ import SearchBptreeComp from "../bptree/components/search-bptree-comp.vue";
 import SearchBtree from "../btree/search-btree.ts";
 import SearchBtreeComp from "../btree/components/search-btree-comp.vue";
 
+import SearchLLRbtree from "../llrbtree/search-llrbtree.ts";
+import SearchLLRbtreeComp from "../llrbtree/components/search-llrbtree-comp.vue";
+
 import { ProgressState } from "../algorithm-handler.ts";
 
 type ComponentMap = { [_:string]: any };
@@ -56,19 +59,24 @@ const componentMap: ComponentMap = {
 	[Kruskal.constructor.name]: KruskalComp,
 	[BellmanFord.constructor.name]: BellmanFordComp,
 	[Astar.constructor.name]: AstarComp,
+
 	[DijkstraAdjMatrix.constructor.name]: null,
 	[BfsAdjMatrix.constructor.name]: null,
 	[DfsAdjMatrix.constructor.name]: null,
 	[AstarAdjMatrix.constructor.name]: null,
 	[Maze.constructor.name]: null,
+
 	[InsertBtree.constructor.name]: null,
 	[DeleteBtree.constructor.name]: null,
 	[SearchBtree.constructor.name]: SearchBtreeComp,
+
 	[InsertBptree.constructor.name]: null,
 	[DeleteBptree.constructor.name]: null,
 	[SearchBptree.constructor.name]: SearchBptreeComp,
+
 	[InsertLLRbtree.constructor.name]: null,
 	[DeleteLLRbtree.constructor.name]: null,
+	[SearchLLRbtree.constructor.name]: SearchLLRbtreeComp,
 };
 
 const isPlaying = ref(isAutoplay.value);

@@ -15,7 +15,8 @@ import IconUEdge from "./assets/vue-icon-wrappers/u-edge.vue";
 import IconGNode from "./assets/vue-icon-wrappers/g-node.vue";
 import IconMatrix from "./assets/vue-icon-wrappers/matrix.vue";
 import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node-icon.vue";
-import IconLLRbtreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
+import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
+import IconLLRbtreeNode from "./assets/vue-icon-wrappers/llrbtree-node.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -25,7 +26,7 @@ const _errorPopup = reactive({
 
 export const curToolIdx = shallowRef<number>(-1);
 export const isRetainTool = shallowRef<boolean>(false);
-export const isAutoplay = shallowRef<boolean>(false);
+export const isAutoplay = shallowRef<boolean>(true);
 
 export const isAutoRearrangeBtree = ref<boolean>(false);
 
@@ -91,8 +92,8 @@ export const ToolList: ToolType[] = [
 	{ name: "u-edge", toolClass: ToolUEdge, icon: IconUEdge },
 	{ name: "d-edge", toolClass: ToolDEdge, icon: IconDEdge },
 	{ name: "adj-mat", toolClass: ToolAdjMatrix, icon: IconMatrix },
-	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
-	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconLLRbtreeNode },
 	{ name: "llrbtree-node", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
+	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
+	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
 ];
 

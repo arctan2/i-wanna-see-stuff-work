@@ -71,18 +71,20 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 	pointerDy: number = -1;
 	pointerDx: number = -1;
 
-	dfsClean(node: PtrLLRbNode) {
+	dfsClean(node: ElementLLRbtreeNode | null) {
 		if(!node) {
 			return;
 		}
-
-		const n = (node as Ptr<ElementLLRbtreeNode>).v;
-
-		if(n.constructor.name !== ElementLLRbtreeNode.name) {
-			return;
+		
+		if(node.lNode) {
+			this.dfsClean(node.lNode.v);
 		}
 
-		n.resetStyle();
+		if(node.rNode) {
+			this.dfsClean(node.rNode.v);
+		}
+
+		node.resetStyle();
 	}
 
 	isLeaf(): boolean {
@@ -123,7 +125,7 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		}
 
 		if(root !== null) {
-			this.dfsClean(root.ptr);
+			this.dfsClean(root);
 		}
 		canvas.redraw();
 	}
@@ -291,145 +293,6 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		while(root.parentNode !== null) {
 			root = root?.parentNode;
 		}
-
-		// let levels = [];
-		// let queue = [root];
-
-		// let count = 0;
-		// let temp = [];
-
-		// while(queue.length > 0) {
-		// 	if(count === 0) {
-		// 		count = queue.length;
-		// 	}
-
-		// 	count--;
-
-		// 	const node: ElementLLRbtreeNode = queue.pop() as ElementLLRbtreeNode;
-
-		// 	if(node.lNode) {
-		// 		queue.unshift(node.lNode.v);
-		// 	}
-
-		// 	if(node.rNode) {
-		// 		queue.unshift(node.rNode.v);
-		// 	}
-
-		// 	temp.push(node);
-
-		// 	if(count === 0) {
-		// 		levels.push(temp);
-		// 		temp = [];
-		// 	}
-		// }
-
-
-		// const diameter = LLRbtreeNode.diameter;
-		// const radius = LLRbtreeNode.radius;
-
-		// levels.pop();
-
-		// const lastLevel = levels.length - 1;
-
-		// if(lastLevel < 0) return;
-
-		// let locMap = new Map<ElementLLRbtreeNode, Point>();
-		// const lastLevelY = root.y + (lastLevel * gapY);
-		// const lastLevelWidth = (diameter + gapX) * (levels[lastLevel].length - 1);
-		// let lastLevelStartX = root.x - (lastLevelWidth / 2);
-
-		// locMap.set(levels[lastLevel][0], new Point(lastLevelStartX, lastLevelY));
-
-		// const getx = (node: ElementLLRbtreeNode) => locMap.get(node)?.x || 0;
-
-		// for(let i = 1; i < levels[lastLevel].length; i++) {
-		// 	let node = levels[lastLevel][i];
-		// 	let prev = levels[lastLevel][i - 1];
-
-		// 	const endPoint = new Point(
-		// 		getx(prev) + diameter + gapX, lastLevelY
-		// 	);
-
-		// 	locMap.set(node, endPoint);
-		// }
-
-		// for(let i = lastLevel - 1; i >= 0; i--) {
-		// 	let level = levels[i];
-		// 	let calcLater = [];
-		// 	for(let j = 0; j < level.length; j++) {
-		// 		let node = level[j];
-
-		// 		if(node.lNode) {
-		// 			const leftChild = node.lNode.v;
-		// 			const leftX = locMap.get(leftChild)?.x || 0;
-
-		// 			let endPoint = new Point(
-		// 				leftX,
-		// 				root.y + (i * gapY)
-		// 			);
-
-		// 			if(node.rNode) {
-		// 				const rightChild = node.rNode.v;
-		// 				const rightX = (locMap.get(rightChild)?.x || 0);
-		// 				endPoint.x = (leftX + rightX) / 2;
-		// 			}
-		// 			locMap.set(node, endPoint);
-		// 		} else if(i < lastLevel) {
-		// 			if(j >= 2) {
-		// 				const diff = level[j - 1].x - level[j - 2].x;
-		// 				locMap.set(node, new Point(level[j - 1].x + diff, root.y + (i * gapY)));
-		// 			} else {
-		// 				calcLater.push({ node, j })
-		// 			}
-		// 		}
-		// 	}
-
-		// 	for(let { node, j } of calcLater) {
-		// 		if(j === 0) {
-		// 			const next = level[j + 1];
-		// 			let diff = gapX + radius;
-		// 			if(level.length >= 3) {
-		// 				diff = level[j + 2].x - next.x;
-		// 			}
-		// 			locMap.set(node, new Point(next.x - diff, root.y + (i * gapY)));
-		// 		} else {
-		// 			const prev = level[j - 1];
-
-		// 			if(level.length === 2) {
-		// 				locMap.set(node, new Point(prev.x + gapX + radius, root.y + (i * gapY)));
-		// 			} else {
-		// 				const x = ((level[j + 1].x + prev.x) / 2) + gapX + diameter;
-		// 				locMap.set(node, new Point(x, root.y + (i * gapY)));
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		// for(const node of levels[lastLevel]) {
-		// 	const nodeLoc = locMap.get(node);
-
-		// 	if(!nodeLoc) {
-		// 		continue;
-		// 	}
-
-		// 	if(node.lNode) {
-		// 		let endPoint = new Point(
-		// 			nodeLoc.x - radius,
-		// 			nodeLoc.y + gapY
-		// 		);
-
-		// 		locMap.set(node.lNode.v, endPoint);
-		// 	}
-
-		// 	if(node.rNode) {
-		// 		let endPoint = new Point(
-		// 			nodeLoc.x + radius,
-		// 			nodeLoc.y + gapY
-		// 		);
-
-		// 		locMap.set(node.rNode.v, endPoint);
-		// 	}
-		// }
 
 		const locMap = getNewCoords(root);
 

@@ -11,6 +11,7 @@ export function isRed(h: PtrLLRbNode): boolean {
 
 enum Color {
 	toRotate = "#9000ff",
+	flippingColors = "#4287f5",
 }
 
 export async function *rotateLeft(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
@@ -118,18 +119,32 @@ export async function *rotateRight(h: ElementLLRbtreeNode, canvas: CanvasHandler
 	return x.ptr;
 }
 
-export function flip(h: ElementLLRbtreeNode) {
+export function* flip(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
+	const toFlip = [h, h.lNode!.v, h.rNode!.v];
+
+	for(const n of toFlip) {
+		n.bg = Color.flippingColors;
+		n.paint(canvas.ctx);
+		yield;
+	}
+
 	h.isBlack = !h.isBlack;
 	let l = h.lNode!.v;
 	let r = h.rNode!.v;
 	l.isBlack = !l.isBlack;
 	r.isBlack = !r.isBlack;
+
+	for(const n of toFlip) {
+		n.resetStyle();
+		n.paint(canvas.ctx);
+	}
+	yield;
 }
 
 export async function *moveRedLeft(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
-	flip(h.v);
+	for(const _ of flip(h.v, canvas)) yield;
 	if(isRed(h.v.rNode!.v.lNode)) {
 		let gen = rotateRight((h.v.rNode as Ptr<ElementLLRbtreeNode>).v, canvas);
 		while(true) {
@@ -150,7 +165,7 @@ export async function *moveRedLeft(h: PtrLLRbNode, canvas: CanvasHandler) {
 			}
 			yield;
 		}
-		flip(h!.v);
+		for(const _ of flip(h!.v, canvas)) yield;
 	}
 	return h;
 }
@@ -158,7 +173,7 @@ export async function *moveRedLeft(h: PtrLLRbNode, canvas: CanvasHandler) {
 export async function *moveRedRight(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
-	flip(h.v);
+	for(const _ of flip(h.v, canvas)) yield;
 	if(isRed((h.v.lNode as Ptr<ElementLLRbtreeNode>).v.lNode)) {
 		let gen = rotateRight(h.v, canvas);
 		while(true) {
@@ -169,7 +184,7 @@ export async function *moveRedRight(h: PtrLLRbNode, canvas: CanvasHandler) {
 			}
 			yield;
 		}
-		flip(h.v);
+		for(const _ of flip(h.v, canvas)) yield;
 	}
 	return h;
 }
@@ -202,7 +217,7 @@ export async function *fixUp(h: PtrLLRbNode, canvas: CanvasHandler) {
 	}
 
 	if(h && isRed(h.v.lNode) && isRed(h.v.rNode)) {
-		flip(h.v);
+		for(const _ of flip(h.v, canvas)) yield;
 	}
 
 	return h;

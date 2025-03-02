@@ -113,7 +113,7 @@ class InsertLLRbtree extends AlgorithmHandler {
 		}
 
 		if(h && isRed(h.v.lNode) && isRed(h.v.rNode)) {
-			flip(h.v);
+			for(const _ of flip(h.v, canvas)) yield;
 		}
 
 		return h;

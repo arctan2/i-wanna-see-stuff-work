@@ -34,33 +34,30 @@ class SearchLLRbtree extends AlgorithmHandler {
 		let cur = root;
 
 		while(true) {
-			let i = 0;
-
 			for(const _ of cur.animateNodeBg(canvas, Color.traverse)) yield;
 
-			while(i < cur.curKeyCount.value && key > cur.keys.v.arr[i]) {
-				for(const _ of cur.animateCellBg(canvas, i, Color.traverse)) yield;
-				i++;
+			if(cur.key.value === key) {
+				cur.bg = Color.found;
+				cur.draw(canvas.ctx);
+				return;
 			}
 
-			if(i < cur.curKeyCount.value && key === cur.keys.v.arr[i]) {
-				if(cur.isLeaf.value) {
-					cur.keysBg[i] = Color.found;
-					cur.drawCell(canvas.ctx, i);
-					return;
-				}
-				i++;
-			}
-
-			if(cur.isLeaf.value) {
+			if(cur.isLeaf()) {
 				setErrorPopupText(`Key "${key}" not found.`);
 				return;
 			}
 
-			cur.drawLineToChild(canvas.ctx, i, Color.traverse);
+			let to: "l" | "r";
+			if(key < (cur.key.value as number)) {
+				to = "l";
+			} else {
+				to = "r";
+			}
+
+			cur.drawLineToChild(canvas.ctx, to, Color.traverse);
 			yield;
-			cur.drawLineToChild(canvas.ctx, i);
-			cur = (cur.children.v.arr[i] as Ptr<ElementLLRbtreeNode>).v;
+
+			cur = (((to === "l") ? cur.lNode : cur.rNode) as Ptr<ElementLLRbtreeNode>).v;
 		}
 	}
 

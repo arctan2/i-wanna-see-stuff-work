@@ -73,7 +73,7 @@ class SearchBtree extends AlgorithmHandler {
 
 			cur.drawLineToChild(canvas.ctx, i, Color.traverse);
 			yield;
-			cur.drawLineToChild(canvas.ctx, i);
+			
 			cur = (cur.children.v.arr[i] as Ptr<ElementBtreeNode>).v;
 		}
 	}
