@@ -115,5 +115,5 @@ export class LLRbtreeNode {
 }
 
 export const gapX = LLRbtreeNode.diameter;
-export const gapY = LLRbtreeNode.diameter;
+export const gapY = LLRbtreeNode.diameter + (LLRbtreeNode.radius / 2);
 

@@ -246,14 +246,14 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		if(this.lNode) {
 			return new Point(this.lNode.v.x, this.lNode.v.y);
 		}
-		return new Point(this.x - LLRbtreeNode.radius, this.y + gapY);
+		return new Point(this.x - gapX, this.y + gapY);
 	}
 
 	getRightChildPos() {
 		if(this.rNode) {
 			return new Point(this.rNode.v.x, this.rNode.v.y);
 		}
-		return new Point(this.x + LLRbtreeNode.radius, this.y + gapY);
+		return new Point(this.x + gapX, this.y + gapY);
 	}
 
 	async moveToAnimate(canvas: CanvasHandler, x: number, y: number) {

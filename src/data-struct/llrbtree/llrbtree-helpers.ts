@@ -60,6 +60,7 @@ export async function *rotateLeft(h: ElementLLRbtreeNode, canvas: CanvasHandler)
 
 	for(const n of toRotate) {
 		n?.resetStyle();
+		n?.draw(canvas.ctx);
 	}
 
 	return x.ptr;
@@ -72,7 +73,7 @@ export async function *rotateRight(h: ElementLLRbtreeNode, canvas: CanvasHandler
 		throw("rotating a black link");
 	}
 
-	const toRotate = [h, x, x.lNode?.v];
+	const toRotate = [h, x, x.rNode?.v];
 
 	for(const n of toRotate) {
 		if(n) {
@@ -92,7 +93,7 @@ export async function *rotateRight(h: ElementLLRbtreeNode, canvas: CanvasHandler
 	let hRightKaLeft;
 
 	if(h.rNode) {
-		hRightKaLeft = h.rNode.v.getRightChildPos();
+		hRightKaLeft = h.rNode.v.getLeftChildPos();
 	}
 
 	x.rNode = h.ptr;
@@ -102,7 +103,7 @@ export async function *rotateRight(h: ElementLLRbtreeNode, canvas: CanvasHandler
 	await Promise.all([
 		x.moveToAnimate(canvas, h.x, h.y),
 		h.moveToAnimate(canvas, prevHRightPos.x, prevHRightPos.y),
-		h.lNode?.v.moveToAnimate(canvas, hRightKaLeft?.x || 0, hRightKaLeft?.y || 0)
+		h.rNode?.v.moveToAnimate(canvas, hRightKaLeft?.x || 0, hRightKaLeft?.y || 0)
 	]);
 	yield;
 
@@ -111,6 +112,7 @@ export async function *rotateRight(h: ElementLLRbtreeNode, canvas: CanvasHandler
 
 	for(const n of toRotate) {
 		n?.resetStyle();
+		n?.draw(canvas.ctx);
 	}
 
 	return x.ptr;

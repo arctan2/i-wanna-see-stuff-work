@@ -1,6 +1,6 @@
 import { Point } from "../geometry";
 import { ElementLLRbtreeNode, PtrLLRbNode } from "./el-llrbtree-node";
-import { LLRbtreeNode } from "./element-types/node";
+import { LLRbtreeNode, gapX, gapY } from "./element-types/node";
 
 let prevNodes = new Map<number, ElementLLRbtreeNode>;
 let leftNeighbors = new Map<ElementLLRbtreeNode, ElementLLRbtreeNode>;
@@ -24,6 +24,8 @@ export function getNewCoords(root: ElementLLRbtreeNode) {
 	return adjustedLocs;
 }
 
+const MEAN_NODE_SIZE = LLRbtreeNode.diameter;
+const SUBTREE_SEP = LLRbtreeNode.radius;
 
 function positionTree(node: ElementLLRbtreeNode) {
 	firstWalk(node, 0);
@@ -42,7 +44,7 @@ function firstWalk(node: ElementLLRbtreeNode, level: number) {
 	if(node.isLeaf() || level === MAX_DEPTH) {
 		const leftSibling = node.getLeftSibling();
 		if(leftSibling !== null) {
-			prelims.set(node, prelim(leftSibling) + LLRbtreeNode.diameter + meanNodeSize(leftSibling, node));
+			prelims.set(node, prelim(leftSibling) + gapX + MEAN_NODE_SIZE);
 		} else {
 			prelims.set(node, 0);
 		}
@@ -62,7 +64,7 @@ function firstWalk(node: ElementLLRbtreeNode, level: number) {
 		const leftSibling = node.getLeftSibling();
 
 		if(leftSibling !== null) {
-			prelims.set(node, prelim(leftSibling) + LLRbtreeNode.diameter + meanNodeSize(leftSibling, node));
+			prelims.set(node, prelim(leftSibling) + gapX + MEAN_NODE_SIZE);
 			modifiers.set(node, prelim(node) - mid);
 			apportion(node);
 		} else {
@@ -74,7 +76,7 @@ function firstWalk(node: ElementLLRbtreeNode, level: number) {
 function secondWalk(node: ElementLLRbtreeNode, level: number, modSum: number) {
 	if(level <= MAX_DEPTH) {
 		const xTemp = topAdjustment.x + prelim(node) + modSum;
-		const yTemp = topAdjustment.y + (level * (LLRbtreeNode.diameter + (LLRbtreeNode.radius / 2)));
+		const yTemp = topAdjustment.y + (level * gapY);
 
 		adjustedLocs.set(node, new Point(xTemp, yTemp));
 
@@ -109,7 +111,7 @@ function apportion(node: ElementLLRbtreeNode) {
 			leftModSum += modifier(ancestorNeighbor);
 		}
 
-		let moveDistance = prelim(neighbor) + leftModSum + LLRbtreeNode.radius + meanNodeSize(leftMost.v, neighbor)
+		let moveDistance = prelim(neighbor) + leftModSum + SUBTREE_SEP + MEAN_NODE_SIZE
 							- prelim(leftMost.v) - rightModSum;
 
 		if(moveDistance > 0) {
@@ -193,6 +195,3 @@ function getLeftNeighbor(node: ElementLLRbtreeNode | null): ElementLLRbtreeNode 
 	return leftNeighbors.get(node) || null;
 }
 
-function meanNodeSize(_left: ElementLLRbtreeNode | null, _right: ElementLLRbtreeNode | null): number {
-	return LLRbtreeNode.diameter;
-}

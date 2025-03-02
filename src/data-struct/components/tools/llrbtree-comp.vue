@@ -99,6 +99,10 @@ function searchKey() {
 async function iter() {
 	if(from.value === "" || to.value === "" || step.value === "") return;
 
+	if(step.value === 0) {
+		step.value = from.value <= to.value ? 1 : -1;
+	} 
+
 	while(inserterState.node!.parentNode !== null) {
 		inserterState.node = inserterState.node!.parentNode;
 	}
@@ -107,7 +111,7 @@ async function iter() {
 		return;
 	}
 
-	if(inserterState.curKey >= to.value) {
+	if((step.value > 0 && inserterState.curKey >= to.value) || (step.value < 0 && inserterState.curKey <= to.value)) {
 		InsertLLRbtree.forceStop(playground.canvas);
 		return;
 	}
