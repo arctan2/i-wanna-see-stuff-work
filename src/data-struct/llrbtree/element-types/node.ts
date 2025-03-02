@@ -114,3 +114,6 @@ export class LLRbtreeNode {
 	}
 }
 
+export const gapX = LLRbtreeNode.diameter;
+export const gapY = LLRbtreeNode.diameter;
+

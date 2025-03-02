@@ -9,11 +9,25 @@ export function isRed(h: PtrLLRbNode): boolean {
 	return !h.v.isBlack;
 }
 
-export function *rotateLeft(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
+enum Color {
+	toRotate = "#9000ff",
+}
+
+export async function *rotateLeft(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
 	let x = h.rNode!.v;
 	x.parentNode = h.parentNode;
 	if(x.isBlack) {
 		throw("rotating black link");
+	}
+
+	const toRotate = [h, x, x.lNode?.v];
+
+	for(const n of toRotate) {
+		if(n) {
+			n.bg = Color.toRotate;
+			n.paint(canvas.ctx);
+			yield;
+		}
 	}
 
 	h.rNode = x.lNode;
@@ -22,27 +36,50 @@ export function *rotateLeft(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
 		h.rNode.v.parentNode = h;
 	}
 
-	x.y = h.y;
-	x.x = h.x;
+	let prevHLeftPos = h.getLeftChildPos();
+	let hLeftKaRight;
+
+	if(h.lNode) {
+		hLeftKaRight = h.lNode.v.getRightChildPos();
+	}
 
 	x.lNode = h.ptr;
 
 	h.parentNode = x;
 
-	canvas.redraw();
-	console.log("rotlef");
+	await Promise.all([
+		x.moveToAnimate(canvas, h.x, h.y),
+		h.moveToAnimate(canvas, prevHLeftPos.x, prevHLeftPos.y),
+		h.rNode?.v.moveToAnimate(canvas, hLeftKaRight?.x || 0, hLeftKaRight?.y || 0)
+	]);
 	yield;
+
 
 	x.isBlack = h.isBlack;
 	h.isBlack = false;
+
+	for(const n of toRotate) {
+		n?.resetStyle();
+	}
+
 	return x.ptr;
 }
 
-export function rotateRight(h: ElementLLRbtreeNode): PtrLLRbNode {
+export async function *rotateRight(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
 	let x = h.lNode!.v;
 	x.parentNode = h.parentNode;
 	if(x.isBlack) {
 		throw("rotating a black link");
+	}
+
+	const toRotate = [h, x, x.lNode?.v];
+
+	for(const n of toRotate) {
+		if(n) {
+			n.bg = Color.toRotate;
+			n.paint(canvas.ctx);
+			yield;
+		}
 	}
 
 	h.lNode = x.rNode;
@@ -51,15 +88,31 @@ export function rotateRight(h: ElementLLRbtreeNode): PtrLLRbNode {
 		h.lNode.v.parentNode = h;
 	}
 
-	x.y = h.y;
-	x.x = h.x;
+	let prevHRightPos = h.getRightChildPos();
+	let hRightKaLeft;
+
+	if(h.rNode) {
+		hRightKaLeft = h.rNode.v.getRightChildPos();
+	}
 
 	x.rNode = h.ptr;
 
 	h.parentNode = x;
 
+	await Promise.all([
+		x.moveToAnimate(canvas, h.x, h.y),
+		h.moveToAnimate(canvas, prevHRightPos.x, prevHRightPos.y),
+		h.lNode?.v.moveToAnimate(canvas, hRightKaLeft?.x || 0, hRightKaLeft?.y || 0)
+	]);
+	yield;
+
 	x.isBlack = h.isBlack;
 	h.isBlack = false;
+
+	for(const n of toRotate) {
+		n?.resetStyle();
+	}
+
 	return x.ptr;
 }
 
@@ -71,36 +124,79 @@ export function flip(h: ElementLLRbtreeNode) {
 	r.isBlack = !r.isBlack;
 }
 
-export function moveRedLeft(h: PtrLLRbNode): PtrLLRbNode {
+export async function *moveRedLeft(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
 	flip(h.v);
 	if(isRed(h.v.rNode!.v.lNode)) {
-		h.v.rNode = rotateRight((h.v.rNode as Ptr<ElementLLRbtreeNode>).v)
-		h = rotateLeft(h.v);
+		let gen = rotateRight((h.v.rNode as Ptr<ElementLLRbtreeNode>).v, canvas);
+		while(true) {
+			let result = await gen.next();
+			if(result.done) {
+				h.v.rNode = result.value;
+				break;
+			}
+			yield;
+		}
+
+		gen = rotateLeft(h.v, canvas);
+		while(true) {
+			let result = await gen.next();
+			if(result.done) {
+				h = result.value;
+				break;
+			}
+			yield;
+		}
 		flip(h!.v);
 	}
 	return h;
 }
 
-export function moveRedRight(h: Ptr<ElementLLRbtreeNode>): PtrLLRbNode {
+export async function *moveRedRight(h: PtrLLRbNode, canvas: CanvasHandler) {
+	if(h === null) return h;
+
 	flip(h.v);
 	if(isRed((h.v.lNode as Ptr<ElementLLRbtreeNode>).v.lNode)) {
-		h = rotateRight(h.v) as Ptr<ElementLLRbtreeNode>;
+		let gen = rotateRight(h.v, canvas);
+		while(true) {
+			let result = await gen.next();
+			if(result.done) {
+				h = result.value;
+				break;
+			}
+			yield;
+		}
 		flip(h.v);
 	}
 	return h;
 }
 
-export function fixUp(h: PtrLLRbNode): PtrLLRbNode {
+export async function *fixUp(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
 	if(isRed(h.v.rNode)) {
-		h = rotateLeft(h.v)
+		let gen = rotateLeft(h.v, canvas);
+		while(true) {
+			let result = await gen.next();
+			if(result.done) {
+				h = result.value;
+				break;
+			}
+			yield;
+		}
 	}
 
 	if(h && isRed(h.v.lNode) && isRed((h.v.lNode as Ptr<ElementLLRbtreeNode>).v.lNode)) {
-		h = rotateRight(h.v)
+		let gen = rotateRight(h.v, canvas);
+		while(true) {
+			let result = await gen.next();
+			if(result.done) {
+				h = result.value;
+				break;
+			}
+			yield;
+		}
 	}
 
 	if(h && isRed(h.v.lNode) && isRed(h.v.rNode)) {

@@ -25,7 +25,7 @@ const _errorPopup = reactive({
 
 export const curToolIdx = shallowRef<number>(-1);
 export const isRetainTool = shallowRef<boolean>(false);
-export const isAutoplay = shallowRef<boolean>(true);
+export const isAutoplay = shallowRef<boolean>(false);
 
 export const isAutoRearrangeBtree = ref<boolean>(false);
 

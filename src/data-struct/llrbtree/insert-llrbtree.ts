@@ -1,9 +1,7 @@
 import { AlgorithmHandler } from "../algorithm-handler.ts";
-import { GAP } from "../canvas.ts";
 import { setInfoPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
-import { ElementLLRbtreeNode, PtrLLRbNode, gapX, gapY } from "./el-llrbtree-node.ts";
-import { LLRbtreeNode } from "./element-types/node.ts";
+import { ElementLLRbtreeNode, PtrLLRbNode } from "./el-llrbtree-node.ts";
 import { flip, isRed, rotateLeft, rotateRight } from "./llrbtree-helpers.ts";
 
 enum Color {
@@ -35,21 +33,23 @@ class InsertLLRbtree extends AlgorithmHandler {
 	async *insert(h: PtrLLRbNode, key: number, parent: PtrLLRbNode, canvas: CanvasHandler) {
 		if(h === null) {
 			for(const _ of parent!.v.animateNodeBg(canvas, Color.insertTo)) yield;
-			const isLeft = parent!.v.lNode === null;
 			const p = parent!.v;
+			const isLeft = key < (p.key.value || 0);
 
-			let x = p.x;
-			let y = p.y + gapY;
+			const n = new ElementLLRbtreeNode(p.x, p.y, parent === null ? null : parent.v, key);
 
-			// if(isLeft) {
-			// 	x = p.x - LLRbtreeNode.radius - (gapX / 2);
-			// } else {
-			// 	x = p.x + LLRbtreeNode.radius + (gapX / 2);
-			// }
+			let pos;
 
-			const n = new ElementLLRbtreeNode(x, y, parent === null ? null : parent.v, key);
+			if(isLeft) {
+				pos = p.getLeftChildPos();
+				p.lNode = n.ptr;
+			} else {
+				pos = p.getRightChildPos();
+				p.rNode = n.ptr;
+			}
+
 			canvas.addElements(n);
-			canvas.redraw();
+			await n.moveToAnimate(canvas, pos.x, pos.y);
 			yield;
 			return n.ptr;
 		}
@@ -91,7 +91,7 @@ class InsertLLRbtree extends AlgorithmHandler {
 		if(isRed(h.v.rNode) && !isRed(h.v.lNode)) {
 			let gen = rotateLeft(h.v, canvas);
 			while(true) {
-				let result = gen.next();
+				let result = await gen.next();
 				if(result.done) {
 					h = result.value;
 					break;
@@ -101,7 +101,15 @@ class InsertLLRbtree extends AlgorithmHandler {
 		}
 
 		if(h && isRed(h.v.lNode) && isRed(h.v.lNode!.v.lNode)) {
-			h = rotateRight(h.v);
+			let gen = rotateRight(h.v, canvas);;
+			while(true) {
+				let result = await gen.next();
+				if(result.done) {
+					h = result.value;
+					break;
+				}
+				yield;
+			}
 		}
 
 		if(h && isRed(h.v.lNode) && isRed(h.v.rNode)) {
