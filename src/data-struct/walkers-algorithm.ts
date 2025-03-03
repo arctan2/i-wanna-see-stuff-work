@@ -1,16 +1,15 @@
-import { GAP } from "../canvas";
-import { Point } from "../geometry";
-import { AllocDisplay, Ptr } from "../memory-allocator/allocator";
-import { gapX, gapY } from "./element-types/node";
+import { GAP } from "./canvas";
+import { Point } from "./geometry";
+import { AllocDisplay, Ptr } from "./memory-allocator/allocator";
 
-interface WalkersNode extends AllocDisplay {
+export interface WalkersNode extends AllocDisplay {
 	x: number;
 	y: number;
 
 	getLeftSibling: () => WalkersNode | null;
 	getRightSibling: () => WalkersNode | null;
 	getFirstChild: () => WalkersNode | null;
-	hasRightSibling: () => boolean;
+
 	isLeaf: () => boolean;
 	ptr: Ptr<WalkersNode>;
 	parentNode: WalkersNode | null;
@@ -25,8 +24,13 @@ let adjustedLocs = new Map<WalkersNode, Point>;
 let topAdjustment = new Point(0, 0);
 
 const MAX_DEPTH = Infinity;
+const SUBTREE_SEP = GAP * 4;
+let gapX = 0;
+let gapY = 0;
 
-export function getNewCoords(root: WalkersNode) {
+export function getNewCoords(root: WalkersNode, gx: number, gy: number) {
+	gapX = gx;
+	gapY = gy;
 	prevNodes = new Map<number, WalkersNode>;
 	leftNeighbors = new Map<WalkersNode, WalkersNode>;
 	prelims = new Map<WalkersNode, number>;
@@ -38,8 +42,6 @@ export function getNewCoords(root: WalkersNode) {
 
 	return adjustedLocs;
 }
-
-const SUBTREE_SEP = GAP * 4;
 
 function positionTree(node: WalkersNode) {
 	firstWalk(node, 0);
@@ -68,8 +70,10 @@ function firstWalk(node: WalkersNode, level: number) {
 
 		firstWalk(leftMost, level + 1);
 
-		while(rightMost.hasRightSibling()) {
-			rightMost = rightMost.getRightSibling() as WalkersNode;
+		while(true) {
+			const rm = rightMost.getRightSibling();
+			if(rm === null) break;
+			rightMost = rm;
 			firstWalk(rightMost, level + 1);
 		}
 
@@ -172,8 +176,10 @@ function getLeftMost(node: Ptr<WalkersNode> | null, depth: number): Ptr<WalkersN
 
 	let ancestor = node.v.getFirstChild() as WalkersNode;
 	let leftMost = getLeftMost(ancestor.ptr, depth - 1);
-	while(!leftMost && ancestor.hasRightSibling()) {
-		ancestor = ancestor.getRightSibling() as WalkersNode;
+	while(!leftMost) {
+		const r = ancestor.getRightSibling();
+		if(r === null) break;
+		ancestor = r;
 		leftMost = getLeftMost(ancestor.ptr, depth - 1);
 	}
 

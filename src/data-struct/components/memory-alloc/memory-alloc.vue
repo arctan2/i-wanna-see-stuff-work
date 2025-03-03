@@ -89,6 +89,7 @@ const isBottomLayout = ref<boolean>(true);
 	--btree-node: #0095ff;
 	--bptree-node: #00ff91;
 	--llrbtree-node: #ff2626;
+	--trie-node: #c7c7c7;
 }
 
 #memory-alloc{

@@ -2,66 +2,72 @@ import { GAP } from "../canvas";
 import { EventState } from "../handler/event-handler";
 import { CanvasHandler } from "../handler/canvas-handler";
 import { isAutoRearrangeBtree } from "../global";
-import { LLRbtreeNode, gapX, gapY } from "./element-types/node";
+import { TrieNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
-import { ShallowReactive } from "vue";
+import { ShallowRef, ShallowReactive, shallowRef } from "vue";
 import { lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
-import { getNewCoords } from "../walkers-algorithm";
+import { WalkersNode, getNewCoords } from "../walkers-algorithm";
+import { Arrow } from "../linked-list/element-types/arrow";
 
-export type PtrLLRbNode = Ptr<ElementLLRbtreeNode> | null;
-
-export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler, AllocDisplay, Dealloc {
-	ptr: ShallowReactive<Ptr<ElementLLRbtreeNode>>;
+export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDisplay, Dealloc, WalkersNode {
+	ptr: ShallowReactive<Ptr<ElementTrieNode>>;
 
 	pointerEnter(_state: EventState, _canvas: CanvasHandler) {};
 	pointerLeave(_state: EventState, _canvas: CanvasHandler) {};
 
-	parentNode: ElementLLRbtreeNode | null = null;
-	lNode: PtrLLRbNode;
-	rNode: PtrLLRbNode;
+	parentNode: ElementTrieNode | null;
 
-	static Size = Ptr.Size + Ptr.Size;
+	children: ShallowReactive<Array<Ptr<ElementTrieNode> | null>>;
+	isWordEnd: ShallowRef<boolean> = shallowRef(false);
 
-	constructor(x: number, y: number, parent: ElementLLRbtreeNode | null, key: number | "" = "") {
-		super(key);
+	static Size = Ptr.Size + (Ptr.Size * 26);
+
+	constructor(x: number, y: number, parent: ElementTrieNode | null, str: string = "root") {
+		super(str);
 		this.x = x;
 		this.y = y;
 		this.parentNode = parent;
-		this.ptr = allocator.malloc(ElementLLRbtreeNode.Size, this);
-		this.lNode = null;
-		this.rNode = null;
+		this.children = new Array(26).fill(null);
+		this.ptr = allocator.malloc(ElementTrieNode.Size, this);
 	}
 
     toBytes(): Array<string> {
+		let blocks = [];
+		let nullBlock = Null.Bytes;
+
+		for(const child of this.children) {
+			blocks.push(...((child === null) ? nullBlock : child.toBytes()));
+		}
+
 		return [
-			...numberToBytes(this.key.value === "" ? 0 : this.key.value),
-			...numberToBytes(this.isBlack ? 1 : 0),
-			...(this.lNode || new Null).toBytes(),
-			...(this.rNode || new Null).toBytes(),
+			...numberToBytes(this.isWordEnd.value ? 1 : 0),
+			...blocks
 		];
 	}
 
     toString(): string {
-		return ` llrbtree-node { key: ${
-			this.key.value === "" ? "0" : this.key.value
-		}, is_black: ${
-			this.isBlack
-		}, left: ${
-			(this.lNode || new Null).toString()
-		}, right: ${
-			(this.rNode || new Null).toString()
-		} } `
+		let blocks = "";
+		let nullBlock = Null.Hex;
+
+		for(const child of this.children) {
+			blocks += ((child === null) ? nullBlock : child.toString()) + ",";
+		}
+
+		return ` trie-node { is_word_end: ${this.isWordEnd.value}, children: [${blocks}] } `
 	}
 
     toDisplayableBlocks() {
+		let blocks = [];
+		let nullBlock = { ptr: Null.Hex };
+
+		for(const child of this.children) {
+			blocks.push((child === null) ? nullBlock : { ptr: child.toString() }, ",");
+		}
+
 		return [
-			` llrbtree-node { key: ${this.key.value === "" ? "0" : this.key.value}, is_black: ${this.isBlack}, left: `,
-			{ ptr: (this.lNode || new Null).toString() },
-			` right: `,
-			{ ptr: (this.rNode || new Null).toString() },
-			` } `
+			` trie-node { is_word_end: ${this.isWordEnd.value}, children: [`, ...blocks ,`] } `
 		];
 	}
 
@@ -71,54 +77,90 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 	pointerDy: number = -1;
 	pointerDx: number = -1;
 
-	dfsClean(node: ElementLLRbtreeNode | null) {
+	dfsClean(node: ElementTrieNode | null) {
 		if(!node) {
 			return;
-		}
-		
-		if(node.lNode) {
-			this.dfsClean(node.lNode.v);
-		}
-
-		if(node.rNode) {
-			this.dfsClean(node.rNode.v);
 		}
 
 		node.resetStyle();
 	}
 
+	isEmpty() {
+		for(const child of this.children) {
+			if(child !== null) return false;
+		}
+		return true;
+	}
+
 	isLeaf(): boolean {
-		return (this.lNode === null) && (this.rNode === null);
+		return this.isEmpty();
 	}
 
 	getLeftSibling() {
 		if(this.parentNode === null) return null;
-		if(this.parentNode.lNode === this.ptr) return null;
-		return this.parentNode.lNode?.v || null;
+		let children = this.parentNode.children;
+		let prevNonNull = null;
+
+		for(let i = 0; i < children.length; i++) {
+			if(children[i]?.v === this) {
+				break;
+			}
+
+			if(children[i] !== null) {
+				prevNonNull = children[i]?.v as ElementTrieNode || null;
+			}
+		}
+
+		return prevNonNull;
 	}
 
 	getRightSibling() {
 		if(this.parentNode === null) return null;
-		if(this.parentNode.rNode === this.ptr) return null;
-		return this.parentNode.rNode?.v || null;
+		let children = this.parentNode.children;
+
+		let i = 0;
+		while(i < children.length) {
+			if(children[i]?.v === this) {
+				break;
+			}
+			i++;
+		}
+
+		if(i >= children.length) {
+			return null;
+		}
+
+		i++;
+
+		while(i < children.length) {
+			if(children[i] !== null) {
+				break;
+			}
+			i++;
+		}
+
+		if(i >= children.length) {
+			return null;
+		}
+
+		return children[i]?.v as ElementTrieNode || null;
 	}
 
 	getFirstChild() {
-		return (this.lNode || this.rNode)?.v || null;
+		for(const c of this.children) {
+			if(c !== null) {
+				return c.v;
+			}
+		}
+		return null;
 	}
 
 	hasChild() {
 		return !this.isLeaf();
 	}
 
-	hasRightSibling() {
-		if(this.parentNode === null) return false;
-		if(this.parentNode.rNode === this.ptr) return false;
-		return this.parentNode.rNode !== null;
-	}
-
 	resetAllNodesStyle(canvas: CanvasHandler) {
-		let root: ElementLLRbtreeNode | null = this;
+		let root: ElementTrieNode | null = this;
 
 		while(root!.parentNode !== null) {
 			root = root!.parentNode;
@@ -178,7 +220,7 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		if(Math.abs(state.pointerDown.x - state.pointerUp.x) <= GAP && Math.abs(state.pointerDown.y - state.pointerUp.y) <= GAP) {
 			return null;
 		}
-		this.rearrangeTree(canvas, this);
+		this.rearrangeTree(canvas);
 		return null;
 	};
 
@@ -195,8 +237,8 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		return null;
 	}
 
-	doRectifyFor(node: ElementLLRbtreeNode, end: Point) {
-		const r = LLRbtreeNode.radius;
+	doRectifyFor(node: ElementTrieNode, end: Point) {
+		const r = TrieNode.radius;
 		const { x: x0, y: y0 } = node;
 		const { x: x1, y: y1 } = end;
 		const { x: h, y: k } = node;
@@ -224,38 +266,17 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		return { x, y };
 	}
 
-	drawLineToChild(ctx: CanvasRenderingContext2D, childType: "l" | "r", color = "#ffffff") {
-		const to = childType === "l" ? this.lNode : this.rNode;
+	drawLineToChild(ctx: CanvasRenderingContext2D, idx: number, color = "#ffffff") {
+		const to = this.children[idx];
 		if(to === null) {
 			return;
 		}
-
 
 		const child = to.v;
 		const p1 = this.doRectifyFor(child, this) as any;
 		const p2 = this.doRectifyFor(this, child) as any;
 
-		ctx.strokeStyle = color;
-		ctx.beginPath();
-		ctx.lineWidth = 3;
-		ctx.lineTo(p1.x, p1.y);
-		ctx.lineTo(p2.x, p2.y);
-		ctx.stroke();
-	}
-
-	// must call these before setting the child if you need default leaf positions
-	getLeftChildPos() {
-		if(this.lNode) {
-			return new Point(this.lNode.v.x, this.lNode.v.y);
-		}
-		return new Point(this.x - gapX, this.y + gapY);
-	}
-
-	getRightChildPos() {
-		if(this.rNode) {
-			return new Point(this.rNode.v.x, this.rNode.v.y);
-		}
-		return new Point(this.x + gapX, this.y + gapY);
+		Arrow.drawFromTo(ctx, p2, p1, color);
 	}
 
 	async moveToAnimate(canvas: CanvasHandler, x: number, y: number) {
@@ -282,10 +303,10 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 
 	isLeftChild() {
 		if(this.parentNode === null) return false;
-		return this.parentNode.lNode === this.ptr;
+		return false;
 	}
 
-	async rearrangeTree(canvas: CanvasHandler, root?: ElementLLRbtreeNode) {
+	async rearrangeTree(canvas: CanvasHandler, root?: ElementTrieNode) {
 		if(root === undefined) {
 			root = this;
 		}
@@ -294,7 +315,7 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 			root = root?.parentNode;
 		}
 
-		const locMap = getNewCoords(root, gapX, gapY);
+		const locMap = getNewCoords(this, gapX, gapY);
 
 		return new Promise<void>((resolve) => {
 			let t = 0;
@@ -320,14 +341,18 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		this.bg = color;
 		this.draw(canvas.ctx);
 		yield;
-		this.bg = this.defaultBg;
+		this.bg = TrieNode.defaultBg;
 		this.draw(canvas.ctx);
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
 		this.paint(ctx);
-		this.drawLineToChild(ctx, "l");
-		this.drawLineToChild(ctx, "r");
+
+		for(let i = 0; i < this.children.length; i++) {
+			if(this.children[i]) {
+				this.drawLineToChild(ctx, i);
+			}
+		}
 	}
 }
 

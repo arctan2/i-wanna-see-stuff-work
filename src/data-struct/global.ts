@@ -8,6 +8,7 @@ import { ToolAdjMatrix } from "./graph/tool-adjmatrix.ts";
 import { ToolBtreeNode } from "./btree/tool-btree-node.ts";
 import { ToolBptreeNode } from "./bptree/tool-bptree-node.ts";
 import { ToolLLRbtreeNode } from "./llrbtree/tool-llrbtree-node.ts";
+import { ToolTrieNode } from "./trie/tool-trie-node.ts";
 
 import IconLLNode from "./assets/vue-icon-wrappers/ll-node.vue";
 import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
@@ -95,5 +96,6 @@ export const ToolList: ToolType[] = [
 	{ name: "llrbtree-node", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
 	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
 	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
+	{ name: "trie-node", toolClass: ToolTrieNode, icon: IconBptreeNode },
 ];
 

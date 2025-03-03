@@ -154,6 +154,10 @@ function calcBytesInc() {
 	color: var(--llrbtree-node);
 }
 
+.ElementTrieNode.bytes{
+	color: var(--trie-node);
+}
+
 .MapList.bytes, .List.bytes{
 	color: var(--list);
 }

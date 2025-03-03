@@ -38,6 +38,9 @@ import DeleteBptree from "../bptree/delete-bptree.ts";
 import InsertLLRbtree from "../llrbtree/insert-llrbtree.ts";
 import DeleteLLRbtree from "../llrbtree/delete-llrbtree.ts";
 
+import InsertTrie from "../trie/insert-trie.ts";
+import DeleteTrie from "../trie/delete-trie.ts";
+
 import SearchBptree from "../bptree/search-bptree.ts";
 import SearchBptreeComp from "../bptree/components/search-bptree-comp.vue";
 
@@ -46,6 +49,9 @@ import SearchBtreeComp from "../btree/components/search-btree-comp.vue";
 
 import SearchLLRbtree from "../llrbtree/search-llrbtree.ts";
 import SearchLLRbtreeComp from "../llrbtree/components/search-llrbtree-comp.vue";
+
+import SearchTrie from "../trie/search-trie.ts";
+import SearchTrieComp from "../trie/components/search-trie-comp.vue";
 
 import { ProgressState } from "../algorithm-handler.ts";
 
@@ -77,6 +83,10 @@ const componentMap: ComponentMap = {
 	[InsertLLRbtree.constructor.name]: null,
 	[DeleteLLRbtree.constructor.name]: null,
 	[SearchLLRbtree.constructor.name]: SearchLLRbtreeComp,
+
+	[InsertTrie.constructor.name]: null,
+	[DeleteTrie.constructor.name]: null,
+	[SearchTrie.constructor.name]: SearchTrieComp,
 };
 
 const isPlaying = ref(isAutoplay.value);

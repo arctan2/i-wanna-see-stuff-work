@@ -119,6 +119,11 @@ onMounted(() => {
 	color: white;
 }
 
+.ElementTrieNode.simplified{
+	background-color: var(--trie-node);
+	color: black;
+}
+
 .Null.simplified{
 	background-color: var(--null);
 	color: black;

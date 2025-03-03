@@ -7,6 +7,7 @@ import { ElementAdjMatrix } from "../graph/el-adjmatrix";
 import { ElementBtreeNode } from "../btree/el-btree-node";
 import { ElementBptreeNode } from "../bptree/el-bptree-node";
 import { ElementLLRbtreeNode } from "../llrbtree/el-llrbtree-node";
+import { ElementTrieNode } from "../trie/el-trie-node";
 
 import LLNodeComp from "./tools/ll-node.vue";
 import GNodeComp from "./tools/g-node.vue";
@@ -16,6 +17,7 @@ import AdjMatrixComp from "./tools/adjmatrix.vue";
 import BtreeNodeComp from "./tools/btree-comp.vue";
 import BptreeNodeComp from "./tools/bptree-comp.vue";
 import LLRbtreeNodeComp from "./tools/llrbtree-comp.vue";
+import TrieNodeComp from "./tools/trie-comp.vue";
 
 type ComponentMap = { [_:string]: any };
 
@@ -28,5 +30,6 @@ export const componentMap: ComponentMap = {
 	[ElementBtreeNode.name]: BtreeNodeComp,
 	[ElementBptreeNode.name]: BptreeNodeComp,
 	[ElementLLRbtreeNode.name]: LLRbtreeNodeComp,
+	[ElementTrieNode.name]: TrieNodeComp,
 };
 

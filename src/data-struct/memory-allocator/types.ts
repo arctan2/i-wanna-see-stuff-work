@@ -1,9 +1,12 @@
 import { ShallowReactive, ShallowRef, shallowReactive, shallowRef } from "vue";
 import { numberToBytes } from "../utils";
-import allocator, { AllocDisplay, Dealloc, DisplayableBlock, Ptr } from "./allocator";
+import allocator, { AllocDisplay, Dealloc, DisplayableBlock, Null, Ptr } from "./allocator";
 
 export const PrimitiveSize = {
-	Int: 4
+	Int: 4,
+	Bool: 1,
+	Float: 4,
+	Char: 1
 }
 
 export class Chars implements AllocDisplay {
@@ -103,7 +106,7 @@ export class Str implements AllocDisplay, Dealloc {
 	}
 }
 
-export class Arr<T extends AllocDisplay | number> implements AllocDisplay {
+export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay {
 	arr: ShallowReactive<Array<T>>;
 	cap: number;
 
@@ -145,7 +148,7 @@ export class Arr<T extends AllocDisplay | number> implements AllocDisplay {
     toString(): string {
 		let arr = [];
 		for(let a of this.arr) {
-			arr.push(a.toString());
+			arr.push(a === null ? Null.Hex : a.toString());
 		}
 
 		const type = typeof this.arr[0];
@@ -166,7 +169,11 @@ export class Arr<T extends AllocDisplay | number> implements AllocDisplay {
 		const type = typeof this.arr[0];
 		let b = [];
 		for(let a of this.arr) {
-			b.push(type === "number" ? a.toString() : { ptr: a.toString() } , ',');
+			if(a === null) {
+				b.push({ ptr: Null.Hex }, ",");
+			} else {
+				b.push(type === "number" ? a.toString() : { ptr: a.toString() } , ',');
+			}
 		}
 
 		if(type === "number") {
