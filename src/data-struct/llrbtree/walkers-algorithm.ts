@@ -1,22 +1,37 @@
+import { GAP } from "../canvas";
 import { Point } from "../geometry";
-import { ElementLLRbtreeNode, PtrLLRbNode } from "./el-llrbtree-node";
-import { LLRbtreeNode, gapX, gapY } from "./element-types/node";
+import { AllocDisplay, Ptr } from "../memory-allocator/allocator";
+import { gapX, gapY } from "./element-types/node";
 
-let prevNodes = new Map<number, ElementLLRbtreeNode>;
-let leftNeighbors = new Map<ElementLLRbtreeNode, ElementLLRbtreeNode>;
-let prelims = new Map<ElementLLRbtreeNode, number>;
-let modifiers = new Map<ElementLLRbtreeNode, number>;
-let adjustedLocs = new Map<ElementLLRbtreeNode, Point>;
+interface WalkersNode extends AllocDisplay {
+	x: number;
+	y: number;
+
+	getLeftSibling: () => WalkersNode | null;
+	getRightSibling: () => WalkersNode | null;
+	getFirstChild: () => WalkersNode | null;
+	hasRightSibling: () => boolean;
+	isLeaf: () => boolean;
+	ptr: Ptr<WalkersNode>;
+	parentNode: WalkersNode | null;
+	totalWidth: () => number;
+}
+
+let prevNodes = new Map<number, WalkersNode>;
+let leftNeighbors = new Map<WalkersNode, WalkersNode>;
+let prelims = new Map<WalkersNode, number>;
+let modifiers = new Map<WalkersNode, number>;
+let adjustedLocs = new Map<WalkersNode, Point>;
 let topAdjustment = new Point(0, 0);
 
 const MAX_DEPTH = Infinity;
 
-export function getNewCoords(root: ElementLLRbtreeNode) {
-	prevNodes = new Map<number, ElementLLRbtreeNode>;
-	leftNeighbors = new Map<ElementLLRbtreeNode, ElementLLRbtreeNode>;
-	prelims = new Map<ElementLLRbtreeNode, number>;
-	modifiers = new Map<ElementLLRbtreeNode, number>;
-	adjustedLocs = new Map<ElementLLRbtreeNode, Point>;
+export function getNewCoords(root: WalkersNode) {
+	prevNodes = new Map<number, WalkersNode>;
+	leftNeighbors = new Map<WalkersNode, WalkersNode>;
+	prelims = new Map<WalkersNode, number>;
+	modifiers = new Map<WalkersNode, number>;
+	adjustedLocs = new Map<WalkersNode, Point>;
 	topAdjustment = new Point(0, 0);
 
 	positionTree(root);
@@ -24,10 +39,9 @@ export function getNewCoords(root: ElementLLRbtreeNode) {
 	return adjustedLocs;
 }
 
-const MEAN_NODE_SIZE = LLRbtreeNode.diameter;
-const SUBTREE_SEP = LLRbtreeNode.radius;
+const SUBTREE_SEP = GAP * 4;
 
-function positionTree(node: ElementLLRbtreeNode) {
+function positionTree(node: WalkersNode) {
 	firstWalk(node, 0);
 
 	topAdjustment = new Point(node.x - prelim(node), node.y);
@@ -36,7 +50,7 @@ function positionTree(node: ElementLLRbtreeNode) {
 	secondWalk(node, 0, 0);
 }
 
-function firstWalk(node: ElementLLRbtreeNode, level: number) {
+function firstWalk(node: WalkersNode, level: number) {
 	setLeftNeighbor(node, getPrevNodeAtLevel(level));
 	setPrevNodeAtLevel(level, node);
 	modifiers.set(node, 0);
@@ -44,18 +58,18 @@ function firstWalk(node: ElementLLRbtreeNode, level: number) {
 	if(node.isLeaf() || level === MAX_DEPTH) {
 		const leftSibling = node.getLeftSibling();
 		if(leftSibling !== null) {
-			prelims.set(node, prelim(leftSibling) + gapX + MEAN_NODE_SIZE);
+			prelims.set(node, prelim(leftSibling) + gapX + meanNodeSize(leftSibling, node))
 		} else {
 			prelims.set(node, 0);
 		}
 	} else {
-		const leftMost = node.getFirstChild() as ElementLLRbtreeNode;
+		const leftMost = node.getFirstChild() as WalkersNode;
 		let rightMost = leftMost;
 
 		firstWalk(leftMost, level + 1);
 
 		while(rightMost.hasRightSibling()) {
-			rightMost = rightMost.getRightSibling() as ElementLLRbtreeNode;
+			rightMost = rightMost.getRightSibling() as WalkersNode;
 			firstWalk(rightMost, level + 1);
 		}
 
@@ -64,7 +78,7 @@ function firstWalk(node: ElementLLRbtreeNode, level: number) {
 		const leftSibling = node.getLeftSibling();
 
 		if(leftSibling !== null) {
-			prelims.set(node, prelim(leftSibling) + gapX + MEAN_NODE_SIZE);
+			prelims.set(node, prelim(leftSibling) + gapX + meanNodeSize(leftSibling, node));
 			modifiers.set(node, prelim(node) - mid);
 			apportion(node);
 		} else {
@@ -73,7 +87,7 @@ function firstWalk(node: ElementLLRbtreeNode, level: number) {
 	}
 }
 
-function secondWalk(node: ElementLLRbtreeNode, level: number, modSum: number) {
+function secondWalk(node: WalkersNode, level: number, modSum: number) {
 	if(level <= MAX_DEPTH) {
 		const xTemp = topAdjustment.x + prelim(node) + modSum;
 		const yTemp = topAdjustment.y + (level * gapY);
@@ -92,8 +106,8 @@ function secondWalk(node: ElementLLRbtreeNode, level: number, modSum: number) {
 	}
 }
 
-function apportion(node: ElementLLRbtreeNode) {
-	let leftMost: PtrLLRbNode = node.ptr;
+function apportion(node: WalkersNode) {
+	let leftMost: Ptr<WalkersNode> | null = node.ptr;
 	let neighbor = getLeftNeighbor(leftMost?.v || null);
 	let compareDepth = 0;
 
@@ -104,18 +118,18 @@ function apportion(node: ElementLLRbtreeNode) {
 		let ancestorNeighbor = neighbor;
 
 		for(let i = 0; i < compareDepth; i++) {
-			ancestorLeftmost = ancestorLeftmost.parentNode as ElementLLRbtreeNode;
-			ancestorNeighbor = ancestorNeighbor.parentNode as ElementLLRbtreeNode;
+			ancestorLeftmost = ancestorLeftmost.parentNode as WalkersNode;
+			ancestorNeighbor = ancestorNeighbor.parentNode as WalkersNode;
 
 			rightModSum += modifier(ancestorLeftmost);
 			leftModSum += modifier(ancestorNeighbor);
 		}
 
-		let moveDistance = prelim(neighbor) + leftModSum + SUBTREE_SEP + MEAN_NODE_SIZE
+		let moveDistance = prelim(neighbor) + leftModSum + SUBTREE_SEP + meanNodeSize(leftMost.v, neighbor)
 							- prelim(leftMost.v) - rightModSum;
 
 		if(moveDistance > 0) {
-			let tempPtr: null | ElementLLRbtreeNode = node;
+			let tempPtr: null | WalkersNode = node;
 			let leftSiblings = 0;
 
 			while((tempPtr !== null) && (tempPtr !== ancestorNeighbor)) {
@@ -147,7 +161,7 @@ function apportion(node: ElementLLRbtreeNode) {
 	}
 }
 
-function getLeftMost(node: PtrLLRbNode, depth: number): PtrLLRbNode {
+function getLeftMost(node: Ptr<WalkersNode> | null, depth: number): Ptr<WalkersNode> | null {
 	if (depth <= 0) {
 		return node;
 	}
@@ -156,22 +170,22 @@ function getLeftMost(node: PtrLLRbNode, depth: number): PtrLLRbNode {
 		return null;
 	}
 
-	let ancestor = node.v.getFirstChild() as ElementLLRbtreeNode;
+	let ancestor = node.v.getFirstChild() as WalkersNode;
 	let leftMost = getLeftMost(ancestor.ptr, depth - 1);
 	while(!leftMost && ancestor.hasRightSibling()) {
-		ancestor = ancestor.getRightSibling() as ElementLLRbtreeNode;
+		ancestor = ancestor.getRightSibling() as WalkersNode;
 		leftMost = getLeftMost(ancestor.ptr, depth - 1);
 	}
 
 	return leftMost;
 }
 
-function prelim(node: ElementLLRbtreeNode | null): number {
+function prelim(node: WalkersNode | null): number {
 	if(node === null) return 0;
 	return prelims.get(node) || 0;
 }
 
-function modifier(node: ElementLLRbtreeNode | null): number {
+function modifier(node: WalkersNode | null): number {
 	if(node === null) return 0;
 	return modifiers.get(node) || 0;
 }
@@ -180,18 +194,33 @@ function getPrevNodeAtLevel(level: number) {
 	return prevNodes.get(level) || null;
 }
 
-function setPrevNodeAtLevel(level: number, node: ElementLLRbtreeNode) {
+function setPrevNodeAtLevel(level: number, node: WalkersNode) {
 	return prevNodes.set(level, node);
 }
 
-function setLeftNeighbor(node: ElementLLRbtreeNode, leftNeighbor: ElementLLRbtreeNode | null) {
+function setLeftNeighbor(node: WalkersNode, leftNeighbor: WalkersNode | null) {
 	if(leftNeighbor) {
 		leftNeighbors.set(node, leftNeighbor);
 	}
 }
 
-function getLeftNeighbor(node: ElementLLRbtreeNode | null): ElementLLRbtreeNode | null {
+function getLeftNeighbor(node: WalkersNode | null): WalkersNode | null {
 	if(node === null) return null;
 	return leftNeighbors.get(node) || null;
 }
 
+function meanNodeSize(leftNode: WalkersNode | null, rightNode: WalkersNode | null) {
+	let nodeSize = 0;
+	let count = 0;
+	if(leftNode) {
+		nodeSize += leftNode.totalWidth();
+		count++;
+	}
+
+	if(rightNode) {
+		nodeSize += rightNode.totalWidth();
+		count++;
+	}
+
+	return nodeSize / count;
+}

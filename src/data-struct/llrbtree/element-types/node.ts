@@ -106,6 +106,10 @@ export class LLRbtreeNode {
 		return this.isBlack ? LLRbtreeNode.Black : LLRbtreeNode.Red;
 	}
 
+	totalWidth() {
+		return LLRbtreeNode.diameter;
+	}
+
 	intersects(x: number, y: number, {x: ox, y: oy}: Point): boolean {
 		return new Line(
 			new Point(this.x + ox, this.y + oy),
