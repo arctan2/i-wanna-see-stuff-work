@@ -1,7 +1,7 @@
 import { AlgorithmHandler } from "../algorithm-handler.ts";
 import { setErrorPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
-import { Null, Ptr } from "../memory-allocator/allocator.ts";
+import { Ptr } from "../memory-allocator/allocator.ts";
 import { ElementBptreeNode } from "./el-bptree-node.ts";
 import { BptreeNode } from "./element-types/node.ts";
 
@@ -31,12 +31,12 @@ class DeleteBptree extends AlgorithmHandler {
 	}
 
 	*merge(node: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
-		if(Null.isNull(node.children.v.arr[idx]) || Null.isNull(node.children.v.arr[idx + 1])) {
+		if((node.children[idx] === null) || (node.children[idx + 1] === null)) {
 			return;
 		}
 
-		let child = (node.children.v.arr[idx] as Ptr<ElementBptreeNode>).v;
-		let sibbling = (node.children.v.arr[idx + 1] as Ptr<ElementBptreeNode>).v;
+		let child = (node.children[idx] as Ptr<ElementBptreeNode>).v;
+		let sibbling = (node.children[idx + 1] as Ptr<ElementBptreeNode>).v;
 
 		child.bg = Color.merge;
 		sibbling.bg = Color.merge;
@@ -61,33 +61,33 @@ class DeleteBptree extends AlgorithmHandler {
 		}
 
 		for(const _ of node.animateCellBg(canvas, idx, Color.merge)) yield;
-		child.keys.v.arr[childCurKeyCount] = node.keys.v.arr[idx];
+		child.keys[childCurKeyCount] = node.keys[idx];
 		for(const _ of child.animateCellBg(canvas, childCurKeyCount, Color.merge)) yield;
 
-		if(sibbling.curKeyCount.value === 0 || child.keys.v.arr[childCurKeyCount] !== sibbling.keys.v.arr[0]) {
+		if(sibbling.curKeyCount.value === 0 || child.keys[childCurKeyCount] !== sibbling.keys[0]) {
 			childCurKeyCount++;
 		}
 
 		for(let i = 0; i < sibbling.curKeyCount.value; i++) {
 			for(const _ of sibbling.animateCellBg(canvas, i, Color.merge)) yield;
-			child.keys.v.arr[i + childCurKeyCount] = sibbling.keys.v.arr[i];
+			child.keys[i + childCurKeyCount] = sibbling.keys[i];
 			for(const _ of child.animateCellBg(canvas, i + childCurKeyCount, Color.merge)) yield;
 		}
 
 		if(!child.isLeaf.value) {
 			for(let i = 0; i <= sibbling.curKeyCount.value; i++) {
-				child.children.v.arr[i + childCurKeyCount] = sibbling.children.v.arr[i];
+				child.children[i + childCurKeyCount] = sibbling.children[i];
 			}
 		}
 
 		for(let i = idx + 1; i < node.curKeyCount.value; i++) {
 			for(const _ of node.animateCellBg(canvas, i, Color.shifting)) yield;
-			node.keys.v.arr[i - 1] = node.keys.v.arr[i];
+			node.keys[i - 1] = node.keys[i];
 			for(const _ of node.animateCellBg(canvas, i - 1, Color.shifting)) yield;
 		}
 
 		for(let i = idx + 2; i <= node.curKeyCount.value; i++) {
-			node.children.v.arr[i - 1] = node.children.v.arr[i];
+			node.children[i - 1] = node.children[i];
 		}
 
 		if(child.isLeaf.value) {
@@ -106,43 +106,43 @@ class DeleteBptree extends AlgorithmHandler {
 	}
 
 	*borrowFromPrev(node: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
-		if(Null.isNull(node.children.v.arr[idx]) || Null.isNull(node.children.v.arr[idx - 1])) {
+		if((node.children[idx] === null) || (node.children[idx - 1] === null)) {
 			return;
 		}
 
-		let child = (node.children.v.arr[idx] as Ptr<ElementBptreeNode>).v;
-		let sibbling = (node.children.v.arr[idx - 1] as Ptr<ElementBptreeNode>).v;
+		let child = (node.children[idx] as Ptr<ElementBptreeNode>).v;
+		let sibbling = (node.children[idx - 1] as Ptr<ElementBptreeNode>).v;
 
 		child.curKeyCount.value += 1;
 
 		for(let i = child.curKeyCount.value - 2; i >= 0; --i) {
 			for(const _ of child.animateCellBg(canvas, i, Color.shifting)) yield;
-			child.keys.v.arr[i + 1] = child.keys.v.arr[i];
+			child.keys[i + 1] = child.keys[i];
 			for(const _ of child.animateCellBg(canvas, i + 1, Color.shifting)) yield;
 		}
 
 		if(!child.isLeaf.value) {
 			for(let i = child.curKeyCount.value - 1; i >= 0; --i) {
-				child.children.v.arr[i + 1] = child.children.v.arr[i];
+				child.children[i + 1] = child.children[i];
 			}
-			child.children.v.arr[0] = sibbling.children.v.arr[sibbling.curKeyCount.value];
+			child.children[0] = sibbling.children[sibbling.curKeyCount.value];
 		}
 
 		if(child.isLeaf.value) {
 			for(const _ of sibbling.animateCellBg(canvas, sibbling.curKeyCount.value - 1, Color.shifting)) yield;
-			node.keys.v.arr[idx - 1] = sibbling.keys.v.arr[sibbling.curKeyCount.value - 1];
+			node.keys[idx - 1] = sibbling.keys[sibbling.curKeyCount.value - 1];
 			for(const _ of node.animateCellBg(canvas, idx - 1, Color.shifting)) yield;
 
 			for(const _ of node.animateCellBg(canvas, idx - 1, Color.shifting)) yield;
-			child.keys.v.arr[0] = node.keys.v.arr[idx - 1];
+			child.keys[0] = node.keys[idx - 1];
 			for(const _ of child.animateCellBg(canvas, 0, Color.shifting)) yield;
 		} else {
 			for(const _ of node.animateCellBg(canvas, idx - 1, Color.shifting)) yield;
-			child.keys.v.arr[0] = node.keys.v.arr[idx - 1];
+			child.keys[0] = node.keys[idx - 1];
 			for(const _ of child.animateCellBg(canvas, 0, Color.shifting)) yield;
 
 			for(const _ of sibbling.animateCellBg(canvas, sibbling.curKeyCount.value - 1, Color.shifting)) yield;
-			node.keys.v.arr[idx - 1] = sibbling.keys.v.arr[sibbling.curKeyCount.value - 1];
+			node.keys[idx - 1] = sibbling.keys[sibbling.curKeyCount.value - 1];
 			for(const _ of node.animateCellBg(canvas, idx - 1, Color.shifting)) yield;
 		}
 
@@ -151,42 +151,42 @@ class DeleteBptree extends AlgorithmHandler {
 	}
 
 	*borrowFromNext(node: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
-		if(Null.isNull(node.children.v.arr[idx]) || Null.isNull(node.children.v.arr[idx + 1])) {
+		if((node.children[idx] === null) || (node.children[idx + 1] === null)) {
 			return;
 		}
 
-		let child = (node.children.v.arr[idx] as Ptr<ElementBptreeNode>).v;
-		let sibbling = (node.children.v.arr[idx + 1] as Ptr<ElementBptreeNode>).v;
+		let child = (node.children[idx] as Ptr<ElementBptreeNode>).v;
+		let sibbling = (node.children[idx + 1] as Ptr<ElementBptreeNode>).v;
 
 		child.curKeyCount.value += 1;
 
 		for(const _ of node.animateCellBg(canvas, idx, Color.shifting)) yield;
-		child.keys.v.arr[child.curKeyCount.value - 1] = node.keys.v.arr[idx];
+		child.keys[child.curKeyCount.value - 1] = node.keys[idx];
 		for(const _ of child.animateCellBg(canvas, child.curKeyCount.value - 1, Color.shifting)) yield;
 
 		if(!child.isLeaf.value) {
-			child.children.v.arr[child.curKeyCount.value] = sibbling.children.v.arr[0];
+			child.children[child.curKeyCount.value] = sibbling.children[0];
 		}
 
 		if(!sibbling.isLeaf.value) {
 			for(const _ of sibbling.animateCellBg(canvas, 0, Color.shifting)) yield;
-			node.keys.v.arr[idx] = sibbling.keys.v.arr[0];
+			node.keys[idx] = sibbling.keys[0];
 			for(const _ of node.animateCellBg(canvas, idx, Color.shifting)) yield;
 		} else {
 			for(const _ of sibbling.animateCellBg(canvas, 1, Color.shifting)) yield;
-			node.keys.v.arr[idx] = sibbling.keys.v.arr[1];
+			node.keys[idx] = sibbling.keys[1];
 			for(const _ of node.animateCellBg(canvas, idx, Color.shifting)) yield;
 		}
 
 		for(let i = 1; i < sibbling.curKeyCount.value; ++i) {
 			for(const _ of sibbling.animateCellBg(canvas, i, Color.shifting)) yield;
-			sibbling.keys.v.arr[i - 1] = sibbling.keys.v.arr[i];
+			sibbling.keys[i - 1] = sibbling.keys[i];
 			for(const _ of sibbling.animateCellBg(canvas, i - 1, Color.shifting)) yield;
 		}
 
 		if(!sibbling.isLeaf.value) {
 			for(let i = 1; i <= sibbling.curKeyCount.value; ++i) {
-				sibbling.children.v.arr[i - 1] = sibbling.children.v.arr[i];
+				sibbling.children[i - 1] = sibbling.children[i];
 			}
 		}
 
@@ -196,8 +196,8 @@ class DeleteBptree extends AlgorithmHandler {
 
 	*fill(node: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
 		const T = node.T;
-		const prevChild = (node.children.v.arr[idx - 1] as Ptr<ElementBptreeNode>);
-		const nextChild = (node.children.v.arr[idx + 1] as Ptr<ElementBptreeNode>);
+		const prevChild = (node.children[idx - 1] as Ptr<ElementBptreeNode>);
+		const nextChild = (node.children[idx + 1] as Ptr<ElementBptreeNode>);
 
 		if(prevChild && idx !== 0 && prevChild.v.curKeyCount.value >= T) {
 			for(const _ of this.borrowFromPrev(node, idx, canvas)) yield;
@@ -217,7 +217,7 @@ class DeleteBptree extends AlgorithmHandler {
 	*deleteFromLeaf(node: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
 		for(let i = idx + 1; i < node.curKeyCount.value; i++) {
 			for(const _ of node.animateCellBg(canvas, i, Color.shifting)) yield;
-			node.keys.v.arr[i - 1] = node.keys.v.arr[i];
+			node.keys[i - 1] = node.keys[i];
 			for(const _ of node.animateCellBg(canvas, i - 1, Color.shifting)) yield;
 		}
 
@@ -227,7 +227,7 @@ class DeleteBptree extends AlgorithmHandler {
 
 	indexOfChild(parent: ElementBptreeNode, child: ElementBptreeNode) {
 		for(let i = 0; i <= parent.curKeyCount.value; i++) {
-			if((parent.children.v.arr[i] as Ptr<ElementBptreeNode>).v === child) {
+			if((parent.children[i] as Ptr<ElementBptreeNode>).v === child) {
 				return i;
 			}
 		}
@@ -237,7 +237,7 @@ class DeleteBptree extends AlgorithmHandler {
 	*indexOfKey(node: ElementBptreeNode, key: number, canvas: CanvasHandler) {
 		for(let i = 0; i < node.curKeyCount.value; i++) {
 			for(const _ of node.animateCellBg(canvas, i, Color.traverse)) yield;
-			if(node.keys.v.arr[i] === key) {
+			if(node.keys[i] === key) {
 				return i;
 			}
 		}
@@ -248,23 +248,23 @@ class DeleteBptree extends AlgorithmHandler {
 		const T = root.T;
 		let stack: Array<ElementBptreeNode> = [];
 
-		let node: Ptr<ElementBptreeNode> | Null = root.ptr;
+		let node: Ptr<ElementBptreeNode> | null = root.ptr;
 		let foundInInternalNode: null | ElementBptreeNode = null;
 
 		let idx = 0;
-		while(!Null.isNull(node)) {
-			const n = (node as Ptr<ElementBptreeNode>).v;
+		while(node !== null) {
+			const n: ElementBptreeNode = node.v;
 
 			for(const _ of n.animateNodeBg(canvas, Color.traverse)) yield;
 
 			stack.push(n);
 			idx = 0;
-			while(idx < n.curKeyCount.value && n.keys.v.arr[idx] as number < value) {
+			while(idx < n.curKeyCount.value && n.keys[idx] as number < value) {
 				for(const _ of n.animateCellBg(canvas, idx, Color.traverse)) yield;
 				idx++;
 			}
 
-			if(idx < n.curKeyCount.value && n.keys.v.arr[idx] === value && !n.isLeaf.value) {
+			if(idx < n.curKeyCount.value && n.keys[idx] === value && !n.isLeaf.value) {
 				for(const _ of n.animateCellBg(canvas, idx, Color.traverse)) yield;
 				foundInInternalNode = n;
 				n.bg = Color.foundInInternal;
@@ -275,11 +275,11 @@ class DeleteBptree extends AlgorithmHandler {
 				yield;
 				n.drawLineToChild(canvas.ctx, idx + 1);
 
-				node = n.children.v.arr[idx + 1];
+				node = n.children[idx + 1];
 				continue;
 			}
 
-			node = n.children.v.arr[idx];
+			node = n.children[idx];
 		}
 
 		let leaf = stack.pop();
@@ -302,7 +302,7 @@ class DeleteBptree extends AlgorithmHandler {
 				if(result.done) {
 					const isChangeLeaf = result.value;
 					if(isChangeLeaf) {
-						leaf = (parent.children.v.arr[parent.curKeyCount.value] as Ptr<ElementBptreeNode>).v;
+						leaf = (parent.children[parent.curKeyCount.value] as Ptr<ElementBptreeNode>).v;
 					}
 					break;
 				}
@@ -333,7 +333,7 @@ class DeleteBptree extends AlgorithmHandler {
 				if(result.done) {
 					if(result.value >= 0) {
 						for(const _ of leaf.animateCellBg(canvas, 0, Color.assign)) yield;
-						foundInInternalNode.keys.v.arr[result.value] = leaf.keys.v.arr[0];
+						foundInInternalNode.keys[result.value] = leaf.keys[0];
 						for(const _ of foundInInternalNode.animateCellBg(canvas, result.value, Color.assign)) yield;
 					}
 					break;
@@ -372,8 +372,8 @@ class DeleteBptree extends AlgorithmHandler {
 			for(const _ of root.animateNodeBg(canvas, Color.delete)) yield;
 
 			if(!root.isLeaf.value) {
-				const child = root.children.v.arr[0];
-				if(!Null.isNull(child)) {
+				const child = root.children[0];
+				if(child !== null) {
 					(child as Ptr<ElementBptreeNode>).v.parentNode = null;
 					root = (child as Ptr<ElementBptreeNode>).v;
 				}

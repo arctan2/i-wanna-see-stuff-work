@@ -38,12 +38,12 @@ class SearchBptree extends AlgorithmHandler {
 
 			for(const _ of cur.animateNodeBg(canvas, Color.traverse)) yield;
 
-			while(i < cur.curKeyCount.value && key > cur.keys.v.arr[i]) {
+			while(i < cur.curKeyCount.value && key > cur.keys[i]) {
 				for(const _ of cur.animateCellBg(canvas, i, Color.traverse)) yield;
 				i++;
 			}
 
-			if(i < cur.curKeyCount.value && key === cur.keys.v.arr[i]) {
+			if(i < cur.curKeyCount.value && key === cur.keys[i]) {
 				if(cur.isLeaf.value) {
 					cur.keysBg[i] = Color.found;
 					cur.drawCell(canvas.ctx, i);
@@ -59,7 +59,7 @@ class SearchBptree extends AlgorithmHandler {
 
 			cur.drawLineToChild(canvas.ctx, i, Color.traverse);
 			yield;
-			cur = (cur.children.v.arr[i] as Ptr<ElementBptreeNode>).v;
+			cur = (cur.children[i] as Ptr<ElementBptreeNode>).v;
 		}
 	}
 

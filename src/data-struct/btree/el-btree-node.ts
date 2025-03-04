@@ -7,7 +7,7 @@ import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive, shallowReactive } from "vue";
 import { PrimitiveSize } from "../memory-allocator/types";
-import { arrayToBytesArray, arrayToDisplayBlocks, lerp, numberToBytes } from "../utils";
+import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 
 const gapX = GAP * 2;
@@ -48,9 +48,9 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		}, is_leaf: ${
 			this.isLeaf.value
 		}, keys: [${
-			this.keys.toString()
+			arrayToDisplayStr(this.keys)
 		}], children: [${
-			this.children.toString()
+			arrayToDisplayStr(this.children)
 		}] } `
 	}
 

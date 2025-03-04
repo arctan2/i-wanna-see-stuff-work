@@ -2,7 +2,7 @@ import { AlgorithmHandler } from "../algorithm-handler.ts";
 import { GAP } from "../canvas.ts";
 import { setInfoPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
-import { Null, Ptr } from "../memory-allocator/allocator.ts";
+import { Ptr } from "../memory-allocator/allocator.ts";
 import { ElementBptreeNode } from "./el-bptree-node.ts";
 import { BptreeNode } from "./element-types/node.ts";
 
@@ -33,7 +33,7 @@ class InsertBptree extends AlgorithmHandler {
 	}
 
 	async *splitNode(parent: ElementBptreeNode, idx: number, canvas: CanvasHandler) {
-		const fullChild: ElementBptreeNode = (parent.children.v.arr[idx] as Ptr<ElementBptreeNode>).v;
+		const fullChild: ElementBptreeNode = (parent.children[idx] as Ptr<ElementBptreeNode>).v;
 		const newChild = new ElementBptreeNode(
 			parent.x + ((parent.totalWidth / 2) * (idx + 1)),
 			parent.y + (BptreeNode.cellHeight) + (GAP * 2),
@@ -51,13 +51,13 @@ class InsertBptree extends AlgorithmHandler {
 
 		for (let i = 0; i < newChild.curKeyCount.value; i++) {
 			for(const _ of fullChild.animateCellBg(canvas, i + t, Color.shifting)) yield;
-			newChild.keys.v.arr[i] = fullChild.keys.v.arr[i + t];
+			newChild.keys[i] = fullChild.keys[i + t];
 			for(const _ of newChild.animateCellBg(canvas, i, Color.shifting)) yield;
 		}
 
 		if (!fullChild.isLeaf.value) {
 			for (let i = 0; i < newChild.curKeyCount.value + 1; i++) {
-				newChild.children.v.arr[i] = fullChild.children.v.arr[i + t];
+				newChild.children[i] = fullChild.children[i + t];
 			}
 			for(const _ of fullChild.animateCellBg(canvas, t - 1, Color.shifting)) yield;
 			fullChild.curKeyCount.value = t - 1;
@@ -70,20 +70,20 @@ class InsertBptree extends AlgorithmHandler {
 
 
 		for (let i = parent.curKeyCount.value; i >= idx + 1; i--) {
-			parent.children.v.arr[i + 1] = parent.children.v.arr[i];
+			parent.children[i + 1] = parent.children[i];
 		}
-		parent.children.v.arr[idx + 1] = newChild.ptr;
+		parent.children[idx + 1] = newChild.ptr;
 
 		for (let i = parent.curKeyCount.value - 1; i >= idx; i--) {
 			for(const _ of parent.animateCellBg(canvas, i, Color.shifting)) yield;
-			parent.keys.v.arr[i + 1] = parent.keys.v.arr[i];
+			parent.keys[i + 1] = parent.keys[i];
 			for(const _ of parent.animateCellBg(canvas, i + 1, Color.shifting)) yield;
 		}
 
 		if (!fullChild.isLeaf.value) {
-			parent.keys.v.arr[idx] = fullChild.keys.v.arr[t - 1];
+			parent.keys[idx] = fullChild.keys[t - 1];
 		} else {
-			parent.keys.v.arr[idx] = fullChild.keys.v.arr[t];
+			parent.keys[idx] = fullChild.keys[t];
 		}
 		parent.curKeyCount.value++;
 		for(const _ of parent.animateCellBg(canvas, idx, Color.shifting)) yield;
@@ -107,7 +107,7 @@ class InsertBptree extends AlgorithmHandler {
 				null
 			);
 			canvas.addElements(newRoot);
-			newRoot.children.v.arr[0] = root.ptr;
+			newRoot.children[0] = root.ptr;
 			root.parentNode = newRoot;
 			{
 				const a = this.splitNode(newRoot, 0, canvas);
@@ -120,7 +120,7 @@ class InsertBptree extends AlgorithmHandler {
 		let current: ElementBptreeNode = root;
 		while(current.isLeaf.value === false) {
 			let i = 0;
-			while (i < current.curKeyCount.value && (current.keys.v.arr[i] as number) < key) {
+			while (i < current.curKeyCount.value && (current.keys[i] as number) < key) {
 				for(const _ of current.animateCellBg(canvas, i, Color.traverse)) yield;
 				i++;
 			}
@@ -130,37 +130,37 @@ class InsertBptree extends AlgorithmHandler {
 			current.drawLineToChild(canvas.ctx, i);
 
 			if(
-				!Null.isNull(current.children.v.arr[i]) &&
-				(current.children.v.arr[i] as Ptr<ElementBptreeNode>).v.curKeyCount.value === M - 1
+				(current.children[i] !== null) &&
+				(current.children[i] as Ptr<ElementBptreeNode>).v.curKeyCount.value === M - 1
 			) {
-				for(const _ of (current.children.v.arr[i] as Ptr<ElementBptreeNode>).v.animateNodeBg(canvas, Color.full)) yield;
+				for(const _ of (current.children[i] as Ptr<ElementBptreeNode>).v.animateNodeBg(canvas, Color.full)) yield;
 				{
 					const a = this.splitNode(current, i, canvas);
 					while(!(await a.next()).done) yield;
 					yield;
 				}
-				if((current.keys.v.arr[i] as number) < key) {
+				if((current.keys[i] as number) < key) {
 					i++;
 				}
 				current.drawLineToChild(canvas.ctx, i, Color.traverse);
 				yield;
 				current.drawLineToChild(canvas.ctx, i);
 			}
-			current = (current.children.v.arr[i] as Ptr<ElementBptreeNode>).v;
+			current = (current.children[i] as Ptr<ElementBptreeNode>).v;
 		}
 
 		let i = current.curKeyCount.value - 1;
 		current.curKeyCount.value++;
-		while (i >= 0 && (current.keys.v.arr[i] as number) > key) {
+		while (i >= 0 && (current.keys[i] as number) > key) {
 			for(const _ of current.animateCellBg(canvas, i, Color.shifting)) yield;
-			current.keys.v.arr[i + 1] = current.keys.v.arr[i];
+			current.keys[i + 1] = current.keys[i];
 			for(const _ of current.animateCellBg(canvas, i + 1, Color.shifting)) yield;
 			i--;
 		}
 
 		for(const _ of current.animateCellBg(canvas, i + 1, Color.assign)) yield;
 
-		current.keys.v.arr[i + 1] = key;
+		current.keys[i + 1] = key;
 
 		canvas.redraw();
 
