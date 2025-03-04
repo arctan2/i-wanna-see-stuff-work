@@ -5,10 +5,8 @@ import { Ptr } from "../memory-allocator/allocator.ts";
 import { ElementTrieNode } from "./el-trie-node.ts";
 
 enum Color {
-	shifting = "#345ceb",
-	insertTo = "#00ff00",
+	endOfWord = "#00ff00",
 	traverse = "#ffff00",
-	full = "#ff0000",
 };
 
 class InsertTrie extends AlgorithmHandler {
@@ -19,7 +17,7 @@ class InsertTrie extends AlgorithmHandler {
 		this.toInsertString = toInsertString;
 		this.root = node;
 		this.doneCallback = doneCallback;
-		this.initGenerator(canvas);
+		this.initAsyncGenerator(canvas);
 		setInfoPopupText(`Inserting "${this.toInsertString}"`);
 	}
 
@@ -30,7 +28,7 @@ class InsertTrie extends AlgorithmHandler {
 		setInfoPopupText("");
 	}
 
-	*insertString(root: ElementTrieNode, s: string, canvas: CanvasHandler) {
+	async *insertString(root: ElementTrieNode, s: string, canvas: CanvasHandler) {
 		s = s.trim().toLowerCase();
 
 		if(s === "") return;
@@ -38,26 +36,31 @@ class InsertTrie extends AlgorithmHandler {
 		let temp = root;
 
 		for(const char of s) {
+			for(const _ of temp.animateNodeBg(canvas, Color.traverse)) yield;
 			const charCodeIdx = char.charCodeAt(0) - 97;
 
 			if(temp.children[charCodeIdx] === null) {
 				const n = new ElementTrieNode(temp.x, temp.y, temp, char);
 				canvas.addElements(n);
 				temp.children[charCodeIdx] = n.ptr;
+				await root.rearrangeTree(canvas);
 			}
 
 			temp = (temp.children[charCodeIdx] as Ptr<ElementTrieNode>).v;
 		}
 
 		temp.isWordEnd.value = true;
+		temp.word = s;
 
-		root.rearrangeTree(canvas);
+		for(const _ of temp.animateNodeBg(canvas, Color.endOfWord)) yield;
+
+		await root.rearrangeTree(canvas);
 	}
 
-	*generatorFn(canvas: CanvasHandler) {
+	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.root) {
 			let gen = this.insertString(this.root, this.toInsertString, canvas);
-			while(!gen.next().done) {
+			while(!(await gen.next()).done) {
 				yield null;
 			}
 		}

@@ -6,7 +6,6 @@ import { ElementTrieNode } from "./el-trie-node.ts";
 enum Color {
 	found = "#00ff00",
 	traverse = "#ffff00",
-	notEqual = "#ff0000",
 };
 
 class SearchTrie extends AlgorithmHandler {
@@ -39,6 +38,12 @@ class SearchTrie extends AlgorithmHandler {
 		for(const char of s) {
 			const charCodeIdx = char.charCodeAt(0) - 97;
 
+			temp.bg = Color.traverse;
+			temp.draw(canvas.ctx);
+			yield;
+			temp.drawLineToChild(canvas.ctx, charCodeIdx, Color.traverse);
+			yield;
+
 			if(charCodeIdx < 0 || charCodeIdx > 25) return false;
 
 			if(temp.children[charCodeIdx] === null) {
@@ -49,7 +54,13 @@ class SearchTrie extends AlgorithmHandler {
 			temp = temp.children[charCodeIdx]?.v as ElementTrieNode;
 		}
 
-		return temp.isWordEnd;
+		if(temp.isWordEnd.value) {
+			temp.bg = Color.found;
+			temp.draw(canvas.ctx);
+			yield;
+		} else {
+			setErrorPopupText(`String "${s}" not found.`);
+		}
 	}
 
 	*generatorFn(canvas: CanvasHandler) {

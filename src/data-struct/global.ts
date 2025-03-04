@@ -18,6 +18,7 @@ import IconMatrix from "./assets/vue-icon-wrappers/matrix.vue";
 import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node-icon.vue";
 import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
 import IconLLRbtreeNode from "./assets/vue-icon-wrappers/llrbtree-node.vue";
+import IconTrieNode from "./assets/vue-icon-wrappers/trie-node.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -96,6 +97,6 @@ export const ToolList: ToolType[] = [
 	{ name: "llrbtree-node", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
 	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
 	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
-	{ name: "trie-node", toolClass: ToolTrieNode, icon: IconBptreeNode },
+	{ name: "trie-node", toolClass: ToolTrieNode, icon: IconTrieNode },
 ];
 

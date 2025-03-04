@@ -33,7 +33,7 @@ export class Arrow {
 		const dy = toy - fromy;
 		const angle = Math.atan2(dy, dx);
 
-		circleFill(ctx, this.tail.x, this.tail.y, 4, this.bg.toString());
+		circleFill(ctx, this.tail.x, this.tail.y, 4, String(this.bg));
 
 		ctx.fillStyle = this.bg;
 		ctx.strokeStyle = this.bg;

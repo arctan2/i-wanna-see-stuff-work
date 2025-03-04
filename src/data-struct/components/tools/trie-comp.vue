@@ -64,7 +64,7 @@ function searchString() {
 		</div>
 		<template v-if="focusedElement.parentNode === null">
 		<div class="insert-key">
-			<h2>Insert Key</h2>
+			<h2>Insert String</h2>
 			<input
 				spellcheck="false"
 				placeholder="string"
@@ -76,7 +76,7 @@ function searchString() {
 		</div>
 
 		<div class="delete-key">
-			<h2>Delete Key</h2>
+			<h2>Delete String</h2>
 			<input
 				spellcheck="false"
 				placeholder="string"
@@ -88,7 +88,7 @@ function searchString() {
 		</div>
 
 		<div class="search-key">
-			<h2>Search Key</h2>
+			<h2>Search String</h2>
 			<input
 				spellcheck="false"
 				placeholder="string"

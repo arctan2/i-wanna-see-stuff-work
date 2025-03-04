@@ -39,6 +39,7 @@ export function circleFill(
 	ctx.arc(x, y, radius, 0, PI2);
 	if(color !== null) {
 		ctx.strokeStyle = color;
+		ctx.fillStyle = color;
 	}
 	ctx.fill();
 }

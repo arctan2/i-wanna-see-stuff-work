@@ -1,6 +1,7 @@
 import { GAP, circleFill, circleStroke } from "../../canvas";
 import { getContrastFg } from "../../utils";
 import { Line, Point } from "../../geometry";
+import { ShallowRef, shallowRef } from "vue";
 
 export class TrieNode {
 	public static radius = GAP * 6 / 2;
@@ -10,6 +11,9 @@ export class TrieNode {
 	public static defaultBg = "#cacaca";
 
 	char: string;
+
+	isWordEnd: ShallowRef<boolean> = shallowRef(false);
+	word: string = "";
 
 	bg: string = "";
 	color: string = "";
@@ -30,8 +34,12 @@ export class TrieNode {
 		return this;
 	}
 
+	get defaultBg() {
+		return this.isWordEnd.value ? "#ff0050" : TrieNode.defaultBg;
+	}
+
 	resetStyle() {
-		this.bg = TrieNode.defaultBg;
+		this.bg = this.defaultBg;
 		this.color = getContrastFg(this.bg);
 		this.borderColor = "";
 		return this;

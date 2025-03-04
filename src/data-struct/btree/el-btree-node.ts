@@ -6,7 +6,7 @@ import { BtreeNode } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
-import { Arr } from "../memory-allocator/types";
+import { Arr, PrimitiveSize } from "../memory-allocator/types";
 import { lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 
@@ -22,7 +22,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	parentNode: ElementBtreeNode | null = null;
 	children: Ptr<Arr<Ptr<ElementBtreeNode> | Null>>;
 
-	static Size = Ptr.Size + Ptr.Size;
+	static Size = PrimitiveSize.Int + PrimitiveSize.Bool + Ptr.Size + Ptr.Size;
 
 	constructor(x: number, y: number, M: number, isLeaf: boolean, parent: ElementBtreeNode | null) {
 		super(M, isLeaf);
@@ -58,7 +58,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		return [
 			` btree-node { keys_count: ${this.curKeyCount.value}, is_leaf: ${this.isLeaf.value}, keys: `,
 			{ ptr: this.keys.toString() },
-			` children: `,
+			`, children: `,
 			{ ptr: this.children.toString() },
 			` } `
 		];

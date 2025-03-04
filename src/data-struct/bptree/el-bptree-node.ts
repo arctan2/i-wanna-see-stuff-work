@@ -6,7 +6,7 @@ import { BptreeNode } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
-import { Arr } from "../memory-allocator/types";
+import { Arr, PrimitiveSize } from "../memory-allocator/types";
 import { lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 import { Arrow } from "../linked-list/element-types/arrow";
@@ -24,7 +24,7 @@ export class ElementBptreeNode extends BptreeNode implements ElementHandler, All
 	children: Ptr<Arr<Ptr<ElementBptreeNode> | Null>>;
 	nextNode: Ptr<ElementBptreeNode> | Null;
 
-	static Size = Ptr.Size + Ptr.Size;
+	static Size = PrimitiveSize.Int + PrimitiveSize.Bool + Ptr.Size + Ptr.Size + Ptr.Size;
 
 	constructor(x: number, y: number, M: number, isLeaf: boolean, parent: ElementBptreeNode | null) {
 		super(M, isLeaf);
@@ -64,9 +64,9 @@ export class ElementBptreeNode extends BptreeNode implements ElementHandler, All
 		return [
 			` bptree-node { keys_count: ${this.curKeyCount.value}, is_leaf: ${this.isLeaf.value}, keys: `,
 			{ ptr: this.keys.toString() },
-			` children: `,
+			`, children: `,
 			{ ptr: this.children.toString() },
-			` next: `,
+			`, next: `,
 			{ ptr: this.nextNode.toString() },
 			` } `
 		];

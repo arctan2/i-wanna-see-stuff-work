@@ -5,7 +5,7 @@ import { isAutoRearrangeBtree } from "../global";
 import { TrieNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
-import { ShallowRef, ShallowReactive, shallowRef } from "vue";
+import { ShallowReactive } from "vue";
 import { lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 import { WalkersNode, getNewCoords } from "../walkers-algorithm";
@@ -20,7 +20,6 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 	parentNode: ElementTrieNode | null;
 
 	children: ShallowReactive<Array<Ptr<ElementTrieNode> | null>>;
-	isWordEnd: ShallowRef<boolean> = shallowRef(false);
 
 	static Size = Ptr.Size + (Ptr.Size * 26);
 
@@ -55,6 +54,8 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 			blocks += ((child === null) ? nullBlock : child.toString()) + ",";
 		}
 
+		blocks = blocks.slice(0, -1);
+
 		return ` trie-node { is_word_end: ${this.isWordEnd.value}, children: [${blocks}] } `
 	}
 
@@ -65,6 +66,8 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 		for(const child of this.children) {
 			blocks.push((child === null) ? nullBlock : { ptr: child.toString() }, ",");
 		}
+
+		blocks = blocks.slice(0, -1);
 
 		return [
 			` trie-node { is_word_end: ${this.isWordEnd.value}, children: [`, ...blocks ,`] } `
@@ -80,6 +83,12 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 	dfsClean(node: ElementTrieNode | null) {
 		if(!node) {
 			return;
+		}
+
+		for(const c of node.children) {
+			if(c !== null) {
+				this.dfsClean(c.v);
+			}
 		}
 
 		node.resetStyle();
@@ -306,16 +315,21 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 		return false;
 	}
 
+	getRoot() {
+		let root: ElementTrieNode = this;
+		while(root.parentNode !== null) {
+			root = root.parentNode;
+		}
+
+		return root;
+	}
+
 	async rearrangeTree(canvas: CanvasHandler, root?: ElementTrieNode) {
 		if(root === undefined) {
-			root = this;
+			root = this.getRoot();
 		}
 
-		while(root.parentNode !== null) {
-			root = root?.parentNode;
-		}
-
-		const locMap = getNewCoords(this, gapX, gapY);
+		const locMap = getNewCoords(root, gapX, gapY);
 
 		return new Promise<void>((resolve) => {
 			let t = 0;
@@ -341,8 +355,16 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 		this.bg = color;
 		this.draw(canvas.ctx);
 		yield;
-		this.bg = TrieNode.defaultBg;
+		this.bg = this.defaultBg;
 		this.draw(canvas.ctx);
+	}
+
+	drawWord(ctx: CanvasRenderingContext2D) {
+		ctx.fillStyle = "#ffffff";
+		ctx.textBaseline = "middle";
+		ctx.textAlign = "center";
+		ctx.font = "16px monospace";
+		ctx.fillText(this.word, this.x, this.y + TrieNode.radius + (GAP * 2));
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
@@ -352,6 +374,10 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 			if(this.children[i]) {
 				this.drawLineToChild(ctx, i);
 			}
+		}
+
+		if(this.isWordEnd.value) {
+			this.drawWord(ctx);
 		}
 	}
 }
