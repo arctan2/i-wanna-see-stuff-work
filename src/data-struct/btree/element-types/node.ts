@@ -1,8 +1,6 @@
-import { ShallowRef, shallowRef } from "vue";
+import { ShallowReactive, ShallowRef, shallowReactive, shallowRef } from "vue";
 import { GAP } from "../../canvas";
 import { Transform } from "../../handler/canvas-handler";
-import { Arr, PrimitiveSize } from "../../memory-allocator/types";
-import { Ptr } from "../../memory-allocator/allocator";
 import { getContrastFg } from "../../utils";
 
 export class BtreeNode {
@@ -17,7 +15,7 @@ export class BtreeNode {
 	T: number;
 
 	curKeyCount: ShallowRef<number>;
-	keys: Ptr<Arr<number>>;
+	keys: ShallowReactive<Array<number>>;
 	isLeaf: ShallowRef<boolean>;
 
 	bg: string = "";
@@ -30,16 +28,12 @@ export class BtreeNode {
 	x = -1;
 	y = -1;
 
-	constructor(M: number, isLeaf: boolean, dontAlloc?: boolean) {
+	constructor(M: number, isLeaf: boolean) {
 		this.M = M;
 		this.T = Math.ceil(M / 2);
 		this.curKeyCount = shallowRef(0);
 
-		if(dontAlloc === false) {
-			this.keys = new Ptr(0, 0, new Arr(new Array<number>(M - 1).fill(0)));
-		} else {
-			this.keys = Arr.new(new Array<number>(M - 1).fill(0), PrimitiveSize.Int);
-		}
+		this.keys = shallowReactive(new Array<number>(M - 1).fill(0));
 
 		this.isLeaf = shallowRef(isLeaf);
 
@@ -102,7 +96,7 @@ export class BtreeNode {
 		ctx.textAlign = "center";
 		ctx.font = `${BtreeNode.fontSize}px monospace`;
 
-		let text = String(this.keys.v.arr[idx]);
+		let text = String(this.keys[idx]);
 		
 		ctx.fillText(text, x + curX + (BtreeNode.cellWidth / 2) - pad, (this.top + this.bottom) / 2);
 	}

@@ -6,7 +6,7 @@ import { TrieNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
-import { lerp, numberToBytes } from "../utils";
+import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 import { WalkersNode, getNewCoords } from "../walkers-algorithm";
 import { Arrow } from "../linked-list/element-types/arrow";
@@ -33,44 +33,19 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 	}
 
     toBytes(): Array<string> {
-		let blocks = [];
-		let nullBlock = Null.Bytes;
-
-		for(const child of this.children) {
-			blocks.push(...((child === null) ? nullBlock : child.toBytes()));
-		}
-
 		return [
 			...numberToBytes(this.isWordEnd.value ? 1 : 0),
-			...blocks
+			...arrayToBytesArray(this.children)
 		];
 	}
 
     toString(): string {
-		let blocks = "";
-		let nullBlock = Null.Hex;
-
-		for(const child of this.children) {
-			blocks += ((child === null) ? nullBlock : child.toString()) + ",";
-		}
-
-		blocks = blocks.slice(0, -1);
-
-		return ` trie-node { is_word_end: ${this.isWordEnd.value}, children: [${blocks}] } `
+		return ` trie-node { is_word_end: ${this.isWordEnd.value}, children: [${arrayToDisplayStr(this.children)}] } `
 	}
 
     toDisplayableBlocks() {
-		let blocks = [];
-		let nullBlock = { ptr: Null.Hex };
-
-		for(const child of this.children) {
-			blocks.push((child === null) ? nullBlock : { ptr: child.toString() }, ",");
-		}
-
-		blocks = blocks.slice(0, -1);
-
 		return [
-			` trie-node { is_word_end: ${this.isWordEnd.value}, children: [`, ...blocks ,`] } `
+			` trie-node { is_word_end: ${this.isWordEnd.value}, children: [`, ...arrayToDisplayBlocks(this.children) ,`] } `
 		];
 	}
 

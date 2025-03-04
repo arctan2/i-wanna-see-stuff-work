@@ -74,7 +74,7 @@ export class ToolBtreeNode extends ToolHandler {
 
 		MAX_CHILDREN.value = v;
 
-		this.node = new BtreeNode(MAX_CHILDREN.value, true, false);
+		this.node = new BtreeNode(MAX_CHILDREN.value, true);
 		ToolBtreeNode.node.x = 0;
 		ToolBtreeNode.node.y = 0;
 	}

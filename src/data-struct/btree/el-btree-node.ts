@@ -4,10 +4,10 @@ import { CanvasHandler } from "../handler/canvas-handler";
 import { focusedElement, isAutoRearrangeBtree } from "../global";
 import { BtreeNode } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
-import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
-import { ShallowReactive } from "vue";
-import { Arr, PrimitiveSize } from "../memory-allocator/types";
-import { lerp, numberToBytes } from "../utils";
+import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
+import { ShallowReactive, shallowReactive } from "vue";
+import { PrimitiveSize } from "../memory-allocator/types";
+import { arrayToBytesArray, arrayToDisplayBlocks, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 
 const gapX = GAP * 2;
@@ -20,7 +20,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	pointerLeave(_state: EventState, _canvas: CanvasHandler) {};
 
 	parentNode: ElementBtreeNode | null = null;
-	children: Ptr<Arr<Ptr<ElementBtreeNode> | Null>>;
+	children: ShallowReactive<Array<Ptr<ElementBtreeNode> | null>>;
 
 	static Size = PrimitiveSize.Int + PrimitiveSize.Bool + Ptr.Size + Ptr.Size;
 
@@ -29,7 +29,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		this.x = x;
 		this.y = y;
 		this.parentNode = parent;
-		this.children = Arr.new(new Array<Ptr<ElementBtreeNode> | Null>(M).fill(new Null), Ptr.Size);
+		this.children = shallowReactive(new Array<Ptr<ElementBtreeNode> | null>(M).fill(null));
 		this.ptr = allocator.malloc(ElementBtreeNode.Size, this);
 	}
 
@@ -37,8 +37,8 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		return [
 			...numberToBytes(this.curKeyCount.value),
 			...numberToBytes(this.isLeaf ? 1 : 0),
-			...this.keys.toBytes(),
-			...this.children.toBytes()
+			...arrayToBytesArray(this.keys),
+			...arrayToBytesArray(this.children)
 		];
 	}
 
@@ -47,33 +47,31 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 			this.curKeyCount.value
 		}, is_leaf: ${
 			this.isLeaf.value
-		}, keys: ${
+		}, keys: [${
 			this.keys.toString()
-		}, children: ${
+		}], children: [${
 			this.children.toString()
-		} } `
+		}] } `
 	}
 
     toDisplayableBlocks() {
 		return [
-			` btree-node { keys_count: ${this.curKeyCount.value}, is_leaf: ${this.isLeaf.value}, keys: `,
-			{ ptr: this.keys.toString() },
-			`, children: `,
-			{ ptr: this.children.toString() },
-			` } `
+			` btree-node { keys_count: ${this.curKeyCount.value}, is_leaf: ${this.isLeaf.value}, keys: [`,
+			...arrayToDisplayBlocks(this.keys),
+			`], children: [`,
+			...arrayToDisplayBlocks(this.children),
+			`] } `
 		];
 	}
 
 	dealloc() {
-		allocator.free(this.children);
-		allocator.free(this.keys);
 	}
 
 	pointerDy: number = -1;
 	pointerDx: number = -1;
 
-	dfsClean(node: Ptr<ElementBtreeNode> | Null) {
-		if(Null.isNull(node)) {
+	dfsClean(node: Ptr<ElementBtreeNode> | null) {
+		if(node === null) {
 			return;
 		}
 
@@ -85,7 +83,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 
 		n.resetStyle();
 		for(let i = 0; i <= n.curKeyCount.value; i++) {
-			this.dfsClean(n.children.v.arr[i]);
+			this.dfsClean(n.children[i]);
 		}
 	}
 
@@ -166,8 +164,8 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	}
 
 	drawLineToChild(ctx: CanvasRenderingContext2D, idx: number, color = "#ffffff") {
-		const c = this.children.v.arr[idx];
-		if(c.constructor.name === Null.name) {
+		const c = this.children[idx];
+		if(c === null) {
 			return;
 		}
 
@@ -206,8 +204,8 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 			const node: ElementBtreeNode = queue.pop() as ElementBtreeNode;
 
 			for(let i = 0; i <= node.curKeyCount.value; i++) {
-				const child = node.children.v.arr[i];
-				if(child.constructor.name !== Null.name) {
+				const child = node.children[i];
+				if(child !== null) {
 					queue.unshift((child as Ptr<ElementBtreeNode>).v);
 				}
 			}
@@ -241,7 +239,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 			let level = levels[i];
 			for(let j = 0; j < level.length; j++) {
 				let node = level[j];
-				const children = node.children.v.arr;
+				const children = node.children;
 				const firstChild = (children[0] as Ptr<ElementBtreeNode>).v;
 				const lastChild = (children[node.curKeyCount.value] as Ptr<ElementBtreeNode>).v;
 				const firstChildX = locMap.get(firstChild)?.x || 0;
