@@ -9,6 +9,7 @@ import { ToolBtreeNode } from "./btree/tool-btree-node.ts";
 import { ToolBptreeNode } from "./bptree/tool-bptree-node.ts";
 import { ToolLLRbtreeNode } from "./llrbtree/tool-llrbtree-node.ts";
 import { ToolTrieNode } from "./trie/tool-trie-node.ts";
+import { ToolHeapBuffer } from "./heap/tool-heap-buffer.ts";
 
 import IconLLNode from "./assets/vue-icon-wrappers/ll-node.vue";
 import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
@@ -19,6 +20,7 @@ import IconBtreeNode from "./assets/vue-icon-wrappers/btree-node-icon.vue";
 import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
 import IconLLRbtreeNode from "./assets/vue-icon-wrappers/llrbtree-node.vue";
 import IconTrieNode from "./assets/vue-icon-wrappers/trie-node.vue";
+import IconHeapBuffer from "./assets/vue-icon-wrappers/trie-node.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -98,5 +100,6 @@ export const ToolList: ToolType[] = [
 	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
 	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
 	{ name: "trie-node", toolClass: ToolTrieNode, icon: IconTrieNode },
+	{ name: "heap-buffer", toolClass: ToolHeapBuffer, icon: IconHeapBuffer },
 ];
 

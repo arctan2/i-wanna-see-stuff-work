@@ -1,4 +1,4 @@
-import { AllocDisplay, Null, Ptr } from "./memory-allocator/allocator";
+import { AllocDisplay, Null } from "./memory-allocator/allocator";
 
 export function sleep(ms: number) {
 	return new Promise((r) => {

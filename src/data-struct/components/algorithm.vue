@@ -41,6 +41,10 @@ import DeleteLLRbtree from "../llrbtree/delete-llrbtree.ts";
 import InsertTrie from "../trie/insert-trie.ts";
 import DeleteTrie from "../trie/delete-trie.ts";
 
+import InsertHeap from "../heap/insert-heap.ts";
+import DeleteHeap from "../heap/delete-heap.ts";
+import Heapify from "../heap/heapify.ts";
+
 import SearchBptree from "../bptree/search-bptree.ts";
 import SearchBptreeComp from "../bptree/components/search-bptree-comp.vue";
 
@@ -87,6 +91,10 @@ const componentMap: ComponentMap = {
 	[InsertTrie.constructor.name]: null,
 	[DeleteTrie.constructor.name]: null,
 	[SearchTrie.constructor.name]: SearchTrieComp,
+
+	[InsertHeap.constructor.name]: null,
+	[DeleteHeap.constructor.name]: null,
+	[Heapify.constructor.name]: null,
 };
 
 const isPlaying = ref(isAutoplay.value);

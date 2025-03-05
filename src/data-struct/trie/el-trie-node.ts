@@ -4,7 +4,7 @@ import { CanvasHandler } from "../handler/canvas-handler";
 import { isAutoRearrangeBtree } from "../global";
 import { TrieNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
-import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
+import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
 import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";

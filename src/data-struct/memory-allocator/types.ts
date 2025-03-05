@@ -109,15 +109,20 @@ export class Str implements AllocDisplay, Dealloc {
 export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay {
 	arr: ShallowReactive<Array<T>>;
 	cap: number;
+	dType?: string;
 
-	static new<T extends AllocDisplay | number>(arr: Array<T>, dsize: number): Ptr<Arr<T>> {
-		const obj = new Arr<T>(arr);
+	static new<T extends AllocDisplay | number>(arr: Array<T>, dsize: number, cap: number = 1, dType?: string): Ptr<Arr<T>> {
+		const obj = new Arr<T>(arr, cap, dType);
 		return allocator.malloc(obj.cap * dsize, obj);
 	}
 
-	constructor(arr: Array<T>) {
+	constructor(arr: Array<T>, cap: number = 1, dType?: string) {
+		if(dType !== undefined) {
+			this.dType = dType;
+		}
+
 		this.arr = shallowReactive(arr);
-		this.cap = Math.max(1, arr.length);
+		this.cap = Math.max(cap, arr.length);
 	}
 
     toBytes(): Array<string> {
@@ -125,7 +130,7 @@ export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay
 			return [];
 		}
 
-		const type = typeof this.arr[0];
+		const type = this.dType || typeof this.arr[0];
 		const arr: Array<string> = [];
 
 		if(type === "number") {
@@ -151,7 +156,7 @@ export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay
 			arr.push(a === null ? Null.Hex : a.toString());
 		}
 
-		const type = typeof this.arr[0];
+		const type = this.dType || typeof this.arr[0];
 		if(type === "number") {
 			for(let i = 0, rem = this.cap - this.arr.length; i < rem; i++) {
 				arr.push('0');
@@ -166,7 +171,7 @@ export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay
 	}
 
     toDisplayableBlocks() {
-		const type = typeof this.arr[0];
+		const type = this.dType || typeof this.arr[0];
 		let b = [];
 		for(let a of this.arr) {
 			if(a === null) {
@@ -198,14 +203,18 @@ export class List<T extends AllocDisplay | number> implements AllocDisplay, Deal
 	arrPtr: Ptr<Arr<T>>;
 	dsize: number;
 
-	static new<T extends AllocDisplay | number>(arr: Array<T>, dsize: number): Ptr<List<T>> {
-		const obj = new List<T>(arr, dsize);
+	static new<T extends AllocDisplay | number>(arr: Array<T>, dsize: number, cap: number = 1, dType?: string): Ptr<List<T>> {
+		const obj = new List<T>(arr, dsize, cap, true, dType);
 		const mem = allocator.malloc(List.Size, obj);
 		return mem;
 	}
 
-	constructor(arr: Array<T>, dsize: number) {
-		this.arrPtr = Arr.new(arr, dsize);
+	constructor(arr: Array<T>, dsize: number, cap: number = 1, alloc?: boolean, dType?: string) {
+		if(alloc === false) {
+			this.arrPtr = new Ptr(0, 0, new Arr([], cap, dType));
+		} else {
+			this.arrPtr = Arr.new(arr, dsize, cap, dType);
+		}
 		this.dsize = dsize;
 	}
 
