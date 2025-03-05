@@ -6,7 +6,7 @@ import { LLRbtreeNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
-import { lerp, numberToBytes } from "../utils";
+import { boolToBytes, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 import { getNewCoords } from "../walkers-algorithm";
 
@@ -37,7 +37,7 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
     toBytes(): Array<string> {
 		return [
 			...numberToBytes(this.key.value === "" ? 0 : this.key.value),
-			...numberToBytes(this.isBlack ? 1 : 0),
+			...boolToBytes(this.isBlack),
 			...(this.lNode || new Null).toBytes(),
 			...(this.rNode || new Null).toBytes(),
 		];

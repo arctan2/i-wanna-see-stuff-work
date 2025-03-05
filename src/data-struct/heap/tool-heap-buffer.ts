@@ -12,7 +12,7 @@ export class ToolHeapBuffer extends ToolHandler {
 	}
 
 	pointerEnter(_state: EventState, canvas: CanvasHandler) {
-		setCanvasSize(canvas.toolCanvas, ToolHeapBuffer.node.width(), ToolHeapBuffer.node.height());
+		setCanvasSize(canvas.toolCanvas, ToolHeapBuffer.node.width(), ToolHeapBuffer.node.height() + 18);
 		canvas.toolCtx.scale(canvas.DPR, canvas.DPR);
 		this.draw(canvas.toolCtx);
 	}
@@ -33,7 +33,7 @@ export class ToolHeapBuffer extends ToolHandler {
 		const canvas = pgnd.canvas;
 
 		x = Math.floor(x / GAP) * GAP - (ToolHeapBuffer.node.width() / 2);
-		y = Math.floor(y / GAP) * GAP - (ToolHeapBuffer.node.height() / 2);
+		y = Math.floor(y / GAP) * GAP - (ToolHeapBuffer.node.height() / 2) + 18;
 
 		x += canvas.transform.x % GAP;
 		y += canvas.transform.y % GAP;
@@ -66,7 +66,7 @@ export class ToolHeapBuffer extends ToolHandler {
 	static {
 		this.node = new HeapBuffer(false);
 		ToolHeapBuffer.node.x = 0;
-		ToolHeapBuffer.node.y = 0;
+		ToolHeapBuffer.node.y = 18;
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {

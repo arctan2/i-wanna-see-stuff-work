@@ -6,7 +6,7 @@ import { TrieNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
-import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, lerp, numberToBytes } from "../utils";
+import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, boolToBytes, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 import { WalkersNode, getNewCoords } from "../walkers-algorithm";
 import { Arrow } from "../linked-list/element-types/arrow";
@@ -34,7 +34,7 @@ export class ElementTrieNode extends TrieNode implements ElementHandler, AllocDi
 
     toBytes(): Array<string> {
 		return [
-			...numberToBytes(this.isWordEnd.value ? 1 : 0),
+			...boolToBytes(this.isWordEnd.value),
 			...arrayToBytesArray(this.children)
 		];
 	}

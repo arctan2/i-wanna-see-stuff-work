@@ -24,19 +24,22 @@ export class ElementHeapBuffer extends HeapBuffer implements ElementHandler, All
 
     toBytes(): Array<string> {
 		return [
+			...this.buf.toBytes()
 		];
 	}
 
     toString(): string {
-		return ``
+		return ` heap { buffer: ${this.buf.toString()} } `
 	}
 
     toDisplayableBlocks() {
 		return [
+			` heap { buffer: `, { ptr: this.buf.toString() }, ` } `
 		];
 	}
 
 	dealloc() {
+		allocator.free(this.buf);
 	}
 
 	pointerDy: number = -1;
@@ -58,19 +61,6 @@ export class ElementHeapBuffer extends HeapBuffer implements ElementHandler, All
 		}
 		canvas.redraw();
 	}
-
-	leftIdx(i: number) {
-		return 2 * i + 1;
-	}
-	
-	rightIdx(i: number) {
-		return 2 * i + 2;
-	}
-
-	parentIdx(i: number) {
-		return Math.floor((i - 1) / 2);
-	}
-
 
 	moveTo(x: number, y: number) {
 		this.setXY(x, y);
@@ -130,6 +120,14 @@ export class ElementHeapBuffer extends HeapBuffer implements ElementHandler, All
 	isIntersect(x: number, y: number, canvas: CanvasHandler): null | ElementHandler {
 		if(this.intersects(x, y, canvas.transform)) return this;
 		return null;
+	}
+
+	*animateCellBg(canvas: CanvasHandler, idx: number, bg: string) {
+		this.nodesStyles[idx].bg = bg;
+		this.drawCellAtIdx(canvas.ctx, idx);
+		yield;
+		this.nodesStyles[idx].bg = HeapBuffer.bg;
+		this.drawCellAtIdx(canvas.ctx, idx);
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {

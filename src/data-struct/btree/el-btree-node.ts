@@ -7,7 +7,7 @@ import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive, shallowReactive } from "vue";
 import { PrimitiveSize } from "../memory-allocator/types";
-import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, lerp, numberToBytes } from "../utils";
+import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, boolToBytes, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 
 const gapX = GAP * 2;
@@ -36,7 +36,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
     toBytes(): Array<string> {
 		return [
 			...numberToBytes(this.curKeyCount.value),
-			...numberToBytes(this.isLeaf ? 1 : 0),
+			...boolToBytes(this.isLeaf.value),
 			...arrayToBytesArray(this.keys),
 			...arrayToBytesArray(this.children)
 		];

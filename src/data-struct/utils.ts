@@ -36,6 +36,11 @@ export function numberToBytes(n: number): Array<string> {
 	return arr;
 }
 
+export function boolToBytes(b: boolean) {
+	let hex = numberToHex(b ? 1 : 0);
+	return [hex.slice(-2)];
+}
+
 export function getContrastFg(hex: string){
 	const { r, g, b } = hexToRGB(hex)
     const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;

@@ -4,8 +4,9 @@ import { CanvasHandler } from "../handler/canvas-handler.ts";
 import { ElementHeapBuffer } from "./el-heap-buffer.ts";
 
 enum Color {
-	endOfWord = "#00ff00",
+	inserted = "#00ff00",
 	traverse = "#ffff00",
+	swap = "#6f00ff"
 };
 
 class InsertTrie extends AlgorithmHandler {
@@ -31,10 +32,38 @@ class InsertTrie extends AlgorithmHandler {
 		let buf = heap.buf.v;
 		buf.push(value);
 		let idx = buf.length - 1;
-		while(idx > 0 && heap.cmpFn(buf.at(heap.parentIdx(idx)) as number, buf.at(idx) as number)) {
+
+		heap.drawTree(canvas.ctx);
+		canvas.redraw();
+
+		for(const _ of heap.animateCellBg(canvas, idx, Color.inserted)) yield;
+
+		while((idx > 0) && heap.cmpFn(buf.at(heap.parentIdx(idx)) as number, buf.at(idx) as number)) {
+			for(const _ of heap.animateCellBg(canvas, idx, Color.traverse)) yield;
 			let temp = buf.at(idx) as number;
+
+			const idxs = [idx, heap.parentIdx(idx)];
+			
+			idxs.forEach(i => {
+				heap.nodesStyles[i].bg = Color.swap;
+				heap.drawCellAtIdx(canvas.ctx, i);
+			})
+			yield;
+
 			buf.setAt(idx, buf.at(heap.parentIdx(idx)) as number);
 			buf.setAt(heap.parentIdx(idx), temp);
+
+			idxs.forEach(i => {
+				heap.drawCellAtIdx(canvas.ctx, i);
+			})
+			yield;
+
+			idxs.forEach(i => {
+				heap.nodesStyles[i].resetStyle();
+				heap.drawCellAtIdx(canvas.ctx, i);
+			})
+			yield;
+
 			idx = heap.parentIdx(idx);
 		}
 		canvas.redraw();

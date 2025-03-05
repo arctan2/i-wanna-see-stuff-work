@@ -158,6 +158,10 @@ function calcBytesInc() {
 	color: var(--trie-node);
 }
 
+.ElementHeapBuffer.bytes{
+	color: var(--heap-buffer);
+}
+
 .MapList.bytes, .List.bytes{
 	color: var(--list);
 }

@@ -126,10 +126,6 @@ export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay
 	}
 
     toBytes(): Array<string> {
-		if(this.arr.length === 0) {
-			return [];
-		}
-
 		const type = this.dType || typeof this.arr[0];
 		const arr: Array<string> = [];
 
@@ -144,7 +140,7 @@ export class Arr<T extends AllocDisplay | number | null> implements AllocDisplay
 		}
 
 		for(let i = 0, rem = this.cap - this.arr.length; i < rem; i++) {
-			arr.push("00");
+			arr.push("00", "00", "00", "00");
 		}
 
 		return arr;
@@ -236,6 +232,11 @@ export class List<T extends AllocDisplay | number> implements AllocDisplay, Deal
 		this.arrPtr.v.arr.push(...values);
 	}
 
+	pop(): T | undefined {
+		const v = this.arrPtr.v.arr.pop();
+		return v;
+	}
+
 	at(idx: number): T | undefined {
 		return this.arrPtr.v.arr[idx];
 	}
@@ -262,6 +263,10 @@ export class List<T extends AllocDisplay | number> implements AllocDisplay, Deal
 
 	get length(): number {
 		return this.arrPtr.v.arr.length;
+	}
+
+	get cap() {
+		return this.arrPtr.v.cap;
 	}
 
     toBytes(): Array<string> {

@@ -5,13 +5,14 @@ import { useFocusedElement, unfocusElement } from '../../global';
 import { ElementHeapBuffer } from '../../heap/el-heap-buffer';
 import InsertHeap from "../../heap/insert-heap.ts"
 import DeleteHeap from "../../heap/delete-heap.ts"
+import Heapify from "../../heap/heapify.ts"
 import { algorithmState } from '../refs';
 import { randInt } from '../../utils.ts';
+import ModeSwitch from '../../../common-components/mode-switch.vue';
+import { minCmpFn } from '../../heap/element-types/buffer.ts';
 
 const focusedElement = useFocusedElement<ElementHeapBuffer>();
 const toInsertKey = ref<number | "">("");
-const toDeleteKey = ref<number | "">("");
-const toSearchKey = ref<number | "">("");
 const from = ref<number | "">(1);
 const to = ref<number | "">(8);
 const step = ref<number | "">(1);
@@ -21,6 +22,7 @@ const inserterState: {node: ElementHeapBuffer | null, curKey: number, insertedKe
 	curKey: 0,
 	insertedKeys: new Set
 }
+const isOn = ref<boolean>(focusedElement.value.cmpFn === minCmpFn);
 
 class ValidatorObj {
 	obj: Ref<number | "">;
@@ -40,8 +42,6 @@ function validateInputs() {
 		new ValidatorObj(from, -999999, 999999),
 		new ValidatorObj(to, -999999, 999999),
 		new ValidatorObj(step, -100, 100),
-		new ValidatorObj(toDeleteKey, -999999, 999999),
-		new ValidatorObj(toSearchKey, -999999, 999999),
 	];
 
 	for(const { obj, min, max } of validatorObjects) {
@@ -72,13 +72,24 @@ function insertKey() {
 }
 
 function deleteKey() {
-	if(toDeleteKey.value === "") {
-		return;
-	}
-
-	DeleteHeap.init(playground.canvas, focusedElement.value, toDeleteKey.value);
+	DeleteHeap.init(playground.canvas, focusedElement.value);
 	algorithmState.setAlgorithm(DeleteHeap);
 	DeleteHeap.tryPlay(playground.canvas);
+
+	unfocusElement();
+}
+
+function deleteWholeHeap() {
+	const heap = focusedElement.value;
+	unfocusElement();
+	heap.remove(playground.canvas);
+	playground.canvas.redraw();
+}
+
+function heapify() {
+	Heapify.init(playground.canvas, focusedElement.value);
+	algorithmState.setAlgorithm(Heapify);
+	Heapify.tryPlay(playground.canvas);
 
 	unfocusElement();
 }
@@ -129,6 +140,18 @@ function iterInsert() {
 	unfocusElement();
 }
 
+function onClick() {
+	isOn.value = !isOn.value;
+
+	if(isOn.value) {
+		focusedElement.value.setAsMaxHeap();
+	} else {
+		focusedElement.value.setAsMinHeap();
+	}
+
+	heapify();
+}
+
 </script>
 
 <template>
@@ -136,6 +159,16 @@ function iterInsert() {
 	<h1>Heap</h1>
 
 	<div class="sub-sections-container scroll-bar">
+		<div>
+			<ModeSwitch 
+				offText="min"
+				onText="max"
+				:onClick="onClick"
+				:state="isOn"
+			/>
+			<!--<button class="btn btn-nobg clr-lblue" @click="heapify()">heapify</button> -->
+		</div>
+
 		<div class="insert-key">
 			<h2>Insert Key</h2>
 			<input
@@ -202,18 +235,8 @@ function iterInsert() {
 		</div>
 
 		<div class="delete-key">
-			<h2>Delete Key</h2>
-			<input
-				@blur="validateInputs"
-				spellcheck="false"
-				placeholder="key"
-				type="number"
-				max="999999"
-				min="-999999"
-				v-model="toDeleteKey"
-				style="width: 100%;"
-			/>
-			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete</button>
+			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete top</button>
+			<button class="btn btn-nobg clr-red" @click="deleteWholeHeap()">delete heap</button>
 		</div>
 	</div>
 </div>

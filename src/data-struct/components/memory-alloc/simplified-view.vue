@@ -124,6 +124,11 @@ onMounted(() => {
 	color: black;
 }
 
+.ElementHeapBuffer.simplified{
+	background-color: var(--heap-buffer);
+	color: black;
+}
+
 .Null.simplified{
 	background-color: var(--null);
 	color: black;

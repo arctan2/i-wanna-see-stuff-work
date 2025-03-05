@@ -7,7 +7,7 @@ import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Null, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive, shallowReactive } from "vue";
 import { PrimitiveSize } from "../memory-allocator/types";
-import { arrayToBytesArray, arrayToDisplayBlocks, lerp, numberToBytes } from "../utils";
+import { arrayToBytesArray, arrayToDisplayBlocks, boolToBytes, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
 import { Arrow } from "../linked-list/element-types/arrow";
 
@@ -39,7 +39,7 @@ export class ElementBptreeNode extends BptreeNode implements ElementHandler, All
     toBytes(): Array<string> {
 		return [
 			...numberToBytes(this.curKeyCount.value),
-			...numberToBytes(this.isLeaf ? 1 : 0),
+			...boolToBytes(this.isLeaf.value),
 			...arrayToBytesArray(this.keys),
 			...arrayToBytesArray(this.children),
 			...(this.nextNode ? this.nextNode.toBytes() : Null.Bytes)

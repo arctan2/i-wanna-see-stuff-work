@@ -4,6 +4,7 @@ import Select from "../../../common-components/select.vue";
 import BytesView from "./bytes-view.vue";
 import SimplifiedView from "./simplified-view.vue";
 import { setIsMemAllocShow } from "../refs";
+import ModeSwitch from "../../../common-components/mode-switch.vue";
 
 enum Mode {
 	Bytes = "Bytes",
@@ -11,7 +12,7 @@ enum Mode {
 }
 
 const byteAlign: any = { "auto": "auto", "4": 4, "8": 8, "16": 16, "32": 32, "64": 64 };
-const mode = ref(Mode.Simplified);
+const isOn = ref<boolean>(true);
 const curByteAlign = ref<"auto" | number>("auto");
 const showAddressOnHover = ref<boolean>(false);
 const allocContainerDiv = ref<Element | null>(null);
@@ -29,20 +30,21 @@ const isBottomLayout = ref<boolean>(true);
 	</div>
 
 	<div id="top-bar" class="scroll-bar">
-		<div class="mode-container">
-			<div :style="{ color: Mode.Bytes === mode ? 'white' : '#444444' }">{{ Mode.Bytes }}</div>
-			<div :class="['switch', mode]" @click="() => mode = mode === Mode.Simplified ? Mode.Bytes : Mode.Simplified"></div>
-			<div :style="{ color: Mode.Simplified === mode ? 'white' : '#444444' }">{{ Mode.Simplified }}</div>
-		</div>
+		<ModeSwitch 
+			:offText="Mode.Bytes"
+			:onText="Mode.Simplified"
+			:onClick="() => isOn = !isOn"
+			:state="isOn"
+		/>
 
-		<div class="drop-down-container" v-if="mode === Mode.Bytes">
+		<div class="drop-down-container" v-if="!isOn">
 			<span>Align: </span>
 			<div class="custom-select-container">
 				<Select :options="byteAlign as any" :onChange="(value) => curByteAlign = value as any" :value="curByteAlign as string" />
 			</div>
 		</div>
 
-		<template v-if="mode === Mode.Simplified">
+		<template v-if="isOn">
 			<div class="checkbox-container">
 				<input type="checkbox" v-model="showAddressOnHover" />
 				<label>Show address on hover</label>
@@ -62,9 +64,9 @@ const isBottomLayout = ref<boolean>(true);
 	</div>
 
 	<div id="alloc-container" class="scroll-bar" ref="allocContainerDiv">
-		<BytesView v-if="mode === Mode.Bytes" :byteAlign="byteAlign[curByteAlign as any]" :parentDiv="allocContainerDiv" />
+		<BytesView v-if="!isOn" :byteAlign="byteAlign[curByteAlign as any]" :parentDiv="allocContainerDiv" />
 		<SimplifiedView
-			v-if="mode === Mode.Simplified"
+			v-if="isOn"
 			:showAddressOnHover="showAddressOnHover"
 			:addressType="addressType"
 			:parentDiv="allocContainerDiv"
@@ -90,6 +92,7 @@ const isBottomLayout = ref<boolean>(true);
 	--bptree-node: #00ff91;
 	--llrbtree-node: #ff2626;
 	--trie-node: #c7c7c7;
+	--heap-buffer: #00e5ff;
 }
 
 #memory-alloc{
@@ -203,46 +206,6 @@ const isBottomLayout = ref<boolean>(true);
 	height: 100%;
 	overflow-y: auto;
 	padding: 0.5rem;
-}
-
-.mode-container{
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-around;
-	font-family: monospace;
-	padding: 0.3rem;
-	color: white;
-}
-
-.switch{
-	width: 2rem;
-	height: 1rem;
-	border-radius: 50px;
-	margin: 0 0.5rem;
-	cursor: pointer;
-}
-
-.switch.Bytes{
-	background-color: rgb(40, 40, 40);
-}
-
-.switch.Simplified{
-	background-color: rgb(40, 40, 40);
-}
-
-.switch::before{
-	content: "";
-	display: block;
-	width: 1rem;
-	height: 100%;
-	background-color: white;
-	border-radius: 7px;
-	transition: transform 0.2s;
-}
-
-.switch.Simplified::before{
-	transform: translateX(100%);
 }
 
 .checkbox-container{
