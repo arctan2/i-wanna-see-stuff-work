@@ -11,7 +11,6 @@ import { randInt } from '../../utils.ts';
 
 const focusedElement = useFocusedElement<ElementLLRbtreeNode>();
 const toInsertKey = ref<number | "">("");
-const toDeleteKey = ref<number | "">("");
 const toSearchKey = ref<number | "">("");
 const from = ref<number | "">(1);
 const to = ref<number | "">(8);
@@ -41,7 +40,6 @@ function validateInputs() {
 		new ValidatorObj(from, -999999, 999999),
 		new ValidatorObj(to, -999999, 999999),
 		new ValidatorObj(step, -100, 100),
-		new ValidatorObj(toDeleteKey, -999999, 999999),
 		new ValidatorObj(toSearchKey, -999999, 999999),
 	];
 
@@ -73,11 +71,7 @@ function insertKey() {
 }
 
 function deleteKey() {
-	if(toDeleteKey.value === "") {
-		return;
-	}
-
-	DeleteLLRbtree.init(playground.canvas, focusedElement.value, toDeleteKey.value);
+	DeleteLLRbtree.init(playground.canvas, focusedElement.value, focusedElement.value.key.value);
 	algorithmState.setAlgorithm(DeleteLLRbtree);
 	DeleteLLRbtree.tryPlay(playground.canvas);
 
@@ -225,21 +219,6 @@ function iterInsert() {
 			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
 		</div>
 
-		<div class="delete-key">
-			<h2>Delete Key</h2>
-			<input
-				@blur="validateInputs"
-				spellcheck="false"
-				placeholder="key"
-				type="number"
-				max="999999"
-				min="-999999"
-				v-model="toDeleteKey"
-				style="width: 100%;"
-			/>
-			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete</button>
-		</div>
-
 		<div class="search-key">
 			<h2>Search Key</h2>
 			<input
@@ -256,6 +235,11 @@ function iterInsert() {
 		</div>
 
 		</template>
+
+		<div class="delete-key">
+			<h2>Delete Key</h2>
+			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete</button>
+		</div>
 	</div>
 </div>
 </template>

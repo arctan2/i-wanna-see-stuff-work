@@ -19,7 +19,7 @@ class DeleteBtree extends AlgorithmHandler {
 
 	init(canvas: CanvasHandler, node: ElementBtreeNode, key: number) {
 		this.toDeleteKey = key;
-		this.root = node;
+		this.root = node.getRoot();
 		this.initGenerator(canvas);
 	}
 

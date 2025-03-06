@@ -12,11 +12,11 @@ enum Color {
 
 class DeleteLLRbtree extends AlgorithmHandler {
 	root: null | ElementLLRbtreeNode = null;
-	toDeleteKey: number = 0;
+	toDeleteKey: number | "" = "";
 
-	init(canvas: CanvasHandler, node: ElementLLRbtreeNode, key: number) {
+	init(canvas: CanvasHandler, node: ElementLLRbtreeNode, key: number | "") {
 		this.toDeleteKey = key;
-		this.root = node;
+		this.root = node.getRoot();
 		this.initAsyncGenerator(canvas);
 	}
 
@@ -200,8 +200,8 @@ class DeleteLLRbtree extends AlgorithmHandler {
 		return [fixedUp, deleted];
 	}
 
-	async *deleteValue(root: PtrLLRbNode, value: number, canvas: CanvasHandler) {
-		if(root && root?.v.isLeaf()) {
+	async *deleteValue(root: PtrLLRbNode, value: number | "", canvas: CanvasHandler) {
+		if(root && (root?.v.isLeaf() || value === "")) {
 			if(root.v.key.value === value) {
 				for(const _ of root.v.animateNodeBg(canvas, Color.delete)) yield;
 				root.v.remove(canvas);
@@ -211,7 +211,7 @@ class DeleteLLRbtree extends AlgorithmHandler {
 
 		let deleted;
 
-		let gen = this.delete(root, value, canvas);
+		let gen = this.delete(root, value as number, canvas);
 		while(true) {
 			let result = await gen.next();
 			if(result.done) {

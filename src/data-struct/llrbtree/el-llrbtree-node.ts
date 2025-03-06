@@ -285,14 +285,20 @@ export class ElementLLRbtreeNode extends LLRbtreeNode implements ElementHandler,
 		return this.parentNode.lNode === this.ptr;
 	}
 
+	getRoot() {
+		let root: ElementLLRbtreeNode = this;
+		while(root.parentNode !== null) {
+			root = root.parentNode;
+		}
+		return root;
+	}
+
 	async rearrangeTree(canvas: CanvasHandler, root?: ElementLLRbtreeNode) {
 		if(root === undefined) {
 			root = this;
 		}
 
-		while(root.parentNode !== null) {
-			root = root?.parentNode;
-		}
+		root = root.getRoot();
 
 		const locMap = getNewCoords(root, gapX, gapY);
 

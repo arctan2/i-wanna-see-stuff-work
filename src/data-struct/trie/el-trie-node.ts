@@ -6,7 +6,7 @@ import { TrieNode, gapX, gapY } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive } from "vue";
-import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, boolToBytes, lerp, numberToBytes } from "../utils";
+import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, boolToBytes, lerp } from "../utils";
 import { Point } from "../geometry";
 import { WalkersNode, getNewCoords } from "../walkers-algorithm";
 import { Arrow } from "../linked-list/element-types/arrow";

@@ -5,7 +5,7 @@ import { focusedElement, isAutoRearrangeBtree } from "../global";
 import { BtreeNode } from "./element-types/node";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
-import { ShallowReactive, shallowReactive } from "vue";
+import { ShallowReactive, ref, shallowReactive } from "vue";
 import { PrimitiveSize } from "../memory-allocator/types";
 import { arrayToBytesArray, arrayToDisplayBlocks, arrayToDisplayStr, boolToBytes, lerp, numberToBytes } from "../utils";
 import { Point } from "../geometry";
@@ -23,6 +23,8 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	children: ShallowReactive<Array<Ptr<ElementBtreeNode> | null>>;
 
 	static Size = PrimitiveSize.Int + PrimitiveSize.Bool + Ptr.Size + Ptr.Size;
+
+	selectedCellIdx = ref<number>(-1);
 
 	constructor(x: number, y: number, M: number, isLeaf: boolean, parent: ElementBtreeNode | null) {
 		super(M, isLeaf);
@@ -108,6 +110,14 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 		}
 	}
 
+	getRoot() {
+		let root: ElementBtreeNode = this;
+		while(root.parentNode !== null) {
+			root = root.parentNode;
+		}
+		return root;
+	}
+
 	pointerMove(state: EventState, canvas: CanvasHandler): void {
 		if(state.pointerDown.x === -1) return;
 		let { x, y } = state.pointerMove;
@@ -142,6 +152,25 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	}
 
 	pointerUp(state: EventState, canvas: CanvasHandler): ElementHandler | null { 
+		if((state.pointerUp.x === state.pointerDown.x) && (state.pointerUp.y === state.pointerDown.y)) {
+			if(this.selectedCellIdx.value !== -1) {
+				this.keysBg[this.selectedCellIdx.value] = BtreeNode.cellBg;
+				this.drawCell(canvas.ctx, this.selectedCellIdx.value);
+				this.selectedCellIdx.value = -1;
+			}
+
+			let { x } = state.pointerUp;
+			const relMouseX = x - this.left - canvas.transform.x;
+
+			let idx = Math.floor(relMouseX / BtreeNode.cellWidth);
+
+			if(idx < this.curKeyCount.value) {
+				this.selectedCellIdx.value = idx;
+				this.keysBg[idx] = "#f5d06c";
+				this.drawCell(canvas.ctx, idx);
+			}
+		}
+
 		if(isAutoRearrangeBtree.value === false) {
 			return null;
 		}
@@ -156,6 +185,8 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 	}
 
 	unfocus() {
+		this.keysBg[this.selectedCellIdx.value] = BtreeNode.cellBg;
+		this.selectedCellIdx.value = -1;
 	}
 
 	isIntersect(x: number, y: number, canvas: CanvasHandler): null | ElementHandler {
@@ -184,9 +215,7 @@ export class ElementBtreeNode extends BtreeNode implements ElementHandler, Alloc
 			root = this;
 		}
 
-		while(root.parentNode !== null) {
-			root = root?.parentNode;
-		}
+		root = this.getRoot();
 
 		let levels = [];
 		let queue = [root];

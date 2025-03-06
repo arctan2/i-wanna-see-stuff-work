@@ -10,7 +10,6 @@ import { algorithmState } from '../refs';
 
 const focusedElement = useFocusedElement<ElementTrieNode>();
 const toInsertString = ref<string>("");
-const toDeleteString = ref<string>("");
 const toSearchString = ref<string>("");
 
 function insertString() {
@@ -26,11 +25,7 @@ function insertString() {
 }
 
 function deleteString() {
-	if(toDeleteString.value === "") {
-		return;
-	}
-
-	DeleteTrie.init(playground.canvas, focusedElement.value, toDeleteString.value);
+	DeleteTrie.init(playground.canvas, focusedElement.value, focusedElement.value.word);
 	algorithmState.setAlgorithm(DeleteTrie);
 	DeleteTrie.tryPlay(playground.canvas);
 
@@ -75,18 +70,6 @@ function searchString() {
 			<button class="btn btn-nobg clr-green" @click="insertString()">insert</button>
 		</div>
 
-		<div class="delete-key">
-			<h2>Delete String</h2>
-			<input
-				spellcheck="false"
-				placeholder="string"
-				type="text"
-				v-model="toDeleteString"
-				style="width: 100%;"
-			/>
-			<button class="btn btn-nobg clr-red" @click="deleteString()">delete</button>
-		</div>
-
 		<div class="search-key">
 			<h2>Search String</h2>
 			<input
@@ -100,6 +83,12 @@ function searchString() {
 		</div>
 
 		</template>
+
+		<div class="delete-key" v-if="focusedElement.isWordEnd.value || (focusedElement.parentNode === null && focusedElement.isEmpty())">
+			<h2>Delete String</h2>
+			<button class="btn btn-nobg clr-red" @click="deleteString()">delete</button>
+		</div>
+
 	</div>
 </div>
 </template>

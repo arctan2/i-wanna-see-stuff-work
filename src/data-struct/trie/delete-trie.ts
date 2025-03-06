@@ -14,7 +14,7 @@ class DeleteTrie extends AlgorithmHandler {
 
 	init(canvas: CanvasHandler, node: ElementTrieNode, s: string) {
 		this.toDeleteString = s;
-		this.root = node;
+		this.root = node.getRoot();
 		this.initGenerator(canvas);
 	}
 
@@ -35,7 +35,7 @@ class DeleteTrie extends AlgorithmHandler {
 		if(depth === s.length) {
 			if(node.isWordEnd.value) {
 				node.isWordEnd.value = false;
-			} else {
+			} else if(s !== "") {
 				setErrorPopupText(`String "${s}" not present in the tree.`);
 			}
 
