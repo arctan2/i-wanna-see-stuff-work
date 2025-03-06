@@ -5,7 +5,9 @@ import SelectedItem from "./selected-item.vue";
 import SettingsMenu from "./settings-menu.vue";
 import Algorithm from "./algorithm.vue";
 import MemoryAlloc from "./memory-alloc/memory-alloc.vue";
+import Tutorial from "./tutorial.vue";
 import { isMemAllocShow } from "./refs";
+import { isTutorialMode } from "./tutorial";
 
 </script>
 
@@ -17,6 +19,7 @@ import { isMemAllocShow } from "./refs";
 	<SelectedItem />
 	<PlaygroundSection />
 	<Algorithm />
+	<Tutorial v-if="isTutorialMode" />
 </div>
 </template>
 

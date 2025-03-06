@@ -1,5 +1,7 @@
 import { readonly, ref, shallowReactive } from "vue";
 import { AlgorithmHandler } from "../algorithm-handler";
+import { unfocusElement } from "../global";
+import { playground } from "../handler/playground-handler";
 
 const _isMenuOpen = ref<boolean>(false);
 const _showToolBar = ref<boolean>(true);
@@ -31,6 +33,8 @@ class AlgorithmState {
 export const algorithmState = shallowReactive<AlgorithmState>(new AlgorithmState);
 
 export function setIsMenuOpen(v: boolean) {
+	if(v) unfocusElement();
+	playground.canvas.redraw();
 	_isMenuOpen.value = v;
 }
 

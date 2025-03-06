@@ -9,6 +9,7 @@ import { componentMap } from "./tool-component-map";
 import { sampleDBinaryTree, sampleDGraph, sampleLinkedList, sampleUEdgeMatrix, sampleUGraph } from "./samples";
 import Select from "../../common-components/select.vue";
 import { computed, ref, watch } from "vue";
+import { startTutorial } from "./tutorial";
 
 const exampleMap = {
 	ll: "Linked List",
@@ -59,6 +60,10 @@ watch(isDisplayGrid, cur => {
 			<div></div>
 		</div>
 		<section id="menu-section" class="floating-panel sub-sections-container" v-if="isMenuOpen">
+			<div>
+				<button class="btn btn-nobg clr-lblue" @click="startTutorial">help</button>
+			</div>
+
 			<div>
 				<div class="checkbox-container">
 					<input type="checkbox" v-model="isRetainTool" />
