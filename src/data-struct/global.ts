@@ -91,15 +91,15 @@ export interface ToolType {
 }
 
 export const ToolList: ToolType[] = [
-	{ name: "ll-node", toolClass: ToolLLNode, icon: IconLLNode },
-	{ name: "g-node", toolClass: ToolGNode, icon: IconGNode },
-	{ name: "u-edge", toolClass: ToolUEdge, icon: IconUEdge },
-	{ name: "d-edge", toolClass: ToolDEdge, icon: IconDEdge },
-	{ name: "adj-mat", toolClass: ToolAdjMatrix, icon: IconMatrix },
-	{ name: "llrbtree-node", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
-	{ name: "btree-node", toolClass: ToolBtreeNode, icon: IconBtreeNode },
-	{ name: "bptree-node", toolClass: ToolBptreeNode, icon: IconBptreeNode },
-	{ name: "trie-node", toolClass: ToolTrieNode, icon: IconTrieNode },
-	{ name: "heap-buffer", toolClass: ToolHeapBuffer, icon: IconHeapBuffer },
+	{ name: "linked list", toolClass: ToolLLNode, icon: IconLLNode },
+	{ name: "graph node", toolClass: ToolGNode, icon: IconGNode },
+	{ name: "undirected edge", toolClass: ToolUEdge, icon: IconUEdge },
+	{ name: "directed edge", toolClass: ToolDEdge, icon: IconDEdge },
+	{ name: "adjacency matrix", toolClass: ToolAdjMatrix, icon: IconMatrix },
+	{ name: "llrbtree", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
+	{ name: "btree", toolClass: ToolBtreeNode, icon: IconBtreeNode },
+	{ name: "b+tree", toolClass: ToolBptreeNode, icon: IconBptreeNode },
+	{ name: "trie", toolClass: ToolTrieNode, icon: IconTrieNode },
+	{ name: "heap buffer", toolClass: ToolHeapBuffer, icon: IconHeapBuffer },
 ];
 

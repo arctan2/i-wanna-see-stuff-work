@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { playground } from "../handler/playground-handler";
 import { runSample } from "../samples";
 import { EventHandler } from "../handler/event-handler";
-import { infoPopup, errorPopup, setErrorPopupText } from "../global";
+import { infoPopup, errorPopup, setErrorPopupText, curToolIdx, ToolList } from "../global";
 import ToolInput from "./tool-input.vue";
 
 const playgroundSection = ref<null | HTMLElement>(null);
@@ -51,6 +51,15 @@ onUnmounted(() => {
 	<canvas id="element" ref="toolCanvas"></canvas>
 
 	<ToolInput />
+
+	<div id="tool-name" v-if="curToolIdx !== -1">
+		<div class="tool">
+			<div>
+				<component :is="ToolList[curToolIdx].icon"></component>
+			</div>
+		</div>
+		<div>{{ ToolList[curToolIdx].name }}</div>
+	</div>
 
 	<div id="info-popup" v-if="infoPopup.text !== ''">
 		<div class="icon">i</div>
@@ -106,6 +115,48 @@ onUnmounted(() => {
 	z-index: 10;
 	pointer-events: none;
 	opacity: 0.5;
+}
+
+#tool-name{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	position: absolute;
+	height: 2.5rem;
+	width: 12rem;
+	min-width: 2rem;
+	padding: 0.3rem;
+	bottom: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 100;
+	overflow-x: auto;
+	overflow-y: hidden;
+	background: #252525;
+	color: white;
+	border-radius: 4px;
+	border: 1px solid #555555;
+}
+
+.tool{
+	display: flex;
+	width: 30%;
+	height: 100%;
+}
+
+.tool div{
+	height: 100%;
+	color: black;
+	min-width: 3rem;
+	padding: 0.2rem;
+	border-radius: 4px;
+}
+
+.tool div > *{
+	width: 100%;
+	height: 100%;
+	--stroke-clr: #444444;
+	pointer-events: none;
 }
 
 #popup-container{
