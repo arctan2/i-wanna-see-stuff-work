@@ -325,7 +325,11 @@ class Allocator {
 
 		if(freePtr.size === 0) {
 			if(prevBlock === null) {
-				this.freed.head = null;
+				if(this.freed.head?.next) {
+					this.freed.deleteByPtr(this.freed.head.ptr);
+				} else {
+					this.freed.head = null;
+				}
 			} else {
 				this.freed.deleteNextOf(prevBlock);
 			}

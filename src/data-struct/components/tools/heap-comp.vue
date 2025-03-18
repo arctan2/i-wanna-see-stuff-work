@@ -95,37 +95,39 @@ function heapify() {
 }
 
 async function iter() {
-	if(from.value === "" || to.value === "" || step.value === "") return;
+	setTimeout(() => {
+		if(from.value === "" || to.value === "" || step.value === "") return;
 
-	if(step.value === 0) {
-		step.value = from.value <= to.value ? 1 : -1;
-	} 
+		if(step.value === 0) {
+			step.value = from.value <= to.value ? 1 : -1;
+		} 
 
-	if(inserterState.node === null) {
-		return;
-	}
-
-	if((step.value > 0 && inserterState.curKey >= to.value) || (step.value < 0 && inserterState.curKey <= to.value)) {
-		InsertHeap.forceStop(playground.canvas);
-		return;
-	}
-
-	if(isRandomize.value) {
-		while(true) {
-			const v = randInt(from.value, to.value);
-			if(inserterState.insertedKeys.has(v)) continue;
-			inserterState.insertedKeys.add(v);
-			InsertHeap.init(playground.canvas, inserterState.node, v, iter);
-			break;
+		if(inserterState.node === null) {
+			return;
 		}
-	} else {
-		InsertHeap.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
-	}
 
-	algorithmState.setAlgorithm(InsertHeap);
-	InsertHeap.tryPlay(playground.canvas);
+		if((step.value > 0 && inserterState.curKey >= to.value) || (step.value < 0 && inserterState.curKey <= to.value)) {
+			InsertHeap.forceStop(playground.canvas);
+			return;
+		}
 
-	inserterState.curKey += step.value;
+		if(isRandomize.value) {
+			while(true) {
+				const v = randInt(from.value, to.value);
+				if(inserterState.insertedKeys.has(v)) continue;
+				inserterState.insertedKeys.add(v);
+				InsertHeap.init(playground.canvas, inserterState.node, v, iter);
+				break;
+			}
+		} else {
+			InsertHeap.init(playground.canvas, inserterState.node, inserterState.curKey, iter);
+		}
+
+		algorithmState.setAlgorithm(InsertHeap);
+		InsertHeap.tryPlay(playground.canvas);
+
+		inserterState.curKey += step.value;
+	}, 200)
 }
 
 function iterInsert() {

@@ -116,7 +116,7 @@ function onSkipIntro() {
 	<div class="modal">
 		<h2>Memory Allocation</h2>
 		<div class="modal-content">
-			This is where all the fun is...
+			This is the fun stuff...
 		</div>
 		<TutorialBtns :on-continue="goNext" :on-skip-intro="onSkipIntro" :step="step" :total-steps="TOTAL_STEPS" />
 	</div>
