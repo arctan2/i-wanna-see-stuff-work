@@ -96,7 +96,7 @@ export const ToolList: ToolType[] = [
 	{ name: "undirected edge", toolClass: ToolUEdge, icon: IconUEdge },
 	{ name: "directed edge", toolClass: ToolDEdge, icon: IconDEdge },
 	{ name: "adjacency matrix", toolClass: ToolAdjMatrix, icon: IconMatrix },
-	{ name: "llrbtree", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
+	{ name: "left leaning rbtree", toolClass: ToolLLRbtreeNode, icon: IconLLRbtreeNode },
 	{ name: "btree", toolClass: ToolBtreeNode, icon: IconBtreeNode },
 	{ name: "b+tree", toolClass: ToolBptreeNode, icon: IconBptreeNode },
 	{ name: "trie", toolClass: ToolTrieNode, icon: IconTrieNode },

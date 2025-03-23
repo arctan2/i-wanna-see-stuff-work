@@ -31,7 +31,7 @@ function input() {
 </script>
 
 <template>
-	<div v-if="ToolList[curToolIdx]?.name === 'btree-node' || ToolList[curToolIdx]?.name === 'bptree-node'" class="btree-node floating-panel">
+	<div v-if="ToolList[curToolIdx]?.name === 'btree' || ToolList[curToolIdx]?.name === 'b+tree'" class="btree-node floating-panel">
 		<span>M: </span>
 		<input
 			@focusout="validateInputs"
