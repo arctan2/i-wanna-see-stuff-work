@@ -34,7 +34,7 @@ class SearchLLRbtree extends AlgorithmHandler {
 		let cur = root;
 
 		while(true) {
-			for(const _ of cur.animateNodeBg(canvas, Color.traverse)) yield;
+			yield* cur.animateNodeBg(canvas, Color.traverse);
 
 			if(cur.key.value === key) {
 				cur.bg = Color.found;
@@ -63,10 +63,7 @@ class SearchLLRbtree extends AlgorithmHandler {
 
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.searchKey(this.root, this.toSearchKey, canvas);
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.searchKey(this.root, this.toSearchKey, canvas);
 		}
 	}
 }

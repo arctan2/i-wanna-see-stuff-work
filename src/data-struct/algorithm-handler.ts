@@ -9,8 +9,8 @@ export enum ProgressState {
 	Running
 }
 
-type Gen = Generator<null, void, unknown>;
-type AsyncGen = AsyncGenerator<null, void, unknown>;
+type Gen = Generator<undefined, void, unknown>;
+type AsyncGen = AsyncGenerator<undefined, void, unknown>;
 
 export class AlgorithmHandler {
 	private state: ProgressState = ProgressState.NotBegun;
@@ -155,13 +155,13 @@ export class AlgorithmHandler {
 	}
 
 	async *asyncGeneratorFn(_canvas: CanvasHandler) {
-		yield null;
 		/* implemented by child class */
+		yield;
 	}
 
 	*generatorFn(_canvas: CanvasHandler) {
-		yield null;
 		/* implemented by child class */
+		yield;
 	}
 }
 

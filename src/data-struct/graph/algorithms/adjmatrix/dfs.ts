@@ -39,7 +39,7 @@ export default class DfsAdjMatrixClass extends AlgorithmHandler {
 		}
 	}
 
-	*dfs(adjMatrix: AdjMatrix, node: Node, visited: Set<string>, pred: {[_:string]: Node | null}, canvas: CanvasHandler) {
+	*dfs(adjMatrix: AdjMatrix, node: Node, visited: Set<string>, pred: {[_:string]: Node | null}, canvas: CanvasHandler): Generator<any, boolean, unknown>{
 		const src = adjMatrix.src;
 		const dest = adjMatrix.dest;
 		visited.add(node.id);
@@ -84,15 +84,9 @@ export default class DfsAdjMatrixClass extends AlgorithmHandler {
 					return true;
 				}
 
-				let gen = this.dfs(adjMatrix, n, visited, pred, canvas);
-				let ret;
-				while(true) {
-					ret = gen.next();
-					if(ret.done) break;
-					yield null;
-				}
+				let ret = yield* this.dfs(adjMatrix, n, visited, pred, canvas);
 
-				if(ret.value === true) {
+				if(ret === true) {
 					return true;
 				}
 			}
@@ -110,11 +104,7 @@ export default class DfsAdjMatrixClass extends AlgorithmHandler {
 		if(this.adjMatrix) {
 			let pred: {[_:string]: Node | null} = {};
 			let visited: Set<string> = new Set();
-			let gen = this.dfs(this.adjMatrix, this.adjMatrix.src, visited, pred, canvas);
-
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.dfs(this.adjMatrix, this.adjMatrix.src, visited, pred, canvas);
 		}
 	}
 }

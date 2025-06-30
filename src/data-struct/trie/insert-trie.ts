@@ -36,7 +36,7 @@ class InsertTrie extends AlgorithmHandler {
 		let temp = root;
 
 		for(const char of s) {
-			for(const _ of temp.animateNodeBg(canvas, Color.traverse)) yield;
+			yield* temp.animateNodeBg(canvas, Color.traverse);
 			const charCodeIdx = char.charCodeAt(0) - 97;
 
 			if(temp.children[charCodeIdx] === null) {
@@ -52,17 +52,14 @@ class InsertTrie extends AlgorithmHandler {
 		temp.isWordEnd.value = true;
 		temp.word = s;
 
-		for(const _ of temp.animateNodeBg(canvas, Color.endOfWord)) yield;
+		yield* temp.animateNodeBg(canvas, Color.endOfWord);
 
 		await root.rearrangeTree(canvas);
 	}
 
 	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.insertString(this.root, this.toInsertString, canvas);
-			while(!(await gen.next()).done) {
-				yield null;
-			}
+			yield* this.insertString(this.root, this.toInsertString, canvas);
 		}
 	}
 }

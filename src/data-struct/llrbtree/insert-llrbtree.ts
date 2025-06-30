@@ -30,9 +30,9 @@ class InsertLLRbtree extends AlgorithmHandler {
 		setInfoPopupText("");
 	}
 
-	async *insert(h: PtrLLRbNode, key: number, parent: PtrLLRbNode, canvas: CanvasHandler) {
+	async *insert(h: PtrLLRbNode, key: number, parent: PtrLLRbNode, canvas: CanvasHandler): AsyncGenerator<any, PtrLLRbNode, unknown> {
 		if(h === null) {
-			for(const _ of parent!.v.animateNodeBg(canvas, Color.insertTo)) yield;
+			yield* parent!.v.animateNodeBg(canvas, Color.insertTo);
 			const p = parent!.v;
 			const isLeft = key < (p.key.value || 0);
 
@@ -54,66 +54,30 @@ class InsertLLRbtree extends AlgorithmHandler {
 			return n.ptr;
 		}
 
-		for(const _ of h.v.animateNodeBg(canvas, Color.traverse)) yield;
+		yield* h.v.animateNodeBg(canvas, Color.traverse);
 
 		if(key < (h.v.key.value as number)) {
-			let gen = this.insert(h.v.lNode, key, h, canvas);
-
 			h.v.drawLineToChild(canvas.ctx, "l", Color.traverse);
 			yield;
 			h.v.drawLineToChild(canvas.ctx, "l");
-
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					h.v.lNode = result.value;
-					break;
-				}
-				yield;
-			}
+			h.v.lNode = yield* this.insert(h.v.lNode, key, h, canvas);
 		} else {
-			let gen = this.insert(h.v.rNode, key, h, canvas);
-
 			h.v.drawLineToChild(canvas.ctx, "r", Color.traverse);
 			yield;
 			h.v.drawLineToChild(canvas.ctx, "r");
-
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					h.v.rNode = result.value;
-					break;
-				}
-				yield;
-			}
+			h.v.rNode = yield* this.insert(h.v.rNode, key, h, canvas);
 		}
 
 		if(isRed(h.v.rNode) && !isRed(h.v.lNode)) {
-			let gen = rotateLeft(h.v, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					h = result.value;
-					break;
-				}
-				yield;
-			}
+			h = yield* rotateLeft(h.v, canvas);
 		}
 
 		if(h && isRed(h.v.lNode) && isRed(h.v.lNode!.v.lNode)) {
-			let gen = rotateRight(h.v, canvas);;
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					h = result.value;
-					break;
-				}
-				yield;
-			}
+			h = yield* rotateRight(h.v, canvas);
 		}
 
 		if(h && isRed(h.v.lNode) && isRed(h.v.rNode)) {
-			for(const _ of flip(h.v, canvas)) yield;
+			yield* flip(h.v, canvas);
 		}
 
 		return h;
@@ -123,15 +87,7 @@ class InsertLLRbtree extends AlgorithmHandler {
 		if(root.key.value === "") {
 			root.key.value = key;
 		} else {
-			let gen = this.insert(root.ptr, key, root.ptr, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					root = result.value!.v;
-					break;
-				}
-				yield;
-			}
+			root = (yield* this.insert(root.ptr, key, root.ptr, canvas))!.v;
 		}
 
 		root.isBlack = true;
@@ -140,10 +96,7 @@ class InsertLLRbtree extends AlgorithmHandler {
 
 	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.insertKey(this.root, this.toInsertKey, canvas);
-			while(!(await gen.next()).done) {
-				yield null;
-			}
+			yield* this.insertKey(this.root, this.toInsertKey, canvas);
 		}
 	}
 }

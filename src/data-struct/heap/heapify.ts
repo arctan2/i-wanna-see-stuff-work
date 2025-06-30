@@ -25,7 +25,7 @@ class Heapify extends AlgorithmHandler {
 		setInfoPopupText("");
 	}
 
-	*heapify(heap: ElementHeapBuffer, idx: number, canvas: CanvasHandler) {
+	*heapify(heap: ElementHeapBuffer, idx: number, canvas: CanvasHandler): Generator<any, void, unknown> {
 		let i = idx;
 		const leftIdx = heap.leftIdx(idx);
 		const rightIdx = heap.rightIdx(idx);
@@ -41,7 +41,7 @@ class Heapify extends AlgorithmHandler {
 		}
 
 		if(i !== idx) {
-			for(const _ of heap.animateCellBg(canvas, idx, Color.traverse)) yield;
+			yield* heap.animateCellBg(canvas, idx, Color.traverse);
 			let temp = buf.at(idx) as number;
 
 			const idxs = [idx, i];
@@ -65,24 +65,24 @@ class Heapify extends AlgorithmHandler {
 				heap.drawCellAtIdx(canvas.ctx, i);
 			})
 			yield;
-			for(const _ of this.heapify(heap, i, canvas)) yield;
+			yield* this.heapify(heap, i, canvas);
 		}
 	}
 
 	*buildHeap(heap: ElementHeapBuffer, canvas: CanvasHandler) {
 		let startIdx = Math.floor(heap.buf.v.length / 2) - 1;
 
-		for(const _ of heap.animateCellBg(canvas, startIdx, Color.traverse)) yield;
+		yield* heap.animateCellBg(canvas, startIdx, Color.traverse);
 	 
 		for(let i = startIdx; i >= 0; i--) {
-			for(const _ of this.heapify(heap, i, canvas)) yield;
+			yield* this.heapify(heap, i, canvas);
 		}
 	}
 
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.root) {
 			if(this.root.buf.v.length === 0) return;
-			for(const _ of this.buildHeap(this.root, canvas)) yield null;
+			yield* this.buildHeap(this.root, canvas);
 		}
 	}
 }

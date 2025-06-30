@@ -24,13 +24,13 @@ class DeleteTrie extends AlgorithmHandler {
 		this.toDeleteString = "";
 	}
 
-	*deleteRecursive(node: ElementTrieNode | null, s: string, depth: number, canvas: CanvasHandler) {
+	*deleteRecursive(node: ElementTrieNode | null, s: string, depth: number, canvas: CanvasHandler): Generator<any, ElementTrieNode | null, unknown> {
 		if(node === null) {
 			setErrorPopupText(`String "${s}" not present in the tree.`);
 			return node;
 		}
 
-		for(const _ of node.animateNodeBg(canvas, Color.traverse)) yield;
+		yield* node.animateNodeBg(canvas, Color.traverse);
 
 		if(depth === s.length) {
 			if(node.isWordEnd.value) {
@@ -40,7 +40,7 @@ class DeleteTrie extends AlgorithmHandler {
 			}
 
 			if(node.isEmpty()) {
-				for(const _ of node.animateNodeBg(canvas, Color.delete)) yield;
+				yield* node.animateNodeBg(canvas, Color.delete);
 				node.remove(canvas);
 				canvas.redraw();
 				return null;
@@ -51,19 +51,10 @@ class DeleteTrie extends AlgorithmHandler {
 
 		const charCodeIdx = s.charAt(depth).charCodeAt(0) - 97;
 
-		let gen = this.deleteRecursive(node.children[charCodeIdx]?.v || null, s, depth + 1, canvas);
-		let result;
-		while(true) {
-			result = gen.next();
-			if(result.done) {
-				node.children[charCodeIdx] = result.value?.ptr || null;
-				break;
-			}
-			yield;
-		}
+		node.children[charCodeIdx] = (yield* this.deleteRecursive(node.children[charCodeIdx]?.v || null, s, depth + 1, canvas))?.ptr || null;
 
 		if(node.isEmpty() && !node.isWordEnd.value) {
-			for(const _ of node.animateNodeBg(canvas, Color.delete)) yield;
+			yield* node.animateNodeBg(canvas, Color.delete);
 			node.remove(canvas);
 			canvas.redraw();
 			return null;
@@ -74,10 +65,7 @@ class DeleteTrie extends AlgorithmHandler {
 
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.deleteRecursive(this.root, this.toDeleteString, 0, canvas);
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.deleteRecursive(this.root, this.toDeleteString, 0, canvas);
 			this.root.rearrangeTree(canvas);
 		}
 	}

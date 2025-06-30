@@ -38,7 +38,7 @@ class DeleteTrie extends AlgorithmHandler {
 		}
 
 		if(i !== idx) {
-			for(const _ of heap.animateCellBg(canvas, idx, Color.traverse)) yield;
+			yield* heap.animateCellBg(canvas, idx, Color.traverse);
 			let temp = buf.at(idx) as number;
 
 			const idxs = [idx, i];
@@ -62,18 +62,18 @@ class DeleteTrie extends AlgorithmHandler {
 				heap.drawCellAtIdx(canvas.ctx, i);
 			})
 			yield;
-			for(const _ of this.heapify(heap, i, canvas)) yield;
+			yield* this.heapify(heap, i, canvas);
 		}
 	}
 
 	*delete(heap: ElementHeapBuffer, canvas: CanvasHandler) {
 		let buf = heap.buf.v;
 
-		for(const _ of heap.animateCellBg(canvas, 0, Color.delete)) yield;
+		yield* heap.animateCellBg(canvas, 0, Color.delete);
 
-		for(const _ of heap.animateCellBg(canvas, buf.length - 1, Color.shift)) yield;
+		yield* heap.animateCellBg(canvas, buf.length - 1, Color.shift);
 		buf.setAt(0, buf.at(buf.length - 1) as number);
-		for(const _ of heap.animateCellBg(canvas, 0, Color.shift)) yield;
+		yield* heap.animateCellBg(canvas, 0, Color.shift);
 
 		buf.pop();
 
@@ -81,7 +81,7 @@ class DeleteTrie extends AlgorithmHandler {
 
 		canvas.redraw();
 
-		for(const _ of this.heapify(heap, 0, canvas)) yield;
+		yield* this.heapify(heap, 0, canvas);
 	}
 
 	*generatorFn(canvas: CanvasHandler) {

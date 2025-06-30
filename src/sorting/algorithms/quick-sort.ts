@@ -41,14 +41,7 @@ export default class QuickSort extends Sorter {
 
 	*quickSort(low: number, high: number) {
 		if(low < high) {
-			let partitionGen = this.partition(low, high);
-			let p;
-			while(true) {
-				p = partitionGen.next();
-				yield null;
-				if(p.done) break;
-			}
-			let partition = p.value;
+			let partition = yield* this.partition(low, high);
 
 			let leftGen = this.quickSort(low, partition - 1);
 			while(!leftGen.next().done) {

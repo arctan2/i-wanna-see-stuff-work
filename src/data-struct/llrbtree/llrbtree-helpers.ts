@@ -144,28 +144,11 @@ export function* flip(h: ElementLLRbtreeNode, canvas: CanvasHandler) {
 export async function *moveRedLeft(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
-	for(const _ of flip(h.v, canvas)) yield;
+	yield* flip(h.v, canvas);
 	if(isRed(h.v.rNode!.v.lNode)) {
-		let gen = rotateRight((h.v.rNode as Ptr<ElementLLRbtreeNode>).v, canvas);
-		while(true) {
-			let result = await gen.next();
-			if(result.done) {
-				h.v.rNode = result.value;
-				break;
-			}
-			yield;
-		}
-
-		gen = rotateLeft(h.v, canvas);
-		while(true) {
-			let result = await gen.next();
-			if(result.done) {
-				h = result.value;
-				break;
-			}
-			yield;
-		}
-		for(const _ of flip(h!.v, canvas)) yield;
+		h.v.rNode = yield* rotateRight((h.v.rNode as Ptr<ElementLLRbtreeNode>).v, canvas);
+		h = yield* rotateLeft(h.v, canvas);
+		yield* flip(h!.v, canvas);
 	}
 	return h;
 }
@@ -173,18 +156,10 @@ export async function *moveRedLeft(h: PtrLLRbNode, canvas: CanvasHandler) {
 export async function *moveRedRight(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
-	for(const _ of flip(h.v, canvas)) yield;
+	yield* flip(h.v, canvas);
 	if(isRed((h.v.lNode as Ptr<ElementLLRbtreeNode>).v.lNode)) {
-		let gen = rotateRight(h.v, canvas);
-		while(true) {
-			let result = await gen.next();
-			if(result.done) {
-				h = result.value;
-				break;
-			}
-			yield;
-		}
-		for(const _ of flip(h.v, canvas)) yield;
+		h = yield* rotateRight(h.v, canvas);
+		yield* flip(h.v, canvas);
 	}
 	return h;
 }
@@ -193,31 +168,15 @@ export async function *fixUp(h: PtrLLRbNode, canvas: CanvasHandler) {
 	if(h === null) return h;
 
 	if(isRed(h.v.rNode)) {
-		let gen = rotateLeft(h.v, canvas);
-		while(true) {
-			let result = await gen.next();
-			if(result.done) {
-				h = result.value;
-				break;
-			}
-			yield;
-		}
+		h = yield* rotateLeft(h.v, canvas);
 	}
 
 	if(h && isRed(h.v.lNode) && isRed((h.v.lNode as Ptr<ElementLLRbtreeNode>).v.lNode)) {
-		let gen = rotateRight(h.v, canvas);
-		while(true) {
-			let result = await gen.next();
-			if(result.done) {
-				h = result.value;
-				break;
-			}
-			yield;
-		}
+		h = yield* rotateRight(h.v, canvas);
 	}
 
 	if(h && isRed(h.v.lNode) && isRed(h.v.rNode)) {
-		for(const _ of flip(h.v, canvas)) yield;
+		yield* flip(h.v, canvas);
 	}
 
 	return h;

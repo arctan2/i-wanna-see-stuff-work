@@ -50,9 +50,9 @@ class InsertBtree extends AlgorithmHandler {
 		newChild.curKeyCount.value = fullChild.v.curKeyCount.value - t;
 
 		for (let i = 0; i < newChild.curKeyCount.value; i++) {
-			for(const _ of this.animateCellBg(canvas, fullChild.v, i + t, Color.shifting)) yield;
+			yield* this.animateCellBg(canvas, fullChild.v, i + t, Color.shifting);
 			newChild.keys[i] = fullChild.v.keys[i + t];
-			for(const _ of this.animateCellBg(canvas, newChild, i, Color.shifting)) yield;
+			yield* this.animateCellBg(canvas, newChild, i, Color.shifting);
 		}
 
 		if (!fullChild.v.isLeaf.value) {
@@ -61,7 +61,7 @@ class InsertBtree extends AlgorithmHandler {
 			}
 		}
 
-		for(const _ of this.animateCellBg(canvas, fullChild.v, t - 1, Color.shifting)) yield;
+		yield* this.animateCellBg(canvas, fullChild.v, t - 1, Color.shifting);
 		fullChild.v.curKeyCount.value = t - 1;
 
 		for (let i = parent.curKeyCount.value; i >= idx + 1; i--) {
@@ -70,14 +70,14 @@ class InsertBtree extends AlgorithmHandler {
 		parent.children[idx + 1] = newChild.ptr;
 
 		for (let i = parent.curKeyCount.value - 1; i >= idx; i--) {
-			for(const _ of this.animateCellBg(canvas, parent, i, Color.shifting)) yield;
+			yield* this.animateCellBg(canvas, parent, i, Color.shifting);
 			parent.keys[i + 1] = parent.keys[i];
-			for(const _ of this.animateCellBg(canvas, parent, i + 1, Color.shifting)) yield;
+			yield* this.animateCellBg(canvas, parent, i + 1, Color.shifting);
 		}
 
 		parent.keys[idx] = fullChild.v.keys[t - 1];
 		parent.curKeyCount.value++;
-		for(const _ of this.animateCellBg(canvas, parent, idx, Color.shifting)) yield;
+		yield* this.animateCellBg(canvas, parent, idx, Color.shifting);
 		
 		await parent.rearrangeTree(canvas);
 	}
@@ -101,10 +101,10 @@ class InsertBtree extends AlgorithmHandler {
 	async *insertKey(root: ElementBtreeNode, key: number, canvas: CanvasHandler) {
 		const M = root.M;
 
-		for(const _ of this.animateNodeBg(canvas, root, Color.traverse)) yield;
+		yield* this.animateNodeBg(canvas, root, Color.traverse);
 
 		if(root.curKeyCount.value === M - 1) {
-			for(const _ of this.animateNodeBg(canvas, root, Color.full)) yield;
+			yield* this.animateNodeBg(canvas, root, Color.full);
 
 			const newRoot = new ElementBtreeNode(
 				root.x,
@@ -128,7 +128,7 @@ class InsertBtree extends AlgorithmHandler {
 		while(current.isLeaf.value === false) {
 			let i = 0;
 			while (i < current.curKeyCount.value && (current.keys[i] as number) < key) {
-				for(const _ of this.animateCellBg(canvas, current, i, Color.traverse)) yield;
+				yield* this.animateCellBg(canvas, current, i, Color.traverse);
 				i++;
 			}
 
@@ -140,7 +140,7 @@ class InsertBtree extends AlgorithmHandler {
 				(current.children[i] !== null) &&
 				(current.children[i] as Ptr<ElementBtreeNode>).v.curKeyCount.value === M - 1
 			) {
-				for(const _ of this.animateNodeBg(canvas, (current.children[i] as Ptr<ElementBtreeNode>).v, Color.full)) yield;
+				yield* this.animateNodeBg(canvas, (current.children[i] as Ptr<ElementBtreeNode>).v, Color.full);
 				{
 					const a = this.splitNode(current, i, canvas);
 					while(!(await a.next()).done) yield;
@@ -159,13 +159,13 @@ class InsertBtree extends AlgorithmHandler {
 		let i = current.curKeyCount.value - 1;
 		current.curKeyCount.value++;
 		while (i >= 0 && (current.keys[i] as number) > key) {
-			for(const _ of this.animateCellBg(canvas, current, i, Color.shifting)) yield;
+			yield* this.animateCellBg(canvas, current, i, Color.shifting);
 			current.keys[i + 1] = current.keys[i];
-			for(const _ of this.animateCellBg(canvas, current, i + 1, Color.shifting)) yield;
+			yield* this.animateCellBg(canvas, current, i + 1, Color.shifting);
 			i--;
 		}
 
-		for(const _ of this.animateCellBg(canvas, current, i + 1, Color.assign)) yield;
+		yield* this.animateCellBg(canvas, current, i + 1, Color.assign);
 
 		current.keys[i + 1] = key;
 
@@ -176,10 +176,7 @@ class InsertBtree extends AlgorithmHandler {
 
 	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.insertKey(this.root, this.toInsertKey, canvas);
-			while(!(await gen.next()).done) {
-				yield null;
-			}
+			yield* this.insertKey(this.root, this.toInsertKey, canvas);
 		}
 	}
 }

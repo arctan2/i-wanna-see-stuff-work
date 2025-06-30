@@ -33,46 +33,18 @@ class DeleteLLRbtree extends AlgorithmHandler {
 
 		if(h.v.lNode === null) {
 			const v = h.v.key.value as number;
-			for(const _ of h.v.animateNodeBg(canvas, Color.delete)) yield;
+			yield* h.v.animateNodeBg(canvas, Color.delete);
 			h.v.remove(canvas);
 			return [null, v];
 		}
 
 		if(!isRed(h.v.lNode) && !isRed(h.v.lNode.v.lNode)) {
-			let gen = moveRedLeft(h, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					h = result.value;
-					break;
-				}
-				yield;
-			}
+			h = yield* moveRedLeft(h, canvas);
 		}
 
-		let deleted; {
-			let gen = this.deleteMin((h as any).v.lNode, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					[(h as any).v.lNode, deleted] = result.value;
-					break;
-				}
-				yield;
-			}
-		}
-
-		let fixedUp; {
-			let gen = fixUp(h, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					fixedUp = result.value;
-					break;
-				}
-				yield;
-			}
-		}
+		let deleted; 
+		[(h as any).v.lNode, deleted] = yield* this.deleteMin((h as any).v.lNode, canvas);
+		let fixedUp = yield* fixUp(h, canvas);
 
 		return [fixedUp, deleted];
 	}
@@ -84,7 +56,7 @@ class DeleteLLRbtree extends AlgorithmHandler {
 			return [null, null];
 		}
 
-		for(const _ of h.v.animateNodeBg(canvas, Color.traverse)) yield;
+		yield* h.v.animateNodeBg(canvas, Color.traverse);
 
 		if(key < (h.v.key.value as number)) { // left subtree
 			h.v.drawLineToChild(canvas.ctx, "l", Color.traverse);
@@ -96,42 +68,18 @@ class DeleteLLRbtree extends AlgorithmHandler {
 			}
 
 			if(!isRed(h.v.lNode) && !isRed(h.v.lNode.v.lNode)) {
-				let gen = moveRedLeft(h, canvas);
-				while(true) {
-					let result = await gen.next();
-					if(result.done) {
-						h = result.value;
-						break;
-					}
-					yield;
-				}
+				h = yield* moveRedLeft(h, canvas);
 			}
 
-			let gen = this.delete((h as any).v.lNode, key, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					[(h as any).v.lNode, deleted] = result.value;
-					break;
-				}
-				yield;
-			}
+			[(h as any).v.lNode, deleted] = yield* this.delete((h as any).v.lNode, key, canvas);
 		} else { // right subtree
 			if(isRed(h.v.lNode)) {
-				let gen = rotateRight(h.v, canvas);
-				while(true) {
-					let result = await gen.next();
-					if(result.done) {
-						h = result.value;
-						break;
-					}
-					yield;
-				}
+				h = yield* rotateRight(h.v, canvas);
 			}
 
 			if(!(h.v.key.value as number < key) && h.v.rNode === null) {
 				const v = h.v.key.value as number;
-				for(const _ of h.v.animateNodeBg(canvas, Color.delete)) yield;
+				yield* h.v.animateNodeBg(canvas, Color.delete);
 				h.v.remove(canvas);
 				return [null, v];
 			}
@@ -141,30 +89,13 @@ class DeleteLLRbtree extends AlgorithmHandler {
 			h.v.drawLineToChild(canvas.ctx, "r");
 
 			if(h.v.rNode !== null && !isRed(h.v.rNode) && !isRed(h.v.rNode.v.rNode)) {
-				let gen = moveRedRight(h, canvas);
-				while(true) {
-					let result = await gen.next();
-					if(result.done) {
-						h = result.value;
-						break;
-					}
-					yield;
-				}
+				h = yield* moveRedRight(h, canvas);
 			}
 
 			if(!((h as any).v.key.value as number < key)) {
-				for(const _ of (h as any).v.animateNodeBg(canvas, Color.found)) yield;
+				yield* (h as any).v.animateNodeBg(canvas, Color.found);
 				let subDeleted;
-				let gen = this.deleteMin((h as any).v.rNode, canvas);
-
-				while(true) {
-					let result = await gen.next();
-					if(result.done) {
-						[(h as any).v.rNode, subDeleted] = result.value;
-						break;
-					}
-					yield;
-				}
+				[(h as any).v.rNode, subDeleted] = yield* this.deleteMin((h as any).v.rNode, canvas);
 
 				if(subDeleted === null) {
 					throw("logic");
@@ -172,30 +103,11 @@ class DeleteLLRbtree extends AlgorithmHandler {
 
 				[deleted, (h as any).v.key.value] = [(h as any).v.key.value, subDeleted];
 			} else {
-				let gen = this.delete((h as any).v.rNode, key, canvas);
-
-				while(true) {
-					let result = await gen.next();
-					if(result.done) {
-						[(h as any).v.rNode, deleted] = result.value;
-						break;
-					}
-					yield;
-				}
+				[(h as any).v.rNode, deleted] = yield* this.delete((h as any).v.rNode, key, canvas);
 			}
 		}
 
-		let fixedUp; {
-			let gen = fixUp(h, canvas);
-			while(true) {
-				let result = await gen.next();
-				if(result.done) {
-					fixedUp = result.value;
-					break;
-				}
-				yield;
-			}
-		}
+		let fixedUp = yield* fixUp(h, canvas);
 
 		return [fixedUp, deleted];
 	}
@@ -203,7 +115,7 @@ class DeleteLLRbtree extends AlgorithmHandler {
 	async *deleteValue(root: PtrLLRbNode, value: number | "", canvas: CanvasHandler) {
 		if(root && (root?.v.isLeaf() || value === "")) {
 			if(root.v.key.value === value) {
-				for(const _ of root.v.animateNodeBg(canvas, Color.delete)) yield;
+				yield* root.v.animateNodeBg(canvas, Color.delete);
 				root.v.remove(canvas);
 				return;
 			}
@@ -211,17 +123,10 @@ class DeleteLLRbtree extends AlgorithmHandler {
 
 		let deleted;
 
-		let gen = this.delete(root, value as number, canvas);
-		while(true) {
-			let result = await gen.next();
-			if(result.done) {
-				[root, deleted] = result.value;
-				if(deleted === null) {
-					setErrorPopupText(`Key "${value}" not found in the tree.`);
-				}
-				break;
-			}
-			yield;
+		[root, deleted] = yield* this.delete(root, value as number, canvas);
+
+		if(deleted === null) {
+			setErrorPopupText(`Key "${value}" not found in the tree.`);
 		}
 
 		if(root !== null) {
@@ -232,10 +137,7 @@ class DeleteLLRbtree extends AlgorithmHandler {
 
 	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.deleteValue(this.root.ptr, this.toDeleteKey, canvas);
-			while(!(await gen.next()).done) {
-				yield null;
-			}
+			yield* this.deleteValue(this.root.ptr, this.toDeleteKey, canvas);
 		}
 	}
 }

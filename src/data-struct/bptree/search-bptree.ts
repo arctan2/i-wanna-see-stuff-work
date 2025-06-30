@@ -36,10 +36,10 @@ class SearchBptree extends AlgorithmHandler {
 		while(true) {
 			let i = 0;
 
-			for(const _ of cur.animateNodeBg(canvas, Color.traverse)) yield;
+			yield* cur.animateNodeBg(canvas, Color.traverse);
 
 			while(i < cur.curKeyCount.value && key > cur.keys[i]) {
-				for(const _ of cur.animateCellBg(canvas, i, Color.traverse)) yield;
+				yield* cur.animateCellBg(canvas, i, Color.traverse);
 				i++;
 			}
 
@@ -65,10 +65,7 @@ class SearchBptree extends AlgorithmHandler {
 
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.root) {
-			let gen = this.searchKey(this.root, this.toSearchKey, canvas);
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.searchKey(this.root, this.toSearchKey, canvas);
 		}
 	}
 }
