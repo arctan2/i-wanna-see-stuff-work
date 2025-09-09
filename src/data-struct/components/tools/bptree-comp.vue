@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
 import { useFocusedElement, unfocusElement, isAutoRearrangeBtree } from '../../global';
 import { ElementBptreeNode } from '../../bptree/el-bptree-node';
@@ -8,6 +8,7 @@ import DeleteBptree from "../../bptree/delete-bptree.ts"
 import SearchBptree from "../../bptree/search-bptree.ts"
 import { algorithmState } from '../refs';
 import { randInt } from '../../utils.ts';
+import { ValidatorObj } from './util.ts';
 
 const focusedElement = useFocusedElement<ElementBptreeNode>();
 const toInsertKey = ref<number | "">("");
@@ -20,18 +21,6 @@ const inserterState: {node: ElementBptreeNode | null, curKey: number, insertedKe
 	node: null,
 	curKey: 0,
 	insertedKeys: new Set
-}
-
-class ValidatorObj {
-	obj: Ref<number | "">;
-	min: number;
-	max: number;
-
-	constructor(obj: Ref<number | "">, min: number, max: number) {
-		this.obj = obj;
-		this.min = min;
-		this.max = max;
-	}
 }
 
 function validateInputs() {

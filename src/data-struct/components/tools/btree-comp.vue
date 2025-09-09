@@ -8,6 +8,7 @@ import DeleteBtree from "../../btree/delete-btree.ts"
 import SearchBtree from "../../btree/search-btree.ts"
 import { algorithmState } from '../refs';
 import { randInt } from '../../utils.ts';
+import { ValidatorObj } from './util.ts';
 
 const focusedElement = useFocusedElement<ElementBtreeNode>();
 const toInsertKey = ref<number | "">("");
@@ -20,18 +21,6 @@ const inserterState: {node: ElementBtreeNode | null, curKey: number, insertedKey
 	node: null,
 	curKey: 0,
 	insertedKeys: new Set
-}
-
-class ValidatorObj {
-	obj: Ref<number | "">;
-	min: number;
-	max: number;
-
-	constructor(obj: Ref<number | "">, min: number, max: number) {
-		this.obj = obj;
-		this.min = min;
-		this.max = max;
-	}
 }
 
 function validateInputs() {

@@ -12,15 +12,15 @@ import { isTutorialMode } from "./tutorial";
 </script>
 
 <template>
-<div id="pg-body">
-	<ToolBarSection />
-	<MemoryAlloc v-if="isMemAllocShow" />
-	<SettingsMenu />
-	<SelectedItem />
-	<PlaygroundSection />
-	<Algorithm />
-	<Tutorial v-if="isTutorialMode" />
-</div>
+	<div id="pg-body">
+		<ToolBarSection />
+		<MemoryAlloc v-if="isMemAllocShow" />
+		<SettingsMenu />
+		<SelectedItem />
+		<PlaygroundSection />
+		<Algorithm />
+		<Tutorial v-if="isTutorialMode" />
+	</div>
 </template>
 
 <style scoped>

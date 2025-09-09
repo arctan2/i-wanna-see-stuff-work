@@ -157,7 +157,7 @@ export default class AstarAdjMatrix extends AlgorithmHandler {
 		if(this.adjMatrix) {
 			let gen = this.astar(this.adjMatrix, canvas);
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

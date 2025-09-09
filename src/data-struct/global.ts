@@ -10,6 +10,7 @@ import { ToolBptreeNode } from "./bptree/tool-bptree-node.ts";
 import { ToolLLRbtreeNode } from "./llrbtree/tool-llrbtree-node.ts";
 import { ToolTrieNode } from "./trie/tool-trie-node.ts";
 import { ToolHeapBuffer } from "./heap/tool-heap-buffer.ts";
+import { ToolArrayBuf } from "./array/tool-array.ts";
 
 import IconLLNode from "./assets/vue-icon-wrappers/ll-node.vue";
 import IconDEdge from "./assets/vue-icon-wrappers/d-edge.vue";
@@ -21,6 +22,7 @@ import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
 import IconLLRbtreeNode from "./assets/vue-icon-wrappers/llrbtree-node.vue";
 import IconTrieNode from "./assets/vue-icon-wrappers/trie-node.vue";
 import IconHeapBuffer from "./assets/vue-icon-wrappers/heap-buffer.vue";
+import IconArrayBuf from "./assets/vue-icon-wrappers/heap-buffer.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;
@@ -91,6 +93,7 @@ export interface ToolType {
 }
 
 export const ToolList: ToolType[] = [
+	{ name: "array", toolClass: ToolArrayBuf, icon: IconArrayBuf },
 	{ name: "linked list", toolClass: ToolLLNode, icon: IconLLNode },
 	{ name: "graph node", toolClass: ToolGNode, icon: IconGNode },
 	{ name: "undirected edge", toolClass: ToolUEdge, icon: IconUEdge },

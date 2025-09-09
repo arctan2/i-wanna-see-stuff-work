@@ -260,17 +260,6 @@ function onClick() {
 	--bg: rgb(48, 58, 64);
 }
 
-.buttons{
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: 0.5rem 0.5rem;
-}
-
-.buttons button{
-	min-width: 4.5rem;
-}
-
 .sub-sections-container > div h2 {
 	font-size: 1.2rem;
 	margin-bottom: 0.5rem;

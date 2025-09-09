@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ToolBptreeNode } from "../bptree/tool-bptree-node";
-import { MAX_CHILDREN, ToolBtreeNode } from "../btree/tool-btree-node";
-import { curToolIdx, disappearingInfoPopUp, ToolList } from "../global";
+import { ToolBptreeNode } from "../../bptree/tool-bptree-node";
+import { MAX_CHILDREN, ToolBtreeNode } from "../../btree/tool-btree-node";
+import { curToolIdx, disappearingInfoPopUp, ToolList } from "../../global";
 
 function validateInputs() {
 	if(+MAX_CHILDREN.value <= 4) {

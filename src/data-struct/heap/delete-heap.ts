@@ -89,7 +89,7 @@ class DeleteTrie extends AlgorithmHandler {
 			if(this.root.buf.v.length === 0) return;
 			let gen = this.delete(this.root, canvas);
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

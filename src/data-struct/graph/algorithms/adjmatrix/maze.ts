@@ -147,7 +147,7 @@ export default class Maze extends AlgorithmHandler {
 			let gen = this.maze(this.adjMatrix, canvas);
 
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

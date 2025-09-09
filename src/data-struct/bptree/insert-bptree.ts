@@ -171,7 +171,7 @@ class InsertBptree extends AlgorithmHandler {
 		if(this.root) {
 			let gen = this.insertKey(this.root, this.toInsertKey, canvas);
 			while(!(await gen.next()).done) {
-				yield null;
+				yield;
 			}
 		}
 	}

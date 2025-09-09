@@ -124,7 +124,7 @@ export default class DijkstraAdjMatrix extends AlgorithmHandler {
 		if(this.adjMatrix) {
 			let gen = this.dijkstra(this.adjMatrix, canvas);
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

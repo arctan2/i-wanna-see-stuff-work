@@ -93,6 +93,7 @@ const isBottomLayout = ref<boolean>(true);
 	--llrbtree-node: #ff2626;
 	--trie-node: #c7c7c7;
 	--heap-buffer: #00e5ff;
+	--array-buf: #4772ff;
 }
 
 #memory-alloc{

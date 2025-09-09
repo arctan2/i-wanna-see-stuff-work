@@ -94,6 +94,11 @@ onMounted(() => {
 	color: black;
 }
 
+.ElementArrayBuf.simplified{
+	background-color: var(--array-buf);
+	color: white;
+}
+
 .ElementLLNode.simplified{
 	background-color: var(--lnode);
 	color: white;

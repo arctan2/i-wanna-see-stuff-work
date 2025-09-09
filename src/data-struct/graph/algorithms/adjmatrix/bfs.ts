@@ -110,7 +110,7 @@ export default class BfsAdjMatrix extends AlgorithmHandler {
 			let gen = this.bfs(this.adjMatrix, canvas);
 
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

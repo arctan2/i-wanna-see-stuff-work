@@ -4,7 +4,7 @@ import { playground } from "../handler/playground-handler";
 import { runSample } from "../samples";
 import { EventHandler } from "../handler/event-handler";
 import { infoPopup, errorPopup, setErrorPopupText, curToolIdx, ToolList } from "../global";
-import ToolInput from "./tool-input.vue";
+import ToolInput from "./tool-input/tool-input.vue";
 
 const playgroundSection = ref<null | HTMLElement>(null);
 const pgndCanvas = ref<null | HTMLCanvasElement>(null);

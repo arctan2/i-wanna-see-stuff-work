@@ -130,6 +130,10 @@ function calcBytesInc() {
 	color: var(--str);
 }
 
+.ElementArrayBuf.bytes{
+	color: var(--array-buf);
+}
+
 .ElementLLNode.bytes{
 	color: var(--lnode);
 }

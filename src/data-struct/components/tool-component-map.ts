@@ -9,6 +9,7 @@ import { ElementBptreeNode } from "../bptree/el-bptree-node";
 import { ElementLLRbtreeNode } from "../llrbtree/el-llrbtree-node";
 import { ElementTrieNode } from "../trie/el-trie-node";
 import { ElementHeapBuffer } from "../heap/el-heap-buffer";
+import { ElementArrayBuf } from "../array/el-array";
 
 import LLNodeComp from "./tools/ll-node.vue";
 import GNodeComp from "./tools/g-node.vue";
@@ -20,6 +21,7 @@ import BptreeNodeComp from "./tools/bptree-comp.vue";
 import LLRbtreeNodeComp from "./tools/llrbtree-comp.vue";
 import TrieNodeComp from "./tools/trie-comp.vue";
 import HeapComp from "./tools/heap-comp.vue";
+import ArrayComp from "./tools/array-comp.vue";
 
 type ComponentMap = { [_:string]: any };
 
@@ -34,5 +36,6 @@ export const componentMap: ComponentMap = {
 	[ElementLLRbtreeNode.name]: LLRbtreeNodeComp,
 	[ElementTrieNode.name]: TrieNodeComp,
 	[ElementHeapBuffer.name]: HeapComp,
+	[ElementArrayBuf.name]: ArrayComp,
 };
 
