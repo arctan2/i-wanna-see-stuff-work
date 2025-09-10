@@ -61,6 +61,7 @@ class InsertArrayBuf extends AlgorithmHandler {
 	async *asyncGeneratorFn(canvas: CanvasHandler) {
 		if(this.array) {
 			yield* this.insert(this.array, this.toInsertIdx, this.toInsertKey, canvas);
+			this.array.calcSpikeWidth();
 		}
 	}
 }

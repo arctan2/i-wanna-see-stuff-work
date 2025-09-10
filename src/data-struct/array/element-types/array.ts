@@ -12,6 +12,10 @@ export class ArrayBuf {
 	static fontSize = 12;
 	static bg = "#4772ff";
 	static cellStrokeColor = "#9e9e9e";
+	static spikesContainerHeight = GAP * 20;
+	static spikesContainerOffsetBottom = GAP * 2;
+	static spikesContainerBg = "#404040";
+	static spikesGapPx = 2;
 
 	bg: string = "";
 
@@ -20,6 +24,7 @@ export class ArrayBuf {
 	arr: Ptr<Arr<number>>;
 	rowLen: Ref<number>;
 	cellBg: string[];
+	spikeWidth: number = 0;
 
 	x = -1;
 	y = -1;
@@ -34,6 +39,16 @@ export class ArrayBuf {
 		this.rowLen = ref(10);
 		this.cellBg = new Array(cap).fill("");
 		this.resetStyle();
+		this.calcSpikeWidth();
+	}
+
+	calcSpikeWidth() {
+		let n = this.arr.v.arr.length;
+		if(n === 0) {
+			this.spikeWidth = 0;
+		} else {
+			this.spikeWidth = (this.width() - (ArrayBuf.spikesGapPx * n)) / n;
+		}
 	}
 
 	defaultCellColor(bg: string) {
@@ -60,6 +75,8 @@ export class ArrayBuf {
 		const x = this.x + (col * ArrayBuf.cellWidth);
 		const y = this.y + (row * ArrayBuf.cellHeight);
 
+		const cellValue = this.arr.v.arr[idx];
+
 		if(idx < this.arr.v.arr.length) {
 			const s = this.cellBg[idx];
 
@@ -71,9 +88,24 @@ export class ArrayBuf {
 			ctx.textAlign = "center";
 			ctx.font = `${ArrayBuf.fontSize}px monospace`;
 
-			let text = String(this.arr.v.arr[idx]);
+			let text = String(cellValue);
 			
 			ctx.fillText(text, x + (ArrayBuf.cellWidth / 2), y + ArrayBuf.cellHeight / 2);
+
+			const spikeHeight = (ArrayBuf.spikesContainerHeight * (cellValue / ArrayBuf.spikesContainerHeight));
+			const spikeX = this.x + (idx * this.spikeWidth) + (idx * ArrayBuf.spikesGapPx);
+			const spikeY = this.y - ArrayBuf.spikesContainerOffsetBottom - spikeHeight;
+
+			ctx.fillStyle = ArrayBuf.spikesContainerBg;
+			ctx.fillRect(
+				spikeX - 1,
+				this.y - ArrayBuf.spikesContainerHeight - ArrayBuf.spikesContainerOffsetBottom,
+				this.spikeWidth + 2,
+				ArrayBuf.spikesContainerHeight
+			);
+
+			ctx.fillStyle = s;
+			ctx.fillRect(spikeX, spikeY, this.spikeWidth, spikeHeight);
 		}
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = ArrayBuf.cellStrokeColor;
@@ -106,6 +138,14 @@ export class ArrayBuf {
 		ctx.fillStyle = ArrayBuf.bg;
 		ctx.roundRect(x, y, this.rowLen.value * ArrayBuf.cellWidth, this.height(), 4);
 		ctx.fill();
+
+		ctx.fillStyle = ArrayBuf.spikesContainerBg;
+		ctx.fillRect(
+			x,
+			y - ArrayBuf.spikesContainerOffsetBottom - ArrayBuf.spikesContainerHeight,
+			this.width(),
+			ArrayBuf.spikesContainerHeight
+		);
 
 		for(let i = 0; i < this.arr.v.cap; i++) {
 			this.drawCellAtIdx(ctx, i);

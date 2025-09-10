@@ -22,7 +22,7 @@ import IconBptreeNode from "./assets/vue-icon-wrappers/bptree-node-icon.vue";
 import IconLLRbtreeNode from "./assets/vue-icon-wrappers/llrbtree-node.vue";
 import IconTrieNode from "./assets/vue-icon-wrappers/trie-node.vue";
 import IconHeapBuffer from "./assets/vue-icon-wrappers/heap-buffer.vue";
-import IconArrayBuf from "./assets/vue-icon-wrappers/heap-buffer.vue";
+import IconArrayBuf from "./assets/vue-icon-wrappers/array.vue";
 
 export const focusedElement = shallowRef<ElementHandler>(panHandler);
 export let DELAY = 200;

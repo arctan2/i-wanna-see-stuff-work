@@ -30,9 +30,9 @@ enum Sorters {
 	SelectionSort = "Selection Sort"
 }
 
-const from = ref<number | "">(1);
-const to = ref<number | "">(8);
-const step = ref<number | "">(1);
+const from = ref<number | "">(10);
+const to = ref<number | "">(100);
+const step = ref<number | "">(10);
 const isRandomize = ref<boolean>(false);
 const inserterState: {arr: ElementArrayBuf | null, curKey: number, insertedKeys: Set<number>} = {
 	arr: null,
@@ -57,7 +57,6 @@ function insertKey() {
 	if(toInsertKey.value === "" || toInsertPosition.value === "") {
 		return;
 	}
-
 
 	validateInputs();
 
@@ -228,6 +227,12 @@ function freeArray() {
 			</div>
 
 			<button class="btn btn-nobg clr-yellow" @click="iterInsert">iter</button>
+		</div>
+
+		<div>
+			<button class="btn btn-nobg clr-orange" @click="focusedElement.shuffle(playground.canvas)">shuffle</button>
+			<button class="btn btn-nobg clr-orange" @click="focusedElement.randomize(playground.canvas)">randomize</button>
+			<button class="btn btn-nobg clr-orange" @click="focusedElement.randomFill(playground.canvas)">fill random</button>
 		</div>
 
 		<div>

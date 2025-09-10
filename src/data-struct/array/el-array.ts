@@ -7,7 +7,7 @@ import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
 import { ShallowReactive, ref } from "vue";
 import { PrimitiveSize } from "../memory-allocator/types";
-import { numberToBytes } from "../utils";
+import { numberToBytes, randInt } from "../utils";
 
 export class ElementArrayBuf extends ArrayBuf implements ElementHandler, AllocDisplay, Dealloc {
 	ptr: ShallowReactive<Ptr<ElementArrayBuf>>;
@@ -75,6 +75,49 @@ export class ElementArrayBuf extends ArrayBuf implements ElementHandler, AllocDi
 		canvas.removeElements(this);
 	}
 
+	shuffle(canvas: CanvasHandler) {
+		let elements = [...this.arr.v.arr];
+		for(let i = 0; i < elements.length; i++) {
+			let i = randInt(0, elements.length);
+			let j = randInt(0, elements.length);
+			[elements[i], elements[j]] = [elements[j], elements[i]];
+		}
+
+		for(let i = 0; i < elements.length; i++) {
+			this.arr.v.arr[i] = elements[i];
+		}
+
+		this.calcSpikeWidth();
+		this.draw(canvas.ctx);
+	}
+
+	randomFill(canvas: CanvasHandler) {
+		let len = this.arr.v.cap;
+		let newElements = Array(len);
+		for(let i = 0; i < len; i++) {
+			newElements[i] = randInt(10, ArrayBuf.spikesContainerHeight);
+		}
+		for(let i = 0; i < newElements.length; i++) {
+			this.arr.v.arr[i] = newElements[i];
+		}
+		this.calcSpikeWidth();
+		this.draw(canvas.ctx);
+	}
+
+	randomize(canvas: CanvasHandler) {
+		let len = this.arr.v.arr.length;
+		let newElements = Array(len);
+		for(let i = 0; i < len; i++) {
+			newElements[i] = randInt(10, ArrayBuf.spikesContainerHeight);
+		}
+
+		for(let i = 0; i < newElements.length; i++) {
+			this.arr.v.arr[i] = newElements[i];
+		}
+		this.calcSpikeWidth();
+		this.draw(canvas.ctx);
+	}
+
 	async scrollTo(canvas: CanvasHandler) {
 		const x = this.x + canvas.transform.x;
 		const y = this.y + canvas.transform.y;
@@ -114,6 +157,8 @@ export class ElementArrayBuf extends ArrayBuf implements ElementHandler, AllocDi
 				this.drawCellAtIdx(canvas.ctx, idx);
 			}
 		}
+
+		canvas.redraw();
 
 		if(Math.abs(state.pointerDown.x - state.pointerUp.x) <= GAP && Math.abs(state.pointerDown.y - state.pointerUp.y) <= GAP) {
 			return null;

@@ -8,6 +8,7 @@ import { Playground } from "../handler/playground-handler";
 import { ref } from "vue";
 
 export const CAP = ref<number>(10);
+export const MAX = 999999;
 
 export class ToolArrayBuf extends ToolHandler {
 	constructor() {
@@ -68,8 +69,8 @@ export class ToolArrayBuf extends ToolHandler {
 			v = 1;
 		}
 
-		if(v >= 128) {
-			v = 128;
+		if(v >= 999999) {
+			v = 999999;
 		}
 
 		CAP.value = v;

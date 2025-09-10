@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CAP, ToolArrayBuf } from "../../array/tool-array";
+import { CAP, ToolArrayBuf, MAX } from "../../array/tool-array";
 import { curToolIdx, ToolList } from "../../global";
 
 function validateInputs() {
@@ -7,15 +7,15 @@ function validateInputs() {
 		CAP.value = 1;
 	}
 
-	if(+CAP.value >= 128) {
-		CAP.value = 128;
+	if(+CAP.value >= MAX) {
+		CAP.value = MAX;
 	}
 
 	input();
 }
 
 function input() {
-	if(1 <= CAP.value && CAP.value < 128) {
+	if(1 <= CAP.value && CAP.value < MAX) {
 		CAP.value = Math.floor(CAP.value);
 		ToolArrayBuf.setTool(CAP.value);
 	}
@@ -32,7 +32,7 @@ function input() {
 			type="number"
 			step="1"
 			min="1"
-			max="128"
+			:max="MAX"
 			v-model="CAP"
 		/>
 	</div>

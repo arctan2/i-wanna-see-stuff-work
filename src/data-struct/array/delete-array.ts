@@ -64,6 +64,7 @@ class DeleteArrayBuf extends AlgorithmHandler {
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.array && this.toDeleteIdx >= 0) {
 			yield* this.deleteKey(this.array, this.toDeleteIdx, canvas);
+			this.array.calcSpikeWidth();
 		}
 	}
 }
