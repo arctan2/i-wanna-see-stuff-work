@@ -53,6 +53,7 @@ export class ArrayBuf {
 	}
 
 	drawCellAtIdx(ctx: CanvasRenderingContext2D, idx: number) {
+		if(idx < 0) return;
 		const row = Math.floor(idx / this.rowLen.value);
 		const col = (idx % this.rowLen.value);
 

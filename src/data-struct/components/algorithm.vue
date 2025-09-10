@@ -57,6 +57,14 @@ import SearchLLRbtreeComp from "../llrbtree/components/search-llrbtree-comp.vue"
 import SearchTrie from "../trie/search-trie.ts";
 import SearchTrieComp from "../trie/components/search-trie-comp.vue";
 
+import InsertArrayBuf from "../array/insert-array.ts";
+import DeleteArrayBuf from "../array/delete-array.ts";
+import BubbleSort from "../array/sorting/bubble-sort.ts";
+import InsertionSort from "../array/sorting/insertion-sort.ts";
+import MergeSort from "../array/sorting/merge-sort.ts";
+import QuickSort from "../array/sorting/quick-sort.ts";
+import SelectionSort from "../array/sorting/selection-sort.ts";
+
 import { ProgressState } from "../algorithm-handler.ts";
 
 type ComponentMap = { [_:string]: any };
@@ -95,6 +103,14 @@ const componentMap: ComponentMap = {
 	[InsertHeap.constructor.name]: null,
 	[DeleteHeap.constructor.name]: null,
 	[Heapify.constructor.name]: null,
+
+	[InsertArrayBuf.constructor.name]: null,
+	[DeleteArrayBuf.constructor.name]: null,
+	[BubbleSort.constructor.name]: null,
+	[InsertionSort.constructor.name]: null,
+	[MergeSort.constructor.name]: null,
+	[QuickSort.constructor.name]: null,
+	[SelectionSort.constructor.name]: null,
 };
 
 const isPlaying = ref(isAutoplay.value);

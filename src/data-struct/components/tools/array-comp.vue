@@ -9,11 +9,26 @@ import InsertArrayBuf from "../../array/insert-array";
 import DeleteArrayBuf from "../../array/delete-array";
 import { algorithmState } from '../refs';
 import { randInt } from '../../utils';
+import Select from '../../../common-components/select.vue';
+
+import BubbleSort from '../../array/sorting/bubble-sort';
+import InsertionSort from '../../array/sorting/insertion-sort';
+import QuickSort from '../../array/sorting/quick-sort';
+import MergeSort from '../../array/sorting/merge-sort';
+import SelectionSort from '../../array/sorting/selection-sort';
 
 const focusedElement = useFocusedElement<ElementArrayBuf>();
 const toInsertKey = ref<number | "">("");
 const toInsertPosition = ref<number | "">("");
 const errMsg = ref<string>("");
+
+enum Sorters {
+	BubbleSort = "Bubble Sort",
+	InsertionSort = "Insertion Sort",
+	MergeSort = "Merge Sort",
+	QuickSort = "Quick Sort",
+	SelectionSort = "Selection Sort"
+}
 
 const from = ref<number | "">(1);
 const to = ref<number | "">(8);
@@ -24,6 +39,7 @@ const inserterState: {arr: ElementArrayBuf | null, curKey: number, insertedKeys:
 	curKey: 0,
 	insertedKeys: new Set
 }
+const curSorter = ref<string>(Sorters.BubbleSort);
 
 function validateInputs() {
 	const validatorObjects = [
@@ -123,6 +139,26 @@ function iterInsert() {
 	unfocusElement();
 }
 
+function setCurSorter(s: string) {
+	curSorter.value = s;
+}
+
+function sort() {
+	const sorterMap: {[_:string]: any} = {
+		[Sorters.BubbleSort]: BubbleSort,
+		[Sorters.InsertionSort]: InsertionSort,
+		[Sorters.MergeSort]: MergeSort,
+		[Sorters.QuickSort]: QuickSort,
+		[Sorters.SelectionSort]: SelectionSort,
+	}
+	const sorter = sorterMap[curSorter.value];
+
+	sorter.init(playground.canvas, focusedElement.value);
+	algorithmState.setAlgorithm(sorter);
+	sorter.tryPlay(playground.canvas);
+	unfocusElement();
+}
+
 function freeArray() {
 	const arr = focusedElement.value;
 	unfocusElement();
@@ -191,12 +227,21 @@ function freeArray() {
 				<label>Random</label>
 			</div>
 
-			<button class="btn btn-nobg clr-yellow" @click="iterInsert()">iter</button>
+			<button class="btn btn-nobg clr-yellow" @click="iterInsert">iter</button>
+		</div>
+
+		<div>
+			<Select
+				:onChange="setCurSorter"
+				:value="curSorter"
+				:options="Sorters"
+			/>
+			<button class="btn btn-nobg clr-lblue" @click="sort">Sort</button>
 		</div>
 
 		<div class="buttons">
-			<button class="btn btn-nobg clr-red" @click="freeArray()">free</button>
-			<button class="btn btn-nobg clr-red" @click="deleteKey()" v-if="focusedElement.selectedCellIdx.value !== -1">
+			<button class="btn btn-nobg clr-red" @click="freeArray">free</button>
+			<button class="btn btn-nobg clr-red" @click="deleteKey" v-if="focusedElement.selectedCellIdx.value !== -1">
 				delete
 			</button>
 		</div>
