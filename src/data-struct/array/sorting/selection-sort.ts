@@ -21,7 +21,7 @@ class SelectionSort extends AlgorithmHandler {
 		this.array = array;
 		this.doneCallback = doneCallback;
 		this.initAsyncGenerator(canvas);
-		setInfoPopupText(`Selection Sort"`);
+		setInfoPopupText(`Selection Sort`);
 	}
 
 	uninit(canvas: CanvasHandler) {

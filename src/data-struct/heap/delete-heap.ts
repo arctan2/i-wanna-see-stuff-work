@@ -22,7 +22,7 @@ class DeleteTrie extends AlgorithmHandler {
 		this.root = null;
 	}
 
-	*heapify(heap: ElementHeapBuffer, idx: number, canvas: CanvasHandler) {
+	*heapify(heap: ElementHeapBuffer, idx: number, canvas: CanvasHandler): Generator<undefined, void, unknown> {
 		let i = idx;
 		const leftIdx = heap.leftIdx(idx);
 		const rightIdx = heap.rightIdx(idx);

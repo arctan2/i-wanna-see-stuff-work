@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { ref } from 'vue';
 import { playground } from '../../handler/playground-handler';
 import { useFocusedElement, unfocusElement, isAutoRearrangeBtree } from '../../global';
 import { ElementBtreeNode } from '../../btree/el-btree-node';

@@ -21,7 +21,7 @@ class MergeSort extends AlgorithmHandler {
 		this.array = array;
 		this.doneCallback = doneCallback;
 		this.initAsyncGenerator(canvas);
-		setInfoPopupText(`Merge Sort"`);
+		setInfoPopupText(`Merge Sort`);
 	}
 
 	uninit(canvas: CanvasHandler) {

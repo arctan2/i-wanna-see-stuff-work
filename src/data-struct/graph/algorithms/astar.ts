@@ -80,9 +80,9 @@ class Astar extends AlgorithmHandler {
 			temp.prevEdge.bg = Color.shortPath;
 
 			temp.prevEdge.draw(canvas.ctx);
-			yield null;
+			yield;
 			temp.prev.draw(canvas.ctx);
-			yield null;
+			yield;
 
 			temp = distanceTable.value.get(temp.prev);
 		}
@@ -123,19 +123,19 @@ class Astar extends AlgorithmHandler {
 
 			if(cur === endNode) {
 				let gen = this.finalPath(canvas, endNode);
-				while(!gen.next().done) yield null;
+				while(!gen.next().done) yield;
 				return;
 			}
 
 			const curDistVal = distanceTable.value.get(cur) as DistValue;
 
 			cur.setStyle(Color.curNode).draw(canvas.ctx);
-			yield null;
+			yield;
 
 			for(const edge of cur.edges.v.list()) {
 				edge.v.bg = Color.compare;
 				edge.v.draw(canvas.ctx);
-				yield null;
+				yield;
 
 				const toNode = edge.v.getToNode(cur);
 
@@ -160,7 +160,7 @@ class Astar extends AlgorithmHandler {
 			}
 
 			cur.setStyle(Color.visited, "#000000").draw(canvas.ctx);
-			yield null;
+			yield;
 			visited.add(cur);
 		}
 
@@ -181,7 +181,7 @@ class Astar extends AlgorithmHandler {
 			let gen = this.astar(this.startNode, this.endNode, canvas);
 
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

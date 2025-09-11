@@ -18,31 +18,28 @@ class Dfs extends AlgorithmHandler {
 		this.initGenerator(canvas);
 	}
 
-	*dfs(node: ElementGNode, canvas: CanvasHandler) {
+	*dfs(node: ElementGNode, canvas: CanvasHandler): Generator<undefined, void, unknown> {
 		this.visited.value.add(node);
 		this.visited.value = new Set([...this.visited.value]);
 		node.bg = Color.visited;
 
 		node.borderColor = "#0000ff";
 		node.draw(canvas.ctx);
-		yield null;
+		yield;
 
 		for(let n of node.edges.v.list()) {
 			n.v.bg = "#ffff00";
 			n.v.draw(canvas.ctx);
-			yield null;
+			yield;
 			n.v.bg = "#ffffff";
 			n.v.draw(canvas.ctx);
 
 			let temp = n.v.getToNode(node);
 
 			if(!this.visited.value.has(temp)) {
-				let gen = this.dfs(temp, canvas);
 				node.borderColor = "";
 				canvas.redraw();
-				while(!gen.next().done) {
-					yield null;
-				}
+				yield* this.dfs(temp, canvas);
 				node.borderColor = "#0000ff";
 				canvas.redraw();
 			}
@@ -62,11 +59,7 @@ class Dfs extends AlgorithmHandler {
 
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.startNode) {
-			let gen = this.dfs(this.startNode, canvas);
-
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.dfs(this.startNode, canvas);
 		}
 	}
 }

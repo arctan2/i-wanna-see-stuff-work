@@ -123,7 +123,7 @@ class Prims extends AlgorithmHandler {
 
 			extractedVertex.bg = Color.curNode;
 			extractedVertex.draw(canvas.ctx);
-			yield null;
+			yield;
 
 			visited.add(extractedVertex);
 
@@ -132,7 +132,7 @@ class Prims extends AlgorithmHandler {
 
 				edge.v.bg = Color.compare;
 				edge.v.draw(canvas.ctx);
-				yield null;
+				yield;
 
 				const destination = (edge.v.toNode === extractedVertex) ? edge.v.fromNode : edge.v.toNode;
 
@@ -161,7 +161,7 @@ class Prims extends AlgorithmHandler {
 
 			extractedVertex.resetStyle();
 			extractedVertex.draw(canvas.ctx);
-			yield null;
+			yield;
 		}
 
 		for(let key of mst.keys()) {
@@ -186,11 +186,7 @@ class Prims extends AlgorithmHandler {
 				return;
 			}
 
-			let gen = this.prims(this.startNode, canvas);
-
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.prims(this.startNode, canvas);
 		}
 	}
 }

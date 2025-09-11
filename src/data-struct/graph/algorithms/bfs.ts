@@ -25,23 +25,23 @@ class Bfs extends AlgorithmHandler {
 		this.visited.value = new Set([...this.visited.value]);
 
 		this.queue.push(node);
-		yield null;
+		yield;
 		
 		while(this.queue.length) {
 			let front = this.queue.shift();
-			yield null;
+			yield;
 
 			if(!front) {
 				return;
 			}
 
 			front.setStyle(Color.visited, undefined, "#0000ff").draw(canvas.ctx);
-			yield null;
+			yield;
 
 			for(let n of front.edges.v.list()) {
 				n.v.bg = "#ffff00";
 				n.v.draw(canvas.ctx);
-				yield null;
+				yield;
 				n.v.bg = "#ffffff";
 				n.v.draw(canvas.ctx);
 
@@ -53,7 +53,7 @@ class Bfs extends AlgorithmHandler {
 					temp.bg = "#a200ff";
 					temp.draw(canvas.ctx);
 					this.queue.push(temp);
-					yield null;
+					yield;
 				}
 			}
 			front.borderColor = "";
@@ -72,11 +72,7 @@ class Bfs extends AlgorithmHandler {
 
 	*generatorFn(canvas: CanvasHandler) {
 		if(this.startNode) {
-			let gen = this.bfs(this.startNode, canvas);
-
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.bfs(this.startNode, canvas);
 		}
 	}
 }

@@ -3,7 +3,7 @@ import { setIsMemAllocShow, setIsMenuOpen } from "./refs";
 import { playground } from "../handler/playground-handler";
 import { unfocusElement } from "../global";
 
-export const isTutorialMode = ref(false);
+export const isTutorialMode = ref(true);
 
 export function startTutorial() {
 	setIsMenuOpen(false);

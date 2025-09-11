@@ -96,14 +96,14 @@ class BellmanFord extends AlgorithmHandler {
 				const toNode = edge.toNode;
 
 				fromNode.setStyle(Color.compareNode).draw(canvas.ctx);
-				yield null;
+				yield;
 
 				edge.bg = Color.compareEdge;
 				edge.draw(canvas.ctx);
-				yield null;
+				yield;
 
 				toNode.setStyle(Color.compareNode).draw(canvas.ctx);
-				yield null;
+				yield;
 
 				const fromDist = (dist.value.get(fromNode) as DistValue).dist;
 				const toDist = (dist.value.get(toNode) as DistValue).dist;
@@ -118,7 +118,7 @@ class BellmanFord extends AlgorithmHandler {
 				edge.bg = "#ffffff";
 				edge.draw(canvas.ctx);
 				toNode.resetStyle().draw(canvas.ctx);
-				yield null;
+				yield;
 			}
 		}
 
@@ -134,18 +134,18 @@ class BellmanFord extends AlgorithmHandler {
 
 				edge.bg = Color.cycle;
 				edge.draw(canvas.ctx);
-				yield null;
+				yield;
 				fromNode.setStyle(Color.cycle).draw(canvas.ctx);
-				yield null;
+				yield;
 
 				while(temp?.prev && temp.prevEdge && temp !== dist.value.get(toNode)) {
 					temp.prev.bg = Color.cycle;
 					temp.prevEdge.bg = Color.cycle;
 
 					temp.prevEdge.draw(canvas.ctx);
-					yield null;
+					yield;
 					temp.prev.draw(canvas.ctx);
-					yield null;
+					yield;
 
 					temp = dist.value.get(temp.prev);
 				}
@@ -168,9 +168,9 @@ class BellmanFord extends AlgorithmHandler {
 			temp.prevEdge.bg = Color.shortPath;
 
 			temp.prevEdge.draw(canvas.ctx);
-			yield null;
+			yield;
 			temp.prev.draw(canvas.ctx);
-			yield null;
+			yield;
 
 			temp = dist.value.get(temp.prev);
 		}
@@ -195,7 +195,7 @@ class BellmanFord extends AlgorithmHandler {
 			let gen = this.bellmanFord(this.startNode, this.endNode, canvas);
 
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

@@ -169,7 +169,7 @@ function freeArray() {
 
 <template>
 <div class="tool-array">
-	<h1>LL-Node</h1>
+	<h1>Array</h1>
 	<div class="sub-sections-container">
 		<div class="input-section">
 			<h2>Insert</h2>

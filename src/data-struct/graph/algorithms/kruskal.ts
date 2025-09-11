@@ -138,14 +138,14 @@ class Kruskal extends AlgorithmHandler {
 				this.updateInVue.value = { idx: i, value: "include" };
 
 				fromNode.setStyle(Color.span, "#000000").draw(canvas.ctx);
-				yield null;
+				yield;
 
 				edge.bg = Color.span;
 				edge.draw(canvas.ctx);
-				yield null;
+				yield;
 
 				toNode.setStyle(Color.span, "#000000").draw(canvas.ctx);
-				yield null;
+				yield;
 
 				this.union(fromNode, toNode);
 			} else {
@@ -163,7 +163,7 @@ class Kruskal extends AlgorithmHandler {
 				edge.draw(canvas.ctx);
 
 				toNode.setStyle(Color.cycle, "#ffffff").draw(canvas.ctx);
-				yield null;
+				yield;
 
 				fromNode.setStyle(fromPrevBg, fromPrevColor).draw(canvas.ctx);
 
@@ -182,11 +182,7 @@ class Kruskal extends AlgorithmHandler {
 				return;
 			}
 
-			let gen = this.kruskal(this.startNode, canvas);
-
-			while(!gen.next().done) {
-				yield null;
-			}
+			yield* this.kruskal(this.startNode, canvas);
 		}
 	}
 }

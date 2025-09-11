@@ -21,7 +21,7 @@ class QuickSort extends AlgorithmHandler {
 		this.array = array;
 		this.doneCallback = doneCallback;
 		this.initAsyncGenerator(canvas);
-		setInfoPopupText(`Quick Sort"`);
+		setInfoPopupText(`Quick Sort`);
 	}
 
 	uninit(canvas: CanvasHandler) {

@@ -75,9 +75,9 @@ class Dijkstra extends AlgorithmHandler {
 			temp.prevEdge.bg = Color.shortPath;
 
 			temp.prevEdge.draw(canvas.ctx);
-			yield null;
+			yield;
 			temp.prev.draw(canvas.ctx);
-			yield null;
+			yield;
 
 			temp = distanceTable.value.get(temp.prev);
 		}
@@ -102,12 +102,12 @@ class Dijkstra extends AlgorithmHandler {
 			}
 
 			cur.setStyle(Color.curNode).draw(canvas.ctx);
-			yield null;
+			yield;
 
 			for(const edge of cur.edges.v.list()) {
 				edge.v.bg = Color.compare;
 				edge.v.draw(canvas.ctx);
-				yield null;
+				yield;
 
 				const toNode = edge.v.getToNode(cur);
 
@@ -126,12 +126,12 @@ class Dijkstra extends AlgorithmHandler {
 			}
 
 			cur.setStyle(Color.visited, "#000000").draw(canvas.ctx);
-			yield null;
+			yield;
 			visited.add(cur);
 		}
 
 		let gen = this.finalPath(canvas, endNode);
-		while(!gen.next().done) yield null;
+		while(!gen.next().done) yield;
 	}
 
 	*generatorFn(canvas: CanvasHandler) {
@@ -148,7 +148,7 @@ class Dijkstra extends AlgorithmHandler {
 
 			let gen = this.dijkstra(this.startNode, this.endNode, canvas);
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

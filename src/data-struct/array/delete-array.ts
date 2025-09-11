@@ -1,7 +1,5 @@
 import { AlgorithmHandler } from "../algorithm-handler.ts";
-import { setErrorPopupText } from "../global.ts";
 import { CanvasHandler } from "../handler/canvas-handler.ts";
-import { Ptr } from "../memory-allocator/allocator.ts";
 import { ElementArrayBuf } from "./el-array.ts";
 import { ArrayBuf } from "./element-types/array.ts";
 

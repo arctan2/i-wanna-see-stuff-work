@@ -67,7 +67,7 @@ class SearchTrie extends AlgorithmHandler {
 		if(this.root) {
 			let gen = this.searchKey(this.root, this.toSearchString, canvas);
 			while(!gen.next().done) {
-				yield null;
+				yield;
 			}
 		}
 	}

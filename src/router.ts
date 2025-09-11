@@ -4,7 +4,7 @@ import Dsa from "./data-struct/components/TheBody.vue";
 
 const routes: Array<RouteRecordRaw> = [
 	{ path: "/", component: Dsa },
-	{ path: "/dsa", component: Dsa },
+	{ path: '/:pathMatch(.*)*', redirect: '/' },
 ];
 
 const router = createRouter({
