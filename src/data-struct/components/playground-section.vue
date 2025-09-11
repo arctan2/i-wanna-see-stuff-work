@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { playground } from "../handler/playground-handler";
 import { runSample } from "../samples";
 import { EventHandler } from "../handler/event-handler";
-import { infoPopup, errorPopup, setErrorPopupText, curToolIdx, ToolList } from "../global";
+import { infoPopup, errorPopup, setErrorPopupText, curToolIdx, ToolList, setInfoPopupText } from "../global";
 import ToolInput from "./tool-input/tool-input.vue";
 
 const playgroundSection = ref<null | HTMLElement>(null);
@@ -64,6 +64,12 @@ onUnmounted(() => {
 	<div id="info-popup" v-if="infoPopup.text !== ''">
 		<div class="icon">i</div>
 		<div class="info-text">{{ infoPopup.text }}</div>
+		<div class="close-icon" @click="setInfoPopupText('')">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+				<line x1="18" y1="6" x2="6" y2="18" stroke="white" stroke-width="3" stroke-linecap="round" />
+				<line x1="6" y1="6" x2="18" y2="18" stroke="white" stroke-width="3" stroke-linecap="round" />
+			</svg>
+		</div>
 	</div>
 
 	<div v-if="errorPopup.text !== ''" id="popup-container" @click.self="setErrorPopupText('')">
@@ -195,7 +201,6 @@ onUnmounted(() => {
 
 #info-popup{
 	max-width: 40rem;
-	min-width: 15rem;
 	min-height: 3rem;
 	background-color: rgb(40, 40, 40);
 	border: 2px solid rgb(255, 200, 100);
@@ -229,6 +234,22 @@ onUnmounted(() => {
 	font-family: monospace;
 	border-radius: 20px;
 	margin-right: 0.5rem;
+}
+
+.close-icon{
+	--size: 1.45rem;
+	height: var(--size);
+	width: var(--size);
+	display: flex;
+	align-items: center;
+	margin-left: 1rem;
+	cursor: pointer;
+	padding: 0.1rem;
+	border-radius: 6px;
+}
+
+.close-icon:hover{
+	background: rgba(255, 255, 255, 0.2);
 }
 
 </style>

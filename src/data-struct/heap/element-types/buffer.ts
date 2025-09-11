@@ -154,6 +154,7 @@ export class HeapBuffer {
 	static borderWidth = 3;
 	static fontSize = 12;
 	static bg = "#00e5ff";
+	static labelBg = "#7703fc";
 	static cellStrokeColor = "#003b34";
 
 	cmpFn: (a: number, b: number) => boolean = minCmpFn;
@@ -182,6 +183,10 @@ export class HeapBuffer {
 		this.setAsMinHeap();
 	}
 
+	setRowLen(newRowLen: number) {
+		this.rowLen.value = newRowLen;
+	}
+
 	setAsMinHeap() {
 		this.cmpFn = maxCmpFn;
 	}
@@ -208,6 +213,7 @@ export class HeapBuffer {
 	}
 
 	drawCellAtIdx(ctx: CanvasRenderingContext2D, idx: number) {
+		ctx.save();
 		const row = Math.floor(idx / this.rowLen.value);
 		const col = (idx % this.rowLen.value);
 
@@ -245,7 +251,7 @@ export class HeapBuffer {
 		const ly = this.top - GAP + 2 - (strH / 2) - 4;
 
 		ctx.beginPath();
-		ctx.fillStyle = "#7703fc";
+		ctx.fillStyle = HeapBuffer.labelBg;
 		ctx.roundRect(lx, ly, strW - strWb3, 18, 4);
 		ctx.fill();
 
@@ -254,6 +260,7 @@ export class HeapBuffer {
 		ctx.font = `${strH}px monospace`;
 		ctx.fillStyle = "#ffffff";
 		ctx.fillText(dimStr, lx + GAP, ly + 9);
+		ctx.restore();
 	}
 
 	drawTreeNode(ctx: CanvasRenderingContext2D, idx: number) {
@@ -285,17 +292,17 @@ export class HeapBuffer {
 		const { x, y } = this;
 
 		ctx.beginPath();
-			ctx.fillStyle = HeapBuffer.bg;
-			ctx.roundRect(x, y, this.rowLen.value * HeapBuffer.cellWidth, this.height(), 4);
-			ctx.fill();
-			if(this.borderColor) {
-				const pad = 2;
-				ctx.roundRect(x - pad, y - pad, (this.rowLen.value * HeapBuffer.cellWidth) + (pad * 2), this.height() + (pad * 2), 4);
-				ctx.lineWidth = HeapBuffer.borderWidth;
-				ctx.strokeStyle = this.borderColor;
-				ctx.stroke();
-			}
-		ctx.restore();
+		ctx.fillStyle = HeapBuffer.bg;
+		ctx.roundRect(x, y, this.rowLen.value * HeapBuffer.cellWidth, this.height(), 4);
+		ctx.fill();
+		if(this.borderColor) {
+			ctx.beginPath();
+			const pad = 2;
+			ctx.roundRect(x - pad, y - pad, (this.rowLen.value * HeapBuffer.cellWidth) + (pad * 2), this.height() + (pad * 2), 4);
+			ctx.lineWidth = HeapBuffer.borderWidth;
+			ctx.strokeStyle = this.borderColor;
+			ctx.stroke();
+		}
 
 		this.drawTree(ctx);
 		for(let i = 0; i < this.buf.v.cap; i++) {

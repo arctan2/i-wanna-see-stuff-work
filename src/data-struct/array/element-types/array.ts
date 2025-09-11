@@ -11,6 +11,7 @@ export class ArrayBuf {
 	static borderWidth = 3;
 	static fontSize = 12;
 	static bg = "#4772ff";
+	static labelBg = "#7703fc";
 	static cellStrokeColor = "#9e9e9e";
 	static spikesContainerHeight = GAP * 20;
 	static spikesContainerOffsetBottom = GAP * 2;
@@ -42,6 +43,11 @@ export class ArrayBuf {
 		this.calcSpikeWidth();
 	}
 
+	setRowLen(newRowLen: number) {
+		this.rowLen.value = newRowLen;
+		this.calcSpikeWidth();
+	}
+
 	calcSpikeWidth() {
 		let n = this.arr.v.arr.length;
 		if(n === 0) {
@@ -69,6 +75,7 @@ export class ArrayBuf {
 
 	drawCellAtIdx(ctx: CanvasRenderingContext2D, idx: number) {
 		if(idx < 0) return;
+
 		const row = Math.floor(idx / this.rowLen.value);
 		const col = (idx % this.rowLen.value);
 
@@ -121,19 +128,22 @@ export class ArrayBuf {
 		const ly = this.top - GAP + 2 - (strH / 2) - 4;
 
 		ctx.beginPath();
-		ctx.fillStyle = "#7703fc";
-		ctx.roundRect(lx, ly, strW - strWb3, 18, 4);
-		ctx.fill();
+			ctx.fillStyle = ArrayBuf.labelBg;
+			ctx.roundRect(lx, ly, strW - strWb3, 18, 4);
+			ctx.fill();
 
-		ctx.textBaseline = "middle";
-		ctx.textAlign = "left";
-		ctx.font = `${strH}px monospace`;
-		ctx.fillStyle = "#ffffff";
-		ctx.fillText(dimStr, lx + GAP, ly + 9);
+			ctx.textBaseline = "middle";
+			ctx.textAlign = "left";
+			ctx.font = `${strH}px monospace`;
+			ctx.fillStyle = "#ffffff";
+			ctx.fillText(dimStr, lx + GAP, ly + 9);
+		ctx.restore();
 	}
 
 	paint(ctx: CanvasRenderingContext2D) {
 		const { x, y } = this;
+
+		ctx.beginPath();
 
 		ctx.fillStyle = ArrayBuf.bg;
 		ctx.roundRect(x, y, this.rowLen.value * ArrayBuf.cellWidth, this.height(), 4);
@@ -151,15 +161,14 @@ export class ArrayBuf {
 			this.drawCellAtIdx(ctx, i);
 		}
 
-		ctx.beginPath();
-			if(this.borderColor) {
-				const pad = 2;
-				ctx.roundRect(x - pad, y - pad, (this.rowLen.value * ArrayBuf.cellWidth) + (pad * 2), this.height() + (pad * 2), 4);
-				ctx.lineWidth = ArrayBuf.borderWidth;
-				ctx.strokeStyle = this.borderColor;
-				ctx.stroke();
-			}
-		ctx.restore();
+		if(this.borderColor) {
+			ctx.beginPath();
+			const pad = 2;
+			ctx.roundRect(x - pad, y - pad, (this.rowLen.value * ArrayBuf.cellWidth) + (pad * 2), this.height() + (pad * 2), 4);
+			ctx.lineWidth = ArrayBuf.borderWidth;
+			ctx.strokeStyle = this.borderColor;
+			ctx.stroke();
+		}
 	}
 
 	height() {

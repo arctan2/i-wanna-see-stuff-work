@@ -20,6 +20,7 @@ import SelectionSort from '../../array/sorting/selection-sort';
 const focusedElement = useFocusedElement<ElementArrayBuf>();
 const toInsertKey = ref<number | "">("");
 const toInsertPosition = ref<number | "">("");
+const rowLen = ref<number>(focusedElement.value.rowLen.value);
 const errMsg = ref<string>("");
 
 enum Sorters {
@@ -42,8 +43,11 @@ const inserterState: {arr: ElementArrayBuf | null, curKey: number, insertedKeys:
 const curSorter = ref<string>(Sorters.BubbleSort);
 
 function validateInputs() {
+	let rowLenMax = focusedElement.value?.arr?.v.cap || 999999;
+
 	const validatorObjects = [
 		new ValidatorObj(toInsertKey, -999999, 999999),
+		new ValidatorObj(rowLen, 4, rowLenMax),
 	];
 
 	for(const o of validatorObjects) {
@@ -142,6 +146,15 @@ function setCurSorter(s: string) {
 	curSorter.value = s;
 }
 
+function rowLenInput() {
+	validateInputs();
+	if(rowLen.value >= 4 && rowLen.value < 999999) {
+		focusedElement.value.setRowLen(rowLen.value);
+		playground.canvas.redraw();
+		playground.canvas.redraw();
+	}
+}
+
 function sort() {
 	const sorterMap: {[_:string]: any} = {
 		[Sorters.BubbleSort]: BubbleSort,
@@ -156,6 +169,7 @@ function sort() {
 	algorithmState.setAlgorithm(sorter);
 	sorter.tryPlay(playground.canvas);
 	unfocusElement();
+	playground.canvas.redraw();
 }
 
 function freeArray() {
@@ -249,6 +263,18 @@ function freeArray() {
 			<button class="btn btn-nobg clr-red" @click="deleteKey" v-if="focusedElement.selectedCellIdx.value !== -1">
 				delete
 			</button>
+		</div>
+
+		<div>
+			<h2>Row Length</h2>
+			<input
+				spellcheck="false"
+				@blur="validateInputs"
+				@input="rowLenInput"
+				placeholder="index"
+				type="number"
+				v-model="rowLen"
+			/>
 		</div>
 	</div>
 </div>

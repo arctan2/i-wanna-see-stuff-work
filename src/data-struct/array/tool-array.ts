@@ -36,8 +36,8 @@ export class ToolArrayBuf extends ToolHandler {
 		let { x, y } = state.pointerUp;
 		const canvas = pgnd.canvas;
 
-		x = Math.floor(x / GAP) * GAP - (ArrayBuf.cellWidth * 5);
-		y = Math.floor(y / GAP) * GAP - (ArrayBuf.cellHeight / 2);
+		x = Math.floor(x / GAP) * GAP - (ToolArrayBuf.array.width() / 2);
+		y = Math.floor(y / GAP) * GAP - (ToolArrayBuf.array.height() / 2);
 
 		x += canvas.transform.x % GAP;
 		y += canvas.transform.y % GAP;
@@ -52,8 +52,8 @@ export class ToolArrayBuf extends ToolHandler {
 	pointerMove(state: EventState, canvas: CanvasHandler) {
 		let { x, y } = state.pointerMove;
 
-		x = Math.floor(x / GAP) * GAP - (ArrayBuf.cellWidth * 5);
-		y = Math.floor(y / GAP) * GAP - (ArrayBuf.cellHeight / 2);
+		x = Math.floor(x / GAP) * GAP - (ToolArrayBuf.array.width() / 2);
+		y = Math.floor(y / GAP) * GAP - (ToolArrayBuf.array.height() / 2);
 
 		x += canvas.transform.x % GAP;
 		y += canvas.transform.y % GAP;

@@ -167,11 +167,13 @@ export class ElementArrayBuf extends ArrayBuf implements ElementHandler, AllocDi
 	};
 
 	focus() {
+		this.borderColor = "#ffff00";
 	}
 
 	unfocus() {
 		this.cellBg[this.selectedCellIdx.value] = ArrayBuf.bg;
 		this.selectedCellIdx.value = -1;
+		this.borderColor = "";
 	}
 
 	isIntersect(x: number, y: number, canvas: CanvasHandler): null | ElementHandler {
@@ -180,11 +182,6 @@ export class ElementArrayBuf extends ArrayBuf implements ElementHandler, AllocDi
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
-		if(this === focusedElement.value) {
-			this.borderColor = "#ffff00";
-		} else {
-			this.borderColor = "";
-		}
 		this.paint(ctx);
 	}
 }

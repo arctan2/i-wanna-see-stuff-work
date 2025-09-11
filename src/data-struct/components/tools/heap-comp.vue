@@ -10,6 +10,7 @@ import { algorithmState } from '../refs';
 import { randInt } from '../../utils.ts';
 import ModeSwitch from '../../../common-components/mode-switch.vue';
 import { minCmpFn } from '../../heap/element-types/buffer.ts';
+import { ValidatorObj } from './util.ts';
 
 const focusedElement = useFocusedElement<ElementHeapBuffer>();
 const toInsertKey = ref<number | "">("");
@@ -23,18 +24,7 @@ const inserterState: {node: ElementHeapBuffer | null, curKey: number, insertedKe
 	insertedKeys: new Set
 }
 const isOn = ref<boolean>(focusedElement.value.cmpFn === minCmpFn);
-
-class ValidatorObj {
-	obj: Ref<number | "">;
-	min: number;
-	max: number;
-
-	constructor(obj: Ref<number | "">, min: number, max: number) {
-		this.obj = obj;
-		this.min = min;
-		this.max = max;
-	}
-}
+const rowLen = ref<number>(focusedElement.value.rowLen.value);
 
 function validateInputs() {
 	const validatorObjects = [
@@ -42,20 +32,20 @@ function validateInputs() {
 		new ValidatorObj(from, -999999, 999999),
 		new ValidatorObj(to, -999999, 999999),
 		new ValidatorObj(step, -100, 100),
+		new ValidatorObj(rowLen, 4, focusedElement.value.buf?.v.cap || 100),
 	];
 
-	for(const { obj, min, max } of validatorObjects) {
-		if(obj.value !== "") {
-			if(Number(obj.value) <= min) {
-				obj.value = min;
-			}
+	for(const o of validatorObjects) {
+		o.validate();
+	}
+}
 
-			if(Number(obj.value) >= max) {
-				obj.value = max;
-			}
-
-			obj.value = Math.floor(obj.value);
-		}
+function rowLenInput() {
+	validateInputs();
+	if(rowLen.value >= 4 && rowLen.value < 999999) {
+		focusedElement.value.setRowLen(rowLen.value);
+		playground.canvas.redraw();
+		playground.canvas.redraw();
 	}
 }
 
@@ -239,6 +229,18 @@ function onClick() {
 		<div class="delete-key">
 			<button class="btn btn-nobg clr-red" @click="deleteKey()">delete top</button>
 			<button class="btn btn-nobg clr-red" @click="deleteWholeHeap()">delete heap</button>
+		</div>
+
+		<div>
+			<h2>Row Length</h2>
+			<input
+				spellcheck="false"
+				@blur="validateInputs"
+				@input="rowLenInput"
+				placeholder="index"
+				type="number"
+				v-model="rowLen"
+			/>
 		</div>
 	</div>
 </div>
