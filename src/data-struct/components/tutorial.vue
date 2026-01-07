@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import TutorialBtns from "./tutorial-btns.vue";
 import { isTutorialMode } from './tutorial';
 import { setIsMemAllocShow } from './refs';
+import YoutubeLogo from "../assets/icons/youtube_logo.png";
 
 const step = ref<number>(0);
 const TOTAL_STEPS = 5;
@@ -87,6 +88,10 @@ function onSkipIntro() {
 	<div class="modal">
 		<h2>Hello!</h2>
 		<div class="modal-content">Welcome to my interactive data structures and algorithms visualization.</div>
+		<a class="youtube-logo-container" href="https://youtu.be/VzPrvCWdJyM" target="_blank">
+			<div><img :src="YoutubeLogo" /></div>
+			<div>Check out the youtube video presentation on this project here</div>
+		</a>
 		<TutorialBtns :on-continue="goNext" :on-skip-intro="onSkipIntro" :step="step" :total-steps="TOTAL_STEPS" />
 	</div>
 </div>
@@ -204,6 +209,48 @@ function onSkipIntro() {
 .mem-alloc .modal {
 	position: absolute;
 	bottom: 45%;
+}
+
+.youtube-logo-container{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	max-width: max-content;
+	font-family: monospace;
+	border: 2px solid red;
+	border-radius: 6px;
+	padding: 0.5rem;
+	margin-bottom: 1rem;
+	cursor: pointer;
+	user-select: none;
+	transition: all 0.2s;
+	color: white;
+	text-decoration: none;
+	box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+	background-color: rgba(255, 0, 0, 0.2);
+}
+
+.youtube-logo-container:hover{
+	background-color: rgba(255, 0, 0, 0.3);
+	box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+}
+
+.youtube-logo-container > div{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.youtube-logo-container > div:first-child{
+	margin-right: 1rem;
+}
+
+.youtube-logo-container div img{
+	width: 3rem;
+	height: 3rem;
+	object-fit: contain;
 }
 
 @media (max-width: 600px) {

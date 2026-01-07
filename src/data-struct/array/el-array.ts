@@ -1,7 +1,6 @@
 import { GAP } from "../canvas";
 import { EventState } from "../handler/event-handler";
 import { CanvasHandler } from "../handler/canvas-handler";
-import { focusedElement } from "../global";
 import { ArrayBuf } from "./element-types/array";
 import { ElementHandler } from "../handler/element-handler";
 import allocator, { AllocDisplay, Dealloc, Ptr } from "../memory-allocator/allocator";
